@@ -13,11 +13,3 @@ Static website for learning AI from scratch to advanced level.
 
 ## Run locally
 Open `index.html` in your browser.
-
-## Regenerate pages
-Run `python3 scripts/generate_site.py` after editing `assets/curriculum.json` or the generator.
-
-## Host on GitHub Pages
-Upload all files/folders to your repository root, then enable Pages from Settings → Pages.
-
-Important: `index.html` should be directly in the root of your repo.
