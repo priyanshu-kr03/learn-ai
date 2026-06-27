@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Practical Python for AI projects | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">File handling</a>
+<a href="#s2">CSV and JSON</a>
+<a href="#s3">Datetime</a>
+<a href="#s4">Regular expressions</a>
+<a href="#s5">APIs with requests</a>
+<a href="#s6">Exception handling</a>
+<a href="#s7">Logging</a>
+<a href="#s8">Typing basics</a>
+<a href="#s9">Clean code</a>
+<a href="#s10">Basic time and space complexity</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">01 Python for AI</span>
+        <h1>Practical Python for AI projects</h1>
+        <div class="meta"><span class="pill">Beginner</span><span class="pill">1 week</span><span class="pill">Lesson 05</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">File handling</span><span class="tag">CSV and JSON</span><span class="tag">Datetime</span><span class="tag">Regular expressions</span><span class="tag">APIs with requests</span><span class="tag">Exception handling</span><span class="tag">Logging</span><span class="tag">Typing basics</span><span class="tag">Clean code</span><span class="tag">Basic time and space complexity</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s1" data-progress-check>
+    <div>
+      <h2>File handling</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>File handling is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses File handling to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where File handling is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for File handling, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s2" data-progress-check>
+    <div>
+      <h2>CSV and JSON</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>CSV and JSON should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect CSV and JSON to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses CSV and JSON to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply CSV and JSON in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      <pre><code>import json
+payload = {&quot;text&quot;: &quot;hello&quot;, &quot;label&quot;: &quot;greeting&quot;}
+print(json.dumps(payload, indent=2))</code></pre>
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using CSV and JSON. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s3" data-progress-check>
+    <div>
+      <h2>Datetime</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Datetime is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Datetime to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where Datetime is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Datetime, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s4" data-progress-check>
+    <div>
+      <h2>Regular expressions</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Regular expressions is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Regular expressions to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where Regular expressions is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Regular expressions, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s5" data-progress-check>
+    <div>
+      <h2>APIs with requests</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>APIs with requests is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses APIs with requests to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where APIs with requests is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for APIs with requests, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s6" data-progress-check>
+    <div>
+      <h2>Exception handling</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Exception handling should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect Exception handling to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Exception handling to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply Exception handling in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Exception handling. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s7" data-progress-check>
+    <div>
+      <h2>Logging</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Logging should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect Logging to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Logging to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply Logging in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Logging. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s8" data-progress-check>
+    <div>
+      <h2>Typing basics</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Typing basics should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect Typing basics to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Typing basics to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply Typing basics in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Typing basics. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s9" data-progress-check>
+    <div>
+      <h2>Clean code</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Clean code belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Practical Python for AI projects, treat Clean code as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Clean code to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Clean code and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Clean code. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="practical-python-for-ai-projects-s10" data-progress-check>
+    <div>
+      <h2>Basic time and space complexity</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Basic time and space complexity is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Basic time and space complexity to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where Basic time and space complexity is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Basic time and space complexity, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Practical Python for AI projects</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="control-flow-functions-and-oop.html">Previous</a><a class="btn primary" href="numpy-foundations.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

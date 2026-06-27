@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Projects: beginner to advanced | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Beginner projects</a>
+<a href="#s2">EDA project</a>
+<a href="#s3">House price prediction</a>
+<a href="#s4">Spam classifier</a>
+<a href="#s5">Churn prediction</a>
+<a href="#s6">Fraud detection</a>
+<a href="#s7">Recommendation project</a>
+<a href="#s8">Image classifier</a>
+<a href="#s9">Chat with PDF</a>
+<a href="#s10">Agent with tools</a>
+<a href="#s11">MLOps pipeline</a>
+<a href="#s12">Multimodal document AI</a>
+<a href="#s13">README and case study</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">11 Projects and Portfolio</span>
+        <h1>Projects: beginner to advanced</h1>
+        <div class="meta"><span class="pill">Beginner to Advanced</span><span class="pill">Ongoing</span><span class="pill">Lesson 39</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Beginner projects</span><span class="tag">EDA project</span><span class="tag">House price prediction</span><span class="tag">Spam classifier</span><span class="tag">Churn prediction</span><span class="tag">Fraud detection</span><span class="tag">Recommendation project</span><span class="tag">Image classifier</span><span class="tag">Chat with PDF</span><span class="tag">Agent with tools</span><span class="tag">MLOps pipeline</span><span class="tag">Multimodal document AI</span><span class="tag">README and case study</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s1" data-progress-check>
+    <div>
+      <h2>Beginner projects</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Beginner projects is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Beginner projects. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Beginner projects is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Beginner projects, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s2" data-progress-check>
+    <div>
+      <h2>EDA project</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>EDA project belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Projects: beginner to advanced, treat EDA project as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply EDA project. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply EDA project and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply EDA project. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s3" data-progress-check>
+    <div>
+      <h2>House price prediction</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>House price prediction is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply House price prediction. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where House price prediction is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for House price prediction, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s4" data-progress-check>
+    <div>
+      <h2>Spam classifier</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Spam classifier is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Spam classifier. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Spam classifier is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Spam classifier, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s5" data-progress-check>
+    <div>
+      <h2>Churn prediction</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Churn prediction is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Churn prediction. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Churn prediction is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Churn prediction, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s6" data-progress-check>
+    <div>
+      <h2>Fraud detection</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Fraud detection is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Fraud detection. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Fraud detection is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Fraud detection, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s7" data-progress-check>
+    <div>
+      <h2>Recommendation project</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Recommendation project is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Projects: beginner to advanced, connect Recommendation project to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Add Recommendation project to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Recommendation project is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Add Recommendation project to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s8" data-progress-check>
+    <div>
+      <h2>Image classifier</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Image classifier is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Image classifier is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Image classifier, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s9" data-progress-check>
+    <div>
+      <h2>Chat with PDF</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Chat with PDF is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Chat with PDF. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Chat with PDF is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Chat with PDF, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s10" data-progress-check>
+    <div>
+      <h2>Agent with tools</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Agent with tools is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Projects: beginner to advanced, test Agent with tools with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how Agent with tools changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Agent with tools. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s11" data-progress-check>
+    <div>
+      <h2>MLOps pipeline</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>MLOps pipeline belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Projects: beginner to advanced, treat MLOps pipeline as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply MLOps pipeline. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply MLOps pipeline and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply MLOps pipeline. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s12">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s12" data-progress-check>
+    <div>
+      <h2>Multimodal document AI</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Multimodal document AI is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Projects: beginner to advanced, test Multimodal document AI with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to Multimodal document AI, the response, and one failure case.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how Multimodal document AI changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Multimodal document AI. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s13">
+  <div class="checkrow">
+    <input type="checkbox" id="projects-beginner-to-advanced-s13" data-progress-check>
+    <div>
+      <h2>README and case study</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>README and case study is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Projects: beginner to advanced, connect README and case study to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Add README and case study to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
+        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where README and case study is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Add README and case study to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Projects: beginner to advanced</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="llm-app-architecture.html">Previous</a><a class="btn primary" href="capstone-ai-learning-assistant.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

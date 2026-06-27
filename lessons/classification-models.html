@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Classification models | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Logistic regression</a>
+<a href="#s2">KNN</a>
+<a href="#s3">Naive Bayes</a>
+<a href="#s4">SVM</a>
+<a href="#s5">Decision tree</a>
+<a href="#s6">Confusion matrix</a>
+<a href="#s7">Accuracy</a>
+<a href="#s8">Precision</a>
+<a href="#s9">Recall</a>
+<a href="#s10">F1 score</a>
+<a href="#s11">ROC-AUC</a>
+<a href="#s12">Threshold tuning</a>
+<a href="#s13">Multiclass classification</a>
+<a href="#s14">Imbalanced classification</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">04 Machine Learning</span>
+        <h1>Classification models</h1>
+        <div class="meta"><span class="pill">Beginner</span><span class="pill">2 weeks</span><span class="pill">Lesson 16</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Logistic regression</span><span class="tag">KNN</span><span class="tag">Naive Bayes</span><span class="tag">SVM</span><span class="tag">Decision tree</span><span class="tag">Confusion matrix</span><span class="tag">Accuracy</span><span class="tag">Precision</span><span class="tag">Recall</span><span class="tag">F1 score</span><span class="tag">ROC-AUC</span><span class="tag">Threshold tuning</span><span class="tag">Multiclass classification</span><span class="tag">Imbalanced classification</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s1" data-progress-check>
+    <div>
+      <h2>Logistic regression</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Logistic regression is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study Logistic regression by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>House price prediction: the model predicts a number. Compare predicted price with real price, inspect large errors, and check whether errors are worse for expensive homes.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Logistic regression to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      <pre><code>from sklearn.linear_model import LogisticRegression
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)</code></pre>
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Logistic regression affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s2" data-progress-check>
+    <div>
+      <h2>KNN</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>KNN is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study KNN by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how KNN changes the prediction, score, or interpretation.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply KNN to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how KNN affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s3" data-progress-check>
+    <div>
+      <h2>Naive Bayes</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Naive Bayes is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Classification models, learn Naive Bayes with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a tiny numeric example for Naive Bayes: two features, three rows, or two vectors. Calculate the result and explain what the number says about the data.</p>
+        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Classification models.</li><li>Change one input and describe why the result changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Naive Bayes by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s4" data-progress-check>
+    <div>
+      <h2>SVM</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>SVM is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study SVM by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how SVM changes the prediction, score, or interpretation.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply SVM to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how SVM affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s5" data-progress-check>
+    <div>
+      <h2>Decision tree</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Decision tree is a concept inside Classification models that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Classification models and needs to apply Decision tree. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Classification models where Decision tree is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Decision tree, explain it in 5 to 8 lines, and connect it to Classification models.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s6" data-progress-check>
+    <div>
+      <h2>Confusion matrix</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Confusion matrix is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Classification models, learn Confusion matrix with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Classification models.</li><li>Change one input and describe why the result changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Confusion matrix by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s7" data-progress-check>
+    <div>
+      <h2>Accuracy</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Accuracy is a concept inside Classification models that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Classification models and needs to apply Accuracy. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Classification models where Accuracy is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Accuracy, explain it in 5 to 8 lines, and connect it to Classification models.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s8" data-progress-check>
+    <div>
+      <h2>Precision</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Precision is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study Precision by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Precision to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Precision affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s9" data-progress-check>
+    <div>
+      <h2>Recall</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Recall is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study Recall by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Recall to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Recall affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s10" data-progress-check>
+    <div>
+      <h2>F1 score</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>F1 score is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study F1 score by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply F1 score to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how F1 score affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s11" data-progress-check>
+    <div>
+      <h2>ROC-AUC</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>ROC-AUC is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study ROC-AUC by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply ROC-AUC to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how ROC-AUC affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s12">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s12" data-progress-check>
+    <div>
+      <h2>Threshold tuning</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Threshold tuning is a concept inside Classification models that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Set up a small realistic scenario from Classification models where Threshold tuning is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Threshold tuning, explain it in 5 to 8 lines, and connect it to Classification models.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s13">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s13" data-progress-check>
+    <div>
+      <h2>Multiclass classification</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Multiclass classification is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study Multiclass classification by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Multiclass classification to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Multiclass classification affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s14">
+  <div class="checkrow">
+    <input type="checkbox" id="classification-models-s14" data-progress-check>
+    <div>
+      <h2>Imbalanced classification</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Imbalanced classification is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Classification models, study Imbalanced classification by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Imbalanced classification to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Imbalanced classification affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Classification models</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="regression-models.html">Previous</a><a class="btn primary" href="trees-and-ensemble-models.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

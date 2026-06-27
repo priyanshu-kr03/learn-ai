@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PyTorch workflow | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">PyTorch tensors</a>
+<a href="#s2">Autograd</a>
+<a href="#s3">nn.Module</a>
+<a href="#s4">Dataset and DataLoader</a>
+<a href="#s5">Training loop</a>
+<a href="#s6">Validation loop</a>
+<a href="#s7">Saving loading model</a>
+<a href="#s8">GPU usage</a>
+<a href="#s9">Mixed precision concept</a>
+<a href="#s10">Checkpoints</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">05 Deep Learning</span>
+        <h1>PyTorch workflow</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">2 weeks</span><span class="pill">Lesson 23</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">PyTorch tensors</span><span class="tag">Autograd</span><span class="tag">nn.Module</span><span class="tag">Dataset and DataLoader</span><span class="tag">Training loop</span><span class="tag">Validation loop</span><span class="tag">Saving loading model</span><span class="tag">GPU usage</span><span class="tag">Mixed precision concept</span><span class="tag">Checkpoints</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s1" data-progress-check>
+    <div>
+      <h2>PyTorch tensors</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>PyTorch tensors belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In PyTorch workflow, understand PyTorch tensors through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where PyTorch tensors appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where PyTorch tensors appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      <pre><code>for xb, yb in dataloader:
+    pred = model(xb)
+    loss = loss_fn(pred, yb)
+    loss.backward()
+    optimizer.step()
+    optimizer.zero_grad()</code></pre>
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for PyTorch tensors. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s2" data-progress-check>
+    <div>
+      <h2>Autograd</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Autograd belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In PyTorch workflow, understand Autograd through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where Autograd appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Autograd appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Autograd. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s3" data-progress-check>
+    <div>
+      <h2>nn.Module</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>nn.Module should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In PyTorch workflow, connect nn.Module to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses nn.Module to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply nn.Module in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using nn.Module. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s4" data-progress-check>
+    <div>
+      <h2>Dataset and DataLoader</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Dataset and DataLoader is a concept inside PyTorch workflow that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying PyTorch workflow and needs to apply Dataset and DataLoader. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from PyTorch workflow where Dataset and DataLoader is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Dataset and DataLoader, explain it in 5 to 8 lines, and connect it to PyTorch workflow.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s5" data-progress-check>
+    <div>
+      <h2>Training loop</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Training loop should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In PyTorch workflow, connect Training loop to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Training loop to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply Training loop in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Training loop. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s6" data-progress-check>
+    <div>
+      <h2>Validation loop</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Validation loop should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In PyTorch workflow, connect Validation loop to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Validation loop to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply Validation loop in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Validation loop. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s7" data-progress-check>
+    <div>
+      <h2>Saving loading model</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Saving loading model is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In PyTorch workflow, study Saving loading model by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how Saving loading model changes the prediction, score, or interpretation.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Saving loading model to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Saving loading model affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s8" data-progress-check>
+    <div>
+      <h2>GPU usage</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>GPU usage belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In PyTorch workflow, understand GPU usage through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where GPU usage appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where GPU usage appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for GPU usage. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s9" data-progress-check>
+    <div>
+      <h2>Mixed precision concept</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Mixed precision concept is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In PyTorch workflow, study Mixed precision concept by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Mixed precision concept to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Mixed precision concept affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="pytorch-workflow-s10" data-progress-check>
+    <div>
+      <h2>Checkpoints</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Checkpoints is a concept inside PyTorch workflow that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying PyTorch workflow and needs to apply Checkpoints. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from PyTorch workflow where Checkpoints is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Checkpoints, explain it in 5 to 8 lines, and connect it to PyTorch workflow.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>PyTorch workflow</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="neural-network-foundations.html">Previous</a><a class="btn primary" href="cnn-and-computer-vision-basics.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

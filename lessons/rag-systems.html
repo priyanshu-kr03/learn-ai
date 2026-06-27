@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RAG systems | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">RAG</a>
+<a href="#s2">Document loading</a>
+<a href="#s3">Chunking</a>
+<a href="#s4">Indexing</a>
+<a href="#s5">Retrieval</a>
+<a href="#s6">Query rewriting</a>
+<a href="#s7">Reranking</a>
+<a href="#s8">Context construction</a>
+<a href="#s9">Grounded generation</a>
+<a href="#s10">Citations</a>
+<a href="#s11">RAG evaluation</a>
+<a href="#s12">RAG failure modes</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">08 Generative AI and LLMs</span>
+        <h1>RAG systems</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">2 weeks</span><span class="pill">Lesson 30</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">RAG</span><span class="tag">Document loading</span><span class="tag">Chunking</span><span class="tag">Indexing</span><span class="tag">Retrieval</span><span class="tag">Query rewriting</span><span class="tag">Reranking</span><span class="tag">Context construction</span><span class="tag">Grounded generation</span><span class="tag">Citations</span><span class="tag">RAG evaluation</span><span class="tag">RAG failure modes</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s1" data-progress-check>
+    <div>
+      <h2>RAG</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>RAG is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test RAG with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>A company policy assistant retrieves three relevant HR policy chunks before answering an employee&#x27;s leave question.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how RAG changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s2" data-progress-check>
+    <div>
+      <h2>Document loading</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Document loading is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>A policy assistant loads each PDF page with source filename, page number, section title, and extracted text so answers can point back to the original document.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Document loading is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Document loading, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s3" data-progress-check>
+    <div>
+      <h2>Chunking</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Chunking is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Split a handbook by headings into 400 to 800 token chunks with a small overlap, then keep page number and section metadata with every chunk.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Chunking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Chunking, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s4" data-progress-check>
+    <div>
+      <h2>Indexing</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Indexing is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>After embedding 5,000 support articles, store vectors plus tags like product, language, and last_updated so searches can filter before answering.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Indexing is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Indexing, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s5" data-progress-check>
+    <div>
+      <h2>Retrieval</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Retrieval is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>For &#x27;How do I change my billing email?&#x27;, retrieval should return account settings and billing profile chunks, not generic login help.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Retrieval is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Retrieval, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s6" data-progress-check>
+    <div>
+      <h2>Query rewriting</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Query rewriting is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>After the user asks &#x27;What about refunds?&#x27;, rewrite it to &#x27;refund policy for annual subscription cancellation&#x27; before searching documents.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Query rewriting is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Query rewriting, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s7" data-progress-check>
+    <div>
+      <h2>Reranking</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Reranking is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Retrieve 30 chunks quickly, then rerank the top 30 and pass only the best 5 evidence chunks to the model.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Reranking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Reranking, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s8" data-progress-check>
+    <div>
+      <h2>Context construction</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Context construction is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test Context construction with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Place system rules first, then the user&#x27;s question, then clearly labeled evidence snippets with source IDs, then require the answer to cite source IDs.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how Context construction changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Context construction. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s9" data-progress-check>
+    <div>
+      <h2>Grounded generation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Grounded generation is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>If no retrieved policy mentions relocation allowance, the assistant should say it cannot find the answer in the provided documents.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Grounded generation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Grounded generation, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s10" data-progress-check>
+    <div>
+      <h2>Citations</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Citations is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>An answer about leave policy cites &#x27;employee-handbook.pdf, page 18&#x27; next to the sentence that states the rule.</p>
+        <ol><li>Set up a small realistic scenario from RAG systems where Citations is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Citations, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s11" data-progress-check>
+    <div>
+      <h2>RAG evaluation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>RAG evaluation is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test RAG evaluation with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Create 50 question-answer pairs from documents, record expected source chunks, then test recall@k, citation correctness, and unsupported claims.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how RAG evaluation changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG evaluation. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s12">
+  <div class="checkrow">
+    <input type="checkbox" id="rag-systems-s12" data-progress-check>
+    <div>
+      <h2>RAG failure modes</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>RAG failure modes is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test RAG failure modes with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>If a benefits policy changed last month but the vector index was not rebuilt, the assistant can confidently answer with the old policy.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how RAG failure modes changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG failure modes. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>RAG systems</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="embeddings-and-vector-databases.html">Previous</a><a class="btn primary" href="tool-calling-and-ai-agents.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

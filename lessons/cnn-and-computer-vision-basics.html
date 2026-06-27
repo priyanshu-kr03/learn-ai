@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CNN and Computer Vision basics | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Image pixels and channels</a>
+<a href="#s2">Image preprocessing</a>
+<a href="#s3">CNN</a>
+<a href="#s4">Convolution filters</a>
+<a href="#s5">Pooling</a>
+<a href="#s6">Transfer learning</a>
+<a href="#s7">Image augmentation</a>
+<a href="#s8">Object detection</a>
+<a href="#s9">Segmentation</a>
+<a href="#s10">OCR</a>
+<a href="#s11">Vision Transformers</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">05 Deep Learning</span>
+        <h1>CNN and Computer Vision basics</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 24</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Image pixels and channels</span><span class="tag">Image preprocessing</span><span class="tag">CNN</span><span class="tag">Convolution filters</span><span class="tag">Pooling</span><span class="tag">Transfer learning</span><span class="tag">Image augmentation</span><span class="tag">Object detection</span><span class="tag">Segmentation</span><span class="tag">OCR</span><span class="tag">Vision Transformers</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s1" data-progress-check>
+    <div>
+      <h2>Image pixels and channels</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Image pixels and channels is a concept inside CNN and Computer Vision basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Set up a small realistic scenario from CNN and Computer Vision basics where Image pixels and channels is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Image pixels and channels, explain it in 5 to 8 lines, and connect it to CNN and Computer Vision basics.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s2" data-progress-check>
+    <div>
+      <h2>Image preprocessing</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Image preprocessing is a concept inside CNN and Computer Vision basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
+        <ol><li>Set up a small realistic scenario from CNN and Computer Vision basics where Image preprocessing is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Image preprocessing, explain it in 5 to 8 lines, and connect it to CNN and Computer Vision basics.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s3" data-progress-check>
+    <div>
+      <h2>CNN</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>CNN belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In CNN and Computer Vision basics, understand CNN through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where CNN appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for CNN. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s4" data-progress-check>
+    <div>
+      <h2>Convolution filters</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Convolution filters belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In CNN and Computer Vision basics, understand Convolution filters through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where Convolution filters appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Convolution filters appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Convolution filters. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s5" data-progress-check>
+    <div>
+      <h2>Pooling</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Pooling belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In CNN and Computer Vision basics, understand Pooling through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where Pooling appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Pooling appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Pooling. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s6" data-progress-check>
+    <div>
+      <h2>Transfer learning</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Transfer learning is a concept inside CNN and Computer Vision basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying CNN and Computer Vision basics and needs to apply Transfer learning. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from CNN and Computer Vision basics where Transfer learning is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Transfer learning, explain it in 5 to 8 lines, and connect it to CNN and Computer Vision basics.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s7" data-progress-check>
+    <div>
+      <h2>Image augmentation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Image augmentation is a concept inside CNN and Computer Vision basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Set up a small realistic scenario from CNN and Computer Vision basics where Image augmentation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Image augmentation, explain it in 5 to 8 lines, and connect it to CNN and Computer Vision basics.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s8" data-progress-check>
+    <div>
+      <h2>Object detection</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Object detection is a concept inside CNN and Computer Vision basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Set up a small realistic scenario from CNN and Computer Vision basics where Object detection is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Object detection, explain it in 5 to 8 lines, and connect it to CNN and Computer Vision basics.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s9" data-progress-check>
+    <div>
+      <h2>Segmentation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Segmentation is a concept inside CNN and Computer Vision basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Set up a small realistic scenario from CNN and Computer Vision basics where Segmentation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Segmentation, explain it in 5 to 8 lines, and connect it to CNN and Computer Vision basics.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s10" data-progress-check>
+    <div>
+      <h2>OCR</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>OCR is a concept inside CNN and Computer Vision basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Set up a small realistic scenario from CNN and Computer Vision basics where OCR is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for OCR, explain it in 5 to 8 lines, and connect it to CNN and Computer Vision basics.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="cnn-and-computer-vision-basics-s11" data-progress-check>
+    <div>
+      <h2>Vision Transformers</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Vision Transformers belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In CNN and Computer Vision basics, understand Vision Transformers through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Vision Transformers appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Vision Transformers. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>CNN and Computer Vision basics</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="pytorch-workflow.html">Previous</a><a class="btn primary" href="sequence-models-and-transformers.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Neural network foundations | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Neural networks</a>
+<a href="#s2">Perceptron</a>
+<a href="#s3">Layers and weights</a>
+<a href="#s4">Activation functions</a>
+<a href="#s5">Sigmoid tanh ReLU GELU softmax</a>
+<a href="#s6">Forward propagation</a>
+<a href="#s7">Loss functions</a>
+<a href="#s8">Backpropagation</a>
+<a href="#s9">Optimizers</a>
+<a href="#s10">Dropout</a>
+<a href="#s11">Batch normalization</a>
+<a href="#s12">Vanishing gradients</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">05 Deep Learning</span>
+        <h1>Neural network foundations</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">2 weeks</span><span class="pill">Lesson 22</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Neural networks</span><span class="tag">Perceptron</span><span class="tag">Layers and weights</span><span class="tag">Activation functions</span><span class="tag">Sigmoid tanh ReLU GELU softmax</span><span class="tag">Forward propagation</span><span class="tag">Loss functions</span><span class="tag">Backpropagation</span><span class="tag">Optimizers</span><span class="tag">Dropout</span><span class="tag">Batch normalization</span><span class="tag">Vanishing gradients</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s1" data-progress-check>
+    <div>
+      <h2>Neural networks</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Neural networks belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Neural network foundations, understand Neural networks through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where Neural networks appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Neural networks appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Neural networks. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s2" data-progress-check>
+    <div>
+      <h2>Perceptron</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Perceptron is a concept inside Neural network foundations that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Neural network foundations and needs to apply Perceptron. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Neural network foundations where Perceptron is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Perceptron, explain it in 5 to 8 lines, and connect it to Neural network foundations.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s3" data-progress-check>
+    <div>
+      <h2>Layers and weights</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Layers and weights is a concept inside Neural network foundations that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Neural network foundations and needs to apply Layers and weights. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Neural network foundations where Layers and weights is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Layers and weights, explain it in 5 to 8 lines, and connect it to Neural network foundations.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s4" data-progress-check>
+    <div>
+      <h2>Activation functions</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Activation functions is a concept inside Neural network foundations that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
+        <ol><li>Set up a small realistic scenario from Neural network foundations where Activation functions is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Activation functions, explain it in 5 to 8 lines, and connect it to Neural network foundations.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s5" data-progress-check>
+    <div>
+      <h2>Sigmoid tanh ReLU GELU softmax</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Sigmoid tanh ReLU GELU softmax is a concept inside Neural network foundations that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Neural network foundations and needs to apply Sigmoid tanh ReLU GELU softmax. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Neural network foundations where Sigmoid tanh ReLU GELU softmax is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Sigmoid tanh ReLU GELU softmax, explain it in 5 to 8 lines, and connect it to Neural network foundations.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s6" data-progress-check>
+    <div>
+      <h2>Forward propagation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Forward propagation is a concept inside Neural network foundations that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Neural network foundations and needs to apply Forward propagation. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Neural network foundations where Forward propagation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Forward propagation, explain it in 5 to 8 lines, and connect it to Neural network foundations.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s7" data-progress-check>
+    <div>
+      <h2>Loss functions</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A loss function measures how wrong a model is on an example or batch. It turns prediction quality into a number that the optimizer can minimize. Without a loss function, the model has no clear learning signal.</p><p>Different tasks need different losses. Regression often uses mean squared error or mean absolute error because the target is a number. Classification often uses cross-entropy because the model predicts probabilities over classes.</p><p>For regression, if the true house price is 300,000 and the model predicts 270,000, the error is 30,000. Squared error makes that 900,000,000, which strongly punishes large mistakes. Mean absolute error would count it as 30,000, which is easier to interpret but gives a different optimization behavior.</p><p>Choosing a loss function is not just a math choice. It tells the model what kind of mistake matters. If large errors are very costly, squared error may be appropriate. If you want robustness to outliers, absolute error may be better.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Take three true values: [100, 200, 300]. Predictions are [110, 180, 330].</li><li>Errors are [10, -20, 30]. Absolute errors are [10, 20, 30], so MAE is 20.</li><li>Squared errors are [100, 400, 900], so MSE is 466.67.</li><li>The larger third error affects MSE more strongly, which is why MSE pushes models to avoid large errors.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Loss functions by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s8" data-progress-check>
+    <div>
+      <h2>Backpropagation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Backpropagation belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Neural network foundations, understand Backpropagation through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where Backpropagation appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Backpropagation appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Backpropagation. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s9" data-progress-check>
+    <div>
+      <h2>Optimizers</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Optimizers is a concept inside Neural network foundations that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Neural network foundations and needs to apply Optimizers. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Neural network foundations where Optimizers is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Optimizers, explain it in 5 to 8 lines, and connect it to Neural network foundations.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s10" data-progress-check>
+    <div>
+      <h2>Dropout</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Dropout belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Neural network foundations, understand Dropout through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where Dropout appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Dropout appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Dropout. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s11" data-progress-check>
+    <div>
+      <h2>Batch normalization</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Batch normalization belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Neural network foundations, understand Batch normalization through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small image or text model and trace where Batch normalization appears in the training flow: input shape, model layer, loss, gradient, or validation output.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Batch normalization appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Batch normalization. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s12">
+  <div class="checkrow">
+    <input type="checkbox" id="neural-network-foundations-s12" data-progress-check>
+    <div>
+      <h2>Vanishing gradients</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Vanishing gradients is a concept inside Neural network foundations that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Neural network foundations and needs to apply Vanishing gradients. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Neural network foundations where Vanishing gradients is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Vanishing gradients, explain it in 5 to 8 lines, and connect it to Neural network foundations.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Neural network foundations</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="recommendation-anomaly-and-time-series.html">Previous</a><a class="btn primary" href="pytorch-workflow.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

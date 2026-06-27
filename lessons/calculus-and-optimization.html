@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Calculus and optimization | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Derivatives</a>
+<a href="#s2">Partial derivatives</a>
+<a href="#s3">Chain rule</a>
+<a href="#s4">Gradient</a>
+<a href="#s5">Loss functions</a>
+<a href="#s6">Gradient descent</a>
+<a href="#s7">Learning rate</a>
+<a href="#s8">Local minima intuition</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">03 Math and Statistics</span>
+        <h1>Calculus and optimization</h1>
+        <div class="meta"><span class="pill">Beginner</span><span class="pill">1 week</span><span class="pill">Lesson 10</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Derivatives</span><span class="tag">Partial derivatives</span><span class="tag">Chain rule</span><span class="tag">Gradient</span><span class="tag">Loss functions</span><span class="tag">Gradient descent</span><span class="tag">Learning rate</span><span class="tag">Local minima intuition</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s1" data-progress-check>
+    <div>
+      <h2>Derivatives</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A derivative tells you how fast one value changes when another value changes a tiny amount. If a function is y = f(x), the derivative answers: when x increases a little, does y go up or down, and how strongly? This is more useful than only knowing the value of y, because machine learning is mostly about adjusting numbers and seeing whether the result improves.</p><p>Think about a model weight as a knob. The loss tells you how wrong the model is. The derivative tells you what happens to the loss if you turn that knob slightly. A positive derivative means increasing the knob increases the loss, so you usually want to decrease it. A negative derivative means increasing the knob decreases the loss, so increasing it may help.</p><p>For a simple function f(x) = x^2, the derivative is f&#x27;(x) = 2x. At x = 3, the derivative is 6. That means near x = 3, increasing x by a very small amount increases f(x) about 6 times that small amount. If x changes from 3 to 3.01, f(x) changes from 9 to about 9.0601, close to the derivative estimate 9 + 6 * 0.01 = 9.06.</p><p>In AI, derivatives are the reason a model can learn automatically. Instead of a human manually trying every weight, the training algorithm uses derivatives to know which direction makes the loss smaller. This is the core idea behind gradient descent and backpropagation.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Start with f(x) = x^2. This function is easy to visualize: x = 1 gives 1, x = 2 gives 4, x = 3 gives 9.</li><li>The derivative is f&#x27;(x) = 2x. At x = 3, f&#x27;(3) = 6.</li><li>Interpret 6 as local sensitivity: near x = 3, a small increase of 0.01 in x increases the output by roughly 0.06.</li><li>Connect it to ML: if x is a model weight and f(x) is loss, the derivative tells the optimizer how to move x to reduce error.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Derivatives by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s2" data-progress-check>
+    <div>
+      <h2>Partial derivatives</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A partial derivative is used when a function depends on more than one input. Instead of asking how the output changes when the only input changes, you ask how the output changes when one input changes while the other inputs stay fixed.</p><p>This matters because AI models have many parameters. A tiny model may have a few weights; a neural network may have millions or billions. During training, the optimizer needs to know how each individual weight contributes to the final loss.</p><p>For f(x, y) = x^2 + 3y, the partial derivative with respect to x is 2x because y is treated as constant. The partial derivative with respect to y is 3 because x is treated as constant. At x = 4 and y = 10, changing x slightly has sensitivity 8, while changing y slightly has sensitivity 3.</p><p>Partial derivatives let training assign credit and blame. If changing one weight strongly affects the loss, its partial derivative will be large. If changing another weight barely affects loss, its partial derivative will be small.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Use f(x, y) = x^2 + 3y.</li><li>For partial derivative with respect to x, freeze y and differentiate x^2. Result: 2x.</li><li>For partial derivative with respect to y, freeze x and differentiate 3y. Result: 3.</li><li>At x = 4, y = 10, the sensitivities are 8 for x and 3 for y, so x has a stronger local effect on the output.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Partial derivatives by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s3" data-progress-check>
+    <div>
+      <h2>Chain rule</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>The chain rule explains how to differentiate a function that is built from smaller functions. If one calculation feeds into another calculation, the final sensitivity is found by multiplying the sensitivities along the path.</p><p>Neural networks are chains of operations: input goes into a linear layer, then an activation function, then another layer, then a loss. Backpropagation is basically the chain rule applied carefully across all those operations.</p><p>Suppose z = 3x and y = z^2. If x changes, z changes first, and then y changes because z changed. The derivative dy/dx is dy/dz multiplied by dz/dx. Since dy/dz = 2z and dz/dx = 3, dy/dx = 2z * 3. At x = 2, z = 6, so dy/dx = 36.</p><p>The practical lesson is that each layer in a model only needs to know its local derivative and pass information backward. This makes training deep networks possible without manually deriving one enormous formula for the whole model.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Define z = 3x and y = z^2.</li><li>Find the local derivative of y with respect to z: dy/dz = 2z.</li><li>Find the local derivative of z with respect to x: dz/dx = 3.</li><li>Multiply them: dy/dx = 2z * 3. At x = 2, z = 6, so dy/dx = 36.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Chain rule by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s4" data-progress-check>
+    <div>
+      <h2>Gradient</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A gradient is a vector of partial derivatives. If a function has many inputs, the gradient collects the sensitivity of the output with respect to every input in one place.</p><p>For model training, the gradient points in the direction where the loss increases fastest. To reduce the loss, gradient descent moves in the opposite direction. This is why you often hear that models &#x27;follow the negative gradient&#x27;.</p><p>For f(x, y) = x^2 + y^2, the gradient is [2x, 2y]. At x = 3 and y = 4, the gradient is [6, 8]. That means the function is more sensitive to y than x at that point, and moving opposite the gradient means moving x downward and y downward.</p><p>In a neural network, the gradient may contain one value for every weight and bias. The optimizer uses those values to update the parameters a small amount after each batch of data.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Start with f(x, y) = x^2 + y^2.</li><li>Compute partial derivatives: df/dx = 2x and df/dy = 2y.</li><li>At x = 3 and y = 4, the gradient is [6, 8].</li><li>To reduce f, move against the gradient: reduce x and reduce y by small amounts.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Gradient by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s5" data-progress-check>
+    <div>
+      <h2>Loss functions</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A loss function measures how wrong a model is on an example or batch. It turns prediction quality into a number that the optimizer can minimize. Without a loss function, the model has no clear learning signal.</p><p>Different tasks need different losses. Regression often uses mean squared error or mean absolute error because the target is a number. Classification often uses cross-entropy because the model predicts probabilities over classes.</p><p>For regression, if the true house price is 300,000 and the model predicts 270,000, the error is 30,000. Squared error makes that 900,000,000, which strongly punishes large mistakes. Mean absolute error would count it as 30,000, which is easier to interpret but gives a different optimization behavior.</p><p>Choosing a loss function is not just a math choice. It tells the model what kind of mistake matters. If large errors are very costly, squared error may be appropriate. If you want robustness to outliers, absolute error may be better.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Take three true values: [100, 200, 300]. Predictions are [110, 180, 330].</li><li>Errors are [10, -20, 30]. Absolute errors are [10, 20, 30], so MAE is 20.</li><li>Squared errors are [100, 400, 900], so MSE is 466.67.</li><li>The larger third error affects MSE more strongly, which is why MSE pushes models to avoid large errors.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Loss functions by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s6" data-progress-check>
+    <div>
+      <h2>Gradient descent</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Gradient descent is an optimization method that repeatedly updates model parameters to reduce loss. It uses the gradient to decide the direction of change and the learning rate to decide the size of the step.</p><p>The update rule is: new parameter = old parameter - learning_rate * gradient. The minus sign matters because the gradient points toward increasing loss, while training wants to decrease loss.</p><p>Imagine a model has one weight w and the loss at the current point has derivative 6. If the learning rate is 0.1, the update is w = w - 0.1 * 6, so w moves down by 0.6. If the derivative is negative, subtracting it moves w upward.</p><p>Real training repeats this process many times over batches of data. Each update is small, but thousands of updates can move the model from poor predictions to useful predictions.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Suppose current weight w = 3 and current gradient = 6.</li><li>Choose learning rate = 0.1.</li><li>Update: new w = 3 - 0.1 * 6 = 2.4.</li><li>The weight moved in the direction expected to reduce the loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Gradient descent by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s7" data-progress-check>
+    <div>
+      <h2>Learning rate</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>The learning rate controls how large each optimization step is. It is one of the most important training settings because it affects whether learning is stable, slow, or completely broken.</p><p>If the learning rate is too small, the model may improve very slowly and waste compute. If it is too large, the model can jump over good solutions, bounce around, or make the loss explode.</p><p>Using the update rule w = w - learning_rate * gradient, suppose w = 3 and gradient = 6. With learning rate 0.1, the step is 0.6 and w becomes 2.4. With learning rate 1.0, the step is 6 and w becomes -3, which may be far too aggressive.</p><p>In practice, you monitor training loss and validation loss. Smooth slow improvement may mean the learning rate is conservative. Wild spikes or NaN values often indicate the learning rate is too high.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Use the same gradient, 6, with two learning rates.</li><li>Learning rate 0.1 gives update size 0.6.</li><li>Learning rate 1.0 gives update size 6.0.</li><li>Compare the behavior: the first is controlled; the second may overshoot the useful region.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Learning rate by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="calculus-and-optimization-s8" data-progress-check>
+    <div>
+      <h2>Local minima intuition</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A local minimum is a point where the loss is lower than nearby points, even if it is not the lowest possible point overall. Optimization can settle there because small moves in any direction make the loss worse.</p><p>For simple curves, local minima are easy to draw. For neural networks, the loss surface is high-dimensional and complicated. The bigger practical issue is often not a perfect local minimum, but flat regions, poor learning rates, noisy gradients, or bad initialization.</p><p>Imagine hiking down a landscape in fog. Gradient descent looks at the local slope and steps downhill. If it reaches a valley, the local slope may be near zero even if another valley elsewhere is lower. The optimizer does not automatically know about that distant valley.</p><p>This is why training uses techniques like random initialization, momentum, adaptive optimizers, normalization, and learning-rate schedules. They help optimization move through difficult surfaces more reliably.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Picture a curve with two valleys: one shallow valley and one deep valley.</li><li>If optimization starts near the shallow valley, local downhill steps may lead there first.</li><li>Once the slope is near zero, updates become tiny.</li><li>Better initialization or optimizer settings can help find better regions of the loss surface.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Local minima intuition by hand or in Python. Explain what each number means in one sentence.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Calculus and optimization</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="linear-algebra-for-ai.html">Previous</a><a class="btn primary" href="probability-fundamentals.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

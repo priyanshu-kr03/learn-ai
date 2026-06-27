@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Visualization and EDA | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">EDA</a>
+<a href="#s2">Histogram</a>
+<a href="#s3">Bar chart</a>
+<a href="#s4">Line chart</a>
+<a href="#s5">Scatter plot</a>
+<a href="#s6">Box plot</a>
+<a href="#s7">Correlation heatmap</a>
+<a href="#s8">Outlier analysis</a>
+<a href="#s9">Class imbalance visualization</a>
+<a href="#s10">Data storytelling</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">02 Data Handling</span>
+        <h1>Visualization and EDA</h1>
+        <div class="meta"><span class="pill">Beginner</span><span class="pill">1 week</span><span class="pill">Lesson 08</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">EDA</span><span class="tag">Histogram</span><span class="tag">Bar chart</span><span class="tag">Line chart</span><span class="tag">Scatter plot</span><span class="tag">Box plot</span><span class="tag">Correlation heatmap</span><span class="tag">Outlier analysis</span><span class="tag">Class imbalance visualization</span><span class="tag">Data storytelling</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s1" data-progress-check>
+    <div>
+      <h2>EDA</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>EDA belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat EDA as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply EDA. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply EDA and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply EDA. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s2" data-progress-check>
+    <div>
+      <h2>Histogram</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Histogram belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Histogram as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Histogram. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Histogram and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Histogram. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s3" data-progress-check>
+    <div>
+      <h2>Bar chart</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Bar chart belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Bar chart as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Bar chart. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Bar chart and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Bar chart. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s4" data-progress-check>
+    <div>
+      <h2>Line chart</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Line chart belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Line chart as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Line chart. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Line chart and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Line chart. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s5" data-progress-check>
+    <div>
+      <h2>Scatter plot</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Scatter plot belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Scatter plot as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Scatter plot. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Scatter plot and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Scatter plot. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s6" data-progress-check>
+    <div>
+      <h2>Box plot</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Box plot belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Box plot as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Box plot. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Box plot and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Box plot. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s7" data-progress-check>
+    <div>
+      <h2>Correlation heatmap</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Correlation heatmap belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Correlation heatmap as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Correlation heatmap. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Correlation heatmap and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Correlation heatmap. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s8" data-progress-check>
+    <div>
+      <h2>Outlier analysis</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Outlier analysis belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Outlier analysis as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Outlier analysis. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Outlier analysis and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Outlier analysis. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s9" data-progress-check>
+    <div>
+      <h2>Class imbalance visualization</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Class imbalance visualization is a concept inside Visualization and EDA that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Visualization and EDA and needs to apply Class imbalance visualization. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Visualization and EDA where Class imbalance visualization is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Class imbalance visualization, explain it in 5 to 8 lines, and connect it to Visualization and EDA.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="visualization-and-eda-s10" data-progress-check>
+    <div>
+      <h2>Data storytelling</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Data storytelling belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Visualization and EDA, treat Data storytelling as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Data storytelling. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Data storytelling and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Data storytelling. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Visualization and EDA</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="pandas-and-data-cleaning.html">Previous</a><a class="btn primary" href="linear-algebra-for-ai.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

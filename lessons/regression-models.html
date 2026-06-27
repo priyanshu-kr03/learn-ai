@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Regression models | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Linear regression</a>
+<a href="#s2">Multiple linear regression</a>
+<a href="#s3">Polynomial regression</a>
+<a href="#s4">Ridge regression</a>
+<a href="#s5">Lasso regression</a>
+<a href="#s6">ElasticNet</a>
+<a href="#s7">MAE</a>
+<a href="#s8">MSE</a>
+<a href="#s9">RMSE</a>
+<a href="#s10">R2 score</a>
+<a href="#s11">Residual analysis</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">04 Machine Learning</span>
+        <h1>Regression models</h1>
+        <div class="meta"><span class="pill">Beginner</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 15</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Linear regression</span><span class="tag">Multiple linear regression</span><span class="tag">Polynomial regression</span><span class="tag">Ridge regression</span><span class="tag">Lasso regression</span><span class="tag">ElasticNet</span><span class="tag">MAE</span><span class="tag">MSE</span><span class="tag">RMSE</span><span class="tag">R2 score</span><span class="tag">Residual analysis</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s1" data-progress-check>
+    <div>
+      <h2>Linear regression</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Linear regression is the simplest serious model for predicting a number. It assumes the target can be approximated by a straight-line relationship between an input feature and the output. The model learns an intercept and a slope. The intercept is the prediction when the feature is zero. The slope says how much the prediction changes when the feature increases by one unit.</p><p>For one feature, the equation is y = m*x + b. Here x is the input feature, y is the predicted value, m is the slope, and b is the intercept. If you predict house price from house area, the slope might mean: every extra square foot adds about 120 dollars to the predicted price. This is not always perfectly true, but it gives a simple first approximation.</p><p>The model learns m and b by trying many possible lines and choosing the line that makes prediction errors small. The error for one row is actual value minus predicted value. These errors are called residuals. Training linear regression usually means minimizing squared residuals, so large mistakes receive a stronger penalty.</p><p>Linear regression is useful because it is easy to explain. A stakeholder can understand a coefficient more easily than a black-box model. But the simplicity is also its limitation. If the relationship is curved, has strong interactions, or changes across groups, a straight line may underfit.</p><p>Before using a complex model, always try linear regression as a baseline for numeric prediction. If a simple line performs close to a complex model, the complex model may not be worth the extra cost and difficulty.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Use area as x and house price as y. Example rows: 1000 sq ft -&gt; 150k, 1500 sq ft -&gt; 210k, 2000 sq ft -&gt; 270k.</li><li>A reasonable line is price = 30,000 + 120 * area.</li><li>For 1800 sq ft, prediction = 30,000 + 120 * 1800 = 246,000.</li><li>If the real price is 255,000, the residual is 9,000. The model was low by 9,000.</li><li>Repeat this across all training rows and choose the line with the smallest overall error.</li></ol>
+      </div>
+      <pre><code>from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+model.fit(X_train, y_train)</code></pre>
+      <div class="good box"><b>Why this matters in AI</b><br>Linear regression is the baseline for numeric prediction. It teaches features, coefficients, intercept, residuals, loss, and generalization in the simplest possible model.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Thinking a straight line can model every relationship.</li><li>Interpreting coefficients without checking feature scale and correlation.</li><li>Reporting only R2 without showing actual error size and residuals.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a 6-row dataset with area and price. Fit a rough line, predict one new house price, compute the residual, and explain whether the line underfits or seems reasonable.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s2" data-progress-check>
+    <div>
+      <h2>Multiple linear regression</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Multiple linear regression extends linear regression from one input feature to many input features. Instead of predicting house price only from area, you might use area, bedrooms, age, distance from city center, and school rating. The model learns one coefficient for each feature.</p><p>The equation looks like y = b + w1*x1 + w2*x2 + w3*x3 and so on. Each coefficient estimates the effect of one feature while the other features are held constant. For example, the bedroom coefficient tries to estimate how price changes when bedrooms increase and area, location, and age stay the same.</p><p>This &#x27;holding other features constant&#x27; idea is important. If bigger houses also have more bedrooms, the area and bedroom features are correlated. The model must decide how much credit to assign to each feature. That can make coefficients unstable when features overlap too much.</p><p>Multiple regression is strong when the signal is roughly additive: each feature contributes a separate amount to the prediction. It struggles when the effect of one feature depends heavily on another feature unless you add interaction features.</p><p>A beginner should inspect coefficients, feature scales, residuals, and train/test performance. Do not assume more columns automatically mean a better model. More features can add noise, leakage, or instability.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Use features: area = 1800, bedrooms = 3, house_age = 10.</li><li>Suppose the model learned: price = 50,000 + 100*area + 15,000*bedrooms - 1,000*house_age.</li><li>Prediction = 50,000 + 100*1800 + 15,000*3 - 1,000*10.</li><li>Prediction = 50,000 + 180,000 + 45,000 - 10,000 = 265,000.</li><li>Interpretation: area and bedrooms increase predicted price; older age decreases it in this learned model.</li></ol>
+      </div>
+      <pre><code>from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+model.fit(X_train, y_train)</code></pre>
+      <div class="good box"><b>Why this matters in AI</b><br>Most real prediction problems need more than one feature. Multiple regression teaches how a model combines signals and how each coefficient contributes while other features are present.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Assuming each coefficient proves causation.</li><li>Adding many features without checking leakage or multicollinearity.</li><li>Comparing coefficients directly when features use different units.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use area, bedrooms, and age to predict price for three example houses. Write the equation, calculate one prediction manually, and explain what each coefficient means.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s3" data-progress-check>
+    <div>
+      <h2>Polynomial regression</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Polynomial regression is used when the relationship between input and output is curved rather than straight. It still uses a linear model internally, but it adds transformed features such as x squared or x cubed. This lets the model draw curves.</p><p>For example, salary may not increase linearly with years of experience. Early years may increase salary quickly, then growth may slow. A straight line may miss that pattern. A polynomial feature like experience squared lets the model bend.</p><p>The important point is that polynomial regression can fit more flexible shapes, but flexibility increases the risk of overfitting. A very high-degree polynomial can twist through training points and perform badly on new data.</p><p>Polynomial regression is not magic. You must compare train and validation error. If training error becomes very low but validation error becomes worse, the curve is memorizing noise.</p><p>Use polynomial regression when plots or residuals show a clear curved pattern, not just because it sounds more advanced.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Start with one feature: years_experience.</li><li>Create a new feature: years_experience_squared = years_experience * years_experience.</li><li>Train a linear model using both years_experience and years_experience_squared.</li><li>The model can now learn a curve instead of one straight line.</li><li>Check validation error to ensure the curve generalizes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Polynomial regression shows how linear models can represent curves by transforming features. It is a bridge between simple lines and more flexible models.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using a high polynomial degree just to improve training score.</li><li>Forgetting that polynomial features can overfit noise very quickly.</li><li>Skipping a plot of predictions and residuals.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Make a tiny dataset where y grows slowly at first and faster later. Compare a straight-line fit with a squared-feature fit and explain which captures the curve better.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s4" data-progress-check>
+    <div>
+      <h2>Ridge regression</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Ridge regression is linear regression with L2 regularization. Regularization means adding a penalty that discourages the model from using very large coefficients. Ridge keeps all features but shrinks their coefficients toward smaller values.</p><p>Large coefficients can be a warning sign that the model is relying too strongly on small patterns in the training data. This is especially common when features are correlated or when there are many features compared with the number of rows.</p><p>Ridge adds a penalty based on the square of each coefficient. The model now tries to balance two goals: fit the data well and keep coefficients reasonably small. The alpha parameter controls how strong this penalty is.</p><p>If alpha is too low, Ridge behaves almost like normal linear regression. If alpha is too high, coefficients become too small and the model may underfit. You choose alpha using validation or cross-validation.</p><p>Ridge is a practical default when you have many numeric features, correlated features, or a linear model that seems too sensitive to small data changes.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Train normal linear regression and notice some coefficients are very large.</li><li>Train Ridge with a small alpha, such as 1.0.</li><li>Compare validation error and coefficient sizes.</li><li>Increase alpha if overfitting remains; decrease alpha if the model underfits.</li><li>Choose the alpha that performs best on validation data, not training data.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Ridge is important when linear regression becomes unstable. It reduces overfitting by shrinking coefficients, especially when features overlap or the dataset is small.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using Ridge without scaling features first.</li><li>Choosing alpha from test performance instead of validation or cross-validation.</li><li>Thinking smaller coefficients always mean a better model.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare normal linear regression and Ridge on the same toy dataset. Report coefficient sizes and validation error, then explain whether Ridge helped.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s5" data-progress-check>
+    <div>
+      <h2>Lasso regression</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Lasso regression is linear regression with L1 regularization. Like Ridge, it penalizes large coefficients. The special behavior of Lasso is that it can push some coefficients exactly to zero.</p><p>A coefficient of zero means the model effectively ignores that feature. This makes Lasso useful for feature selection when you have many possible predictors and suspect only some are useful.</p><p>For example, a dataset may have 200 customer features. Lasso may keep 20 and set many others to zero. That can make the model easier to interpret and sometimes improve generalization.</p><p>Lasso also has risks. If two features are strongly correlated, it may arbitrarily keep one and drop the other. That does not always mean the dropped feature is truly useless; it may just be redundant with another feature.</p><p>Use Lasso when interpretability and feature selection matter, but validate carefully and do not treat zeroed coefficients as absolute scientific truth.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Train a linear model with many features.</li><li>Apply Lasso with a chosen alpha value.</li><li>Inspect coefficients: some will become exactly zero.</li><li>Keep the non-zero features as the model&#x27;s selected predictors.</li><li>Check validation performance to confirm that feature selection did not remove useful signal.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Lasso is useful because it can perform feature selection by pushing some coefficients to zero. This helps when there are many possible predictors.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Assuming a zero coefficient proves a feature has no real-world value.</li><li>Forgetting that correlated features can make Lasso choose one and drop another arbitrarily.</li><li>Using Lasso without checking validation performance.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create five toy features where only two are useful. Fit or reason through a Lasso-style model and identify which features should stay non-zero.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s6" data-progress-check>
+    <div>
+      <h2>ElasticNet</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>ElasticNet combines Ridge and Lasso. It uses both L1 and L2 regularization, so it can shrink coefficients like Ridge and also set some coefficients to zero like Lasso.</p><p>This is useful when you have many correlated features. Lasso alone may choose one feature from a correlated group and ignore the rest. Ridge tends to keep all of them but shrink them. ElasticNet gives a middle path.</p><p>ElasticNet has two main controls. Alpha controls the total strength of regularization. The l1_ratio controls the mix between Lasso-like behavior and Ridge-like behavior. A higher l1_ratio behaves more like Lasso; a lower l1_ratio behaves more like Ridge.</p><p>Because it has more tuning choices, ElasticNet should be selected with cross-validation. Do not guess alpha and l1_ratio once and assume the result is best.</p><p>ElasticNet is a good practical option when linear regression overfits, features are many, and you want both stability and some feature selection.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Start with a dataset containing many correlated features, such as multiple spending columns.</li><li>Train ElasticNet with several alpha values and l1_ratio values.</li><li>Compare validation error for each combination.</li><li>Inspect coefficients to see which features were shrunk and which became zero.</li><li>Choose the simplest model that keeps validation performance strong.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>ElasticNet is useful when you want Ridge-like stability and Lasso-like feature selection. It is especially helpful with many correlated features.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Tuning only alpha and ignoring l1_ratio.</li><li>Using it as a black box without inspecting coefficients.</li><li>Skipping cross-validation even though the model has multiple regularization choices.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare Ridge, Lasso, and ElasticNet on the same feature set. Note which coefficients shrink, which become zero, and which model gives the clearest tradeoff.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s7" data-progress-check>
+    <div>
+      <h2>MAE</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>MAE means Mean Absolute Error. It measures the average absolute difference between predictions and actual values. If a prediction is too high by 10 or too low by 10, both count as an error of 10.</p><p>MAE is easy to explain because it uses the same unit as the target. If you predict house prices in dollars and MAE is 15,000, your model is wrong by about 15,000 dollars on average.</p><p>MAE treats errors linearly. An error of 20 is twice as bad as an error of 10. This makes MAE less sensitive to extreme outliers than MSE or RMSE.</p><p>MAE is useful when you want a straightforward business interpretation. A manager can understand average absolute error without needing to understand squared units.</p><p>The limitation is that MAE does not strongly punish very large mistakes. If rare huge errors are very costly, RMSE may be a better metric to monitor too.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Actual values: [100, 200, 300]. Predictions: [110, 180, 330].</li><li>Errors: [10, -20, 30].</li><li>Absolute errors: [10, 20, 30].</li><li>MAE = (10 + 20 + 30) / 3 = 20.</li><li>Interpretation: the model is off by 20 units on average.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>MAE is the easiest regression metric to explain to non-technical users because it is in the same unit as the target.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using MAE alone when rare large errors are dangerous.</li><li>Forgetting to compare MAE against a simple baseline.</li><li>Averaging errors across very different groups without group-level inspection.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Take five actual values and five predictions. Compute absolute errors, average them, and write one business sentence explaining the result.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s8" data-progress-check>
+    <div>
+      <h2>MSE</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>MSE means Mean Squared Error. It squares each prediction error and then averages the squared errors. Squaring makes all errors positive and gives extra weight to large mistakes.</p><p>If one prediction is wrong by 10, squared error is 100. If another is wrong by 30, squared error is 900. The 30-unit mistake is only three times larger as a raw error, but nine times larger after squaring.</p><p>MSE is often used as a training loss because it is smooth and works well with calculus-based optimization. But it is less intuitive for humans because the unit is squared, such as dollars squared.</p><p>Use MSE when large errors should be punished heavily. For example, in demand forecasting, a very large miss may cause expensive stockouts or waste.</p><p>Always remember that MSE can be dominated by outliers. A few extreme rows can make the metric look terrible even if most predictions are acceptable.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Actual values: [100, 200, 300]. Predictions: [110, 180, 330].</li><li>Errors: [10, -20, 30].</li><li>Squared errors: [100, 400, 900].</li><li>MSE = (100 + 400 + 900) / 3 = 466.67.</li><li>Interpretation: larger errors dominate the score because of squaring.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>MSE is useful for optimization and for problems where large errors should be punished much more strongly than small errors.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Explaining MSE to users as if it were in the original target unit.</li><li>Letting one or two outliers dominate the metric without investigating them.</li><li>Comparing MSE across datasets with different target scales.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute MSE for two prediction sets with the same MAE but different large-error behavior. Explain why MSE prefers one set.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s9" data-progress-check>
+    <div>
+      <h2>RMSE</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>RMSE means Root Mean Squared Error. It is the square root of MSE. Because it takes the square root, RMSE returns to the same unit as the target, making it easier to interpret than MSE.</p><p>RMSE still punishes large errors more than MAE because it is based on squared errors before taking the root. That makes it useful when big mistakes matter more than small mistakes.</p><p>If house price RMSE is 25,000, you can roughly say the model&#x27;s typical error scale is about 25,000 dollars, with larger errors weighted strongly.</p><p>RMSE is often higher than MAE. The gap between RMSE and MAE tells you something: if RMSE is much larger than MAE, the model likely has some large outlier errors.</p><p>Use RMSE together with MAE when possible. MAE gives easy average error; RMSE warns you about large misses.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Use the previous MSE example where MSE = 466.67.</li><li>RMSE = square root of 466.67.</li><li>RMSE is about 21.6.</li><li>Compare with MAE = 20.</li><li>Since RMSE is only slightly higher, there are not huge outlier errors in this tiny example.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>RMSE keeps the large-error penalty of MSE while returning to the original target unit, which makes it easier to communicate.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating RMSE and MAE as interchangeable.</li><li>Ignoring a large gap between RMSE and MAE.</li><li>Reporting RMSE without showing examples of the biggest errors.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compute MAE and RMSE for the same predictions. If RMSE is much larger, identify which row caused the difference.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s10" data-progress-check>
+    <div>
+      <h2>R2 score</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>R2 score measures how much of the variation in the target your model explains compared with a simple baseline that always predicts the mean target value.</p><p>An R2 of 1.0 means perfect predictions. An R2 of 0 means the model is no better than predicting the average every time. A negative R2 means the model is worse than that average baseline.</p><p>R2 is useful because it gives a normalized score, but it can be misleading. A high R2 does not prove the model is useful for business decisions, fair across groups, or safe on future data.</p><p>R2 also depends on the dataset. Predicting house prices in a dataset with wide price variation may produce a different R2 than predicting prices in a narrow neighborhood, even with similar absolute errors.</p><p>Use R2 as one view of performance, not the only view. Pair it with MAE or RMSE so you understand actual error size.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>Baseline model predicts the average target for every row.</li><li>Your regression model predicts using features.</li><li>R2 compares your model&#x27;s squared error with the baseline&#x27;s squared error.</li><li>If your model reduces error a lot, R2 approaches 1.</li><li>If your model does not beat the average baseline, R2 is 0 or negative.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>R2 tells whether the model explains more variation than a mean-only baseline, but it must be paired with actual error metrics.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Thinking high R2 always means the model is useful.</li><li>Ignoring negative R2, which means the model is worse than predicting the mean.</li><li>Using R2 without MAE or RMSE.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare a mean baseline with a regression model. Explain whether the model reduces squared error enough to justify using it.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="regression-models-s11" data-progress-check>
+    <div>
+      <h2>Residual analysis</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A residual is the difference between the actual value and the predicted value. Residual analysis means studying those errors to understand how the model fails.</p><p>Do not stop after calculating one metric. A model with acceptable MAE can still fail badly for expensive houses, rural customers, new users, or one time period. Residual analysis helps reveal these hidden patterns.</p><p>A good residual plot should look mostly random around zero. If residuals form a curve, the model is missing a nonlinear pattern. If residuals grow larger as predictions grow, the model is less reliable for large values.</p><p>Residual analysis also helps find data problems. Huge residuals may point to incorrect labels, duplicate rows, missing features, outliers, or a group that behaves differently from the rest.</p><p>For beginners, residual analysis is where regression becomes real. You move from asking &#x27;What is my score?&#x27; to asking &#x27;Where is my model wrong, why is it wrong, and what should I do next?&#x27;</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <ol><li>For each row, compute residual = actual - predicted.</li><li>Sort rows by largest absolute residual.</li><li>Inspect the worst predictions manually.</li><li>Plot residuals against predicted values or important features.</li><li>Look for patterns: curves, widening spread, biased groups, or extreme outliers.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Residual analysis is how you find where the model is wrong. It turns a single score into actionable debugging information.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Stopping after one metric and never looking at individual errors.</li><li>Ignoring patterns in residuals, such as errors growing with price.</li><li>Treating outliers as annoyances instead of possible data or modeling clues.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a table with actual, predicted, and residual values. Sort by absolute residual, inspect the worst rows, and write one hypothesis for why each failed.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Regression models</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="data-preparation-for-ml.html">Previous</a><a class="btn primary" href="classification-models.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

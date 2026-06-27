@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MLOps and production ML | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Experiment tracking</a>
+<a href="#s2">Model registry</a>
+<a href="#s3">Model serving</a>
+<a href="#s4">Batch inference</a>
+<a href="#s5">Online inference</a>
+<a href="#s6">FastAPI</a>
+<a href="#s7">Docker</a>
+<a href="#s8">CI/CD</a>
+<a href="#s9">Monitoring</a>
+<a href="#s10">Data drift</a>
+<a href="#s11">Concept drift</a>
+<a href="#s12">A/B testing</a>
+<a href="#s13">Canary deployment</a>
+<a href="#s14">Rollback</a>
+<a href="#s15">Cost monitoring</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">09 Data Engineering for AI</span>
+        <h1>MLOps and production ML</h1>
+        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 35</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Experiment tracking</span><span class="tag">Model registry</span><span class="tag">Model serving</span><span class="tag">Batch inference</span><span class="tag">Online inference</span><span class="tag">FastAPI</span><span class="tag">Docker</span><span class="tag">CI/CD</span><span class="tag">Monitoring</span><span class="tag">Data drift</span><span class="tag">Concept drift</span><span class="tag">A/B testing</span><span class="tag">Canary deployment</span><span class="tag">Rollback</span><span class="tag">Cost monitoring</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s1" data-progress-check>
+    <div>
+      <h2>Experiment tracking</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Experiment tracking is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply Experiment tracking. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from MLOps and production ML where Experiment tracking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Experiment tracking, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s2" data-progress-check>
+    <div>
+      <h2>Model registry</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Model registry is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In MLOps and production ML, study Model registry by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how Model registry changes the prediction, score, or interpretation.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Model registry to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Model registry affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s3" data-progress-check>
+    <div>
+      <h2>Model serving</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Model serving is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In MLOps and production ML, study Model serving by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Model serving to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Model serving affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s4" data-progress-check>
+    <div>
+      <h2>Batch inference</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Batch inference is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply Batch inference. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from MLOps and production ML where Batch inference is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Batch inference, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s5" data-progress-check>
+    <div>
+      <h2>Online inference</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Online inference is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply Online inference. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from MLOps and production ML where Online inference is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Online inference, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s6" data-progress-check>
+    <div>
+      <h2>FastAPI</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>FastAPI should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In MLOps and production ML, connect FastAPI to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses FastAPI to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply FastAPI in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      <pre><code>from fastapi import FastAPI
+app = FastAPI()
+
+@app.post(&quot;/predict&quot;)
+def predict(payload: dict):
+    return {&quot;prediction&quot;: &quot;example&quot;}</code></pre>
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using FastAPI. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s7" data-progress-check>
+    <div>
+      <h2>Docker</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Docker should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In MLOps and production ML, connect Docker to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Build a small script that uses Docker to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
+        <ol><li>Create a tiny input with three to five records.</li><li>Apply Docker in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Docker. Add one normal input, one bad input, and a short note explaining the output.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s8" data-progress-check>
+    <div>
+      <h2>CI/CD</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>CI/CD matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn CI/CD by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where CI/CD affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for CI/CD: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s9" data-progress-check>
+    <div>
+      <h2>Monitoring</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Monitoring matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Monitoring by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Monitoring affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Monitoring: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s10" data-progress-check>
+    <div>
+      <h2>Data drift</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Data drift belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In MLOps and production ML, treat Data drift as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Data drift and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Data drift. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s11" data-progress-check>
+    <div>
+      <h2>Concept drift</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Concept drift matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Concept drift by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Concept drift affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Concept drift: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s12">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s12" data-progress-check>
+    <div>
+      <h2>A/B testing</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A/B testing is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply A/B testing. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from MLOps and production ML where A/B testing is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for A/B testing, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s13">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s13" data-progress-check>
+    <div>
+      <h2>Canary deployment</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Canary deployment matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Canary deployment by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Canary deployment affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Canary deployment: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s14">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s14" data-progress-check>
+    <div>
+      <h2>Rollback</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Rollback matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Rollback by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Rollback affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Rollback: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s15">
+  <div class="checkrow">
+    <input type="checkbox" id="mlops-and-production-ml-s15" data-progress-check>
+    <div>
+      <h2>Cost monitoring</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Cost monitoring matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Cost monitoring by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Cost monitoring affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Cost monitoring: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>MLOps and production ML</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="sql-and-data-pipelines.html">Previous</a><a class="btn primary" href="ai-security-and-responsible-ai.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

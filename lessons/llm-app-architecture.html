@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LLM app architecture | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Frontend backend model provider</a>
+<a href="#s2">Prompt versioning</a>
+<a href="#s3">RAG architecture</a>
+<a href="#s4">Tool layer</a>
+<a href="#s5">Streaming</a>
+<a href="#s6">Caching</a>
+<a href="#s7">Rate limiting</a>
+<a href="#s8">Observability</a>
+<a href="#s9">Evals</a>
+<a href="#s10">Cost optimization</a>
+<a href="#s11">Security design</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">10 AI System Design</span>
+        <h1>LLM app architecture</h1>
+        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 38</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Frontend backend model provider</span><span class="tag">Prompt versioning</span><span class="tag">RAG architecture</span><span class="tag">Tool layer</span><span class="tag">Streaming</span><span class="tag">Caching</span><span class="tag">Rate limiting</span><span class="tag">Observability</span><span class="tag">Evals</span><span class="tag">Cost optimization</span><span class="tag">Security design</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s1" data-progress-check>
+    <div>
+      <h2>Frontend backend model provider</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Frontend backend model provider is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In LLM app architecture, study Frontend backend model provider by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how Frontend backend model provider changes the prediction, score, or interpretation.</p>
+        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Frontend backend model provider to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Frontend backend model provider affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s2" data-progress-check>
+    <div>
+      <h2>Prompt versioning</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Prompt versioning is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In LLM app architecture, test Prompt versioning with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to Prompt versioning, the response, and one failure case.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how Prompt versioning changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      <pre><code>Task: Classify the customer message.
+Return JSON with keys: label, reason.
+Message: &quot;I want to cancel my plan&quot; </code></pre>
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Prompt versioning. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s3" data-progress-check>
+    <div>
+      <h2>RAG architecture</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>RAG architecture is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In LLM app architecture, test RAG architecture with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Chat with PDF: split the PDF into chunks, embed them, retrieve the most relevant passages for a question, and answer only from those passages with citations.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how RAG architecture changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG architecture. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s4" data-progress-check>
+    <div>
+      <h2>Tool layer</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Tool layer is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In LLM app architecture, test Tool layer with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
+        <ol><li>Write one realistic user request.</li><li>Show how Tool layer changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Tool layer. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s5" data-progress-check>
+    <div>
+      <h2>Streaming</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Streaming is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Streaming. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from LLM app architecture where Streaming is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Streaming, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s6" data-progress-check>
+    <div>
+      <h2>Caching</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Caching is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Caching. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from LLM app architecture where Caching is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Caching, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s7" data-progress-check>
+    <div>
+      <h2>Rate limiting</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Rate limiting matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In LLM app architecture, learn Rate limiting by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a deployed churn prediction API. Explain how Rate limiting affects latency, reliability, cost, privacy, monitoring, or rollback for real users.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Rate limiting affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Rate limiting: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s8" data-progress-check>
+    <div>
+      <h2>Observability</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Observability matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In LLM app architecture, learn Observability by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a deployed churn prediction API. Explain how Observability affects latency, reliability, cost, privacy, monitoring, or rollback for real users.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Observability affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Observability: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s9" data-progress-check>
+    <div>
+      <h2>Evals</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Evals is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Evals. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from LLM app architecture where Evals is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Evals, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s10" data-progress-check>
+    <div>
+      <h2>Cost optimization</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Cost optimization is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Cost optimization. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from LLM app architecture where Cost optimization is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Cost optimization, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="llm-app-architecture-s11" data-progress-check>
+    <div>
+      <h2>Security design</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Security design matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In LLM app architecture, learn Security design by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a deployed churn prediction API. Explain how Security design affects latency, reliability, cost, privacy, monitoring, or rollback for real users.</p>
+        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Security design affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Security design: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>LLM app architecture</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="ml-system-design.html">Previous</a><a class="btn primary" href="projects-beginner-to-advanced.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sequence models and transformers | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Sequence data</a>
+<a href="#s2">RNN</a>
+<a href="#s3">Hidden state</a>
+<a href="#s4">LSTM</a>
+<a href="#s5">GRU</a>
+<a href="#s6">Padding and masking</a>
+<a href="#s7">Attention</a>
+<a href="#s8">Self-attention</a>
+<a href="#s9">Query Key Value</a>
+<a href="#s10">Multi-head attention</a>
+<a href="#s11">Positional encoding</a>
+<a href="#s12">Transformers</a>
+<a href="#s13">Encoder decoder decoder-only</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">05 Deep Learning</span>
+        <h1>Sequence models and transformers</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">2 weeks</span><span class="pill">Lesson 25</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Sequence data</span><span class="tag">RNN</span><span class="tag">Hidden state</span><span class="tag">LSTM</span><span class="tag">GRU</span><span class="tag">Padding and masking</span><span class="tag">Attention</span><span class="tag">Self-attention</span><span class="tag">Query Key Value</span><span class="tag">Multi-head attention</span><span class="tag">Positional encoding</span><span class="tag">Transformers</span><span class="tag">Encoder decoder decoder-only</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s1" data-progress-check>
+    <div>
+      <h2>Sequence data</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Sequence data belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Sequence models and transformers, treat Sequence data as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Sequence data and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Sequence data. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s2" data-progress-check>
+    <div>
+      <h2>RNN</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>RNN belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Sequence models and transformers, understand RNN through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where RNN appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for RNN. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s3" data-progress-check>
+    <div>
+      <h2>Hidden state</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Hidden state is a concept inside Sequence models and transformers that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Sequence models and transformers and needs to apply Hidden state. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Sequence models and transformers where Hidden state is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Hidden state, explain it in 5 to 8 lines, and connect it to Sequence models and transformers.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s4" data-progress-check>
+    <div>
+      <h2>LSTM</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>LSTM belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Sequence models and transformers, understand LSTM through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where LSTM appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for LSTM. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s5" data-progress-check>
+    <div>
+      <h2>GRU</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>GRU belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Sequence models and transformers, understand GRU through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where GRU appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for GRU. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s6" data-progress-check>
+    <div>
+      <h2>Padding and masking</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Padding and masking is a concept inside Sequence models and transformers that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Sequence models and transformers and needs to apply Padding and masking. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Sequence models and transformers where Padding and masking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Padding and masking, explain it in 5 to 8 lines, and connect it to Sequence models and transformers.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s7" data-progress-check>
+    <div>
+      <h2>Attention</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Attention belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Sequence models and transformers, understand Attention through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Attention appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Attention. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s8" data-progress-check>
+    <div>
+      <h2>Self-attention</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Self-attention belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Sequence models and transformers, understand Self-attention through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Self-attention appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Self-attention. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s9" data-progress-check>
+    <div>
+      <h2>Query Key Value</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Query Key Value is a concept inside Sequence models and transformers that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Sequence models and transformers and needs to apply Query Key Value. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Sequence models and transformers where Query Key Value is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Query Key Value, explain it in 5 to 8 lines, and connect it to Sequence models and transformers.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s10" data-progress-check>
+    <div>
+      <h2>Multi-head attention</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Multi-head attention belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Sequence models and transformers, understand Multi-head attention through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Multi-head attention appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Multi-head attention. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s11">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s11" data-progress-check>
+    <div>
+      <h2>Positional encoding</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Positional encoding belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Sequence models and transformers, treat Positional encoding as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Use a 10-row customer table and apply Positional encoding. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
+        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Positional encoding and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Positional encoding. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s12">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s12" data-progress-check>
+    <div>
+      <h2>Transformers</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Transformers is a concept inside Sequence models and transformers that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Text sequence example: a model reads words in a review and learns which earlier words matter for the final sentiment prediction.</p>
+        <ol><li>Set up a small realistic scenario from Sequence models and transformers where Transformers is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Transformers, explain it in 5 to 8 lines, and connect it to Sequence models and transformers.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s13">
+  <div class="checkrow">
+    <input type="checkbox" id="sequence-models-and-transformers-s13" data-progress-check>
+    <div>
+      <h2>Encoder decoder decoder-only</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Encoder decoder decoder-only is a concept inside Sequence models and transformers that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Example scenario: a learner is studying Sequence models and transformers and needs to apply Encoder decoder decoder-only. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
+        <ol><li>Set up a small realistic scenario from Sequence models and transformers where Encoder decoder decoder-only is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your own example for Encoder decoder decoder-only, explain it in 5 to 8 lines, and connect it to Sequence models and transformers.</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Sequence models and transformers</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="cnn-and-computer-vision-basics.html">Previous</a><a class="btn primary" href="nlp-foundations.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>
