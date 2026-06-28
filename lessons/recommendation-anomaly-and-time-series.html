@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Recommendation, anomaly and time series | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -43,17 +44,47 @@
       <h2>Recommendation systems</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Recommendation systems is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Recommendation systems predict what items (products, movies, songs, articles) a specific user is likely to engage with, based on the user&#x27;s history and the behavior of similar users. They are among the highest-value ML applications: Netflix&#x27;s recommendation system is estimated to save $1B/year in prevented churn; Amazon attributes 35% of revenue to recommendations.</p><p>Two fundamental approaches: Collaborative filtering — &#x27;users who liked what you liked also liked X&#x27;. Analyzes the user-item interaction matrix (ratings, clicks, purchases) to find similar users or items. Content-based filtering — &#x27;because you liked this, you&#x27;ll like other things similar to it&#x27;. Analyzes item features (movie genre, director, cast) to find similar items.</p><p>User-based vs item-based collaborative filtering: user-based: find users most similar to the target user (cosine similarity of rating vectors), recommend items those similar users rated highly. Item-based: find items most similar to items the user has rated (cosine similarity of item rating vectors), recommend highly similar items. Item-based scales better (item similarity is stable; user similarity changes as users rate more items).</p><p>Matrix factorization: the core technique in modern collaborative filtering. Factorize the user-item matrix R (<code>n_users</code> × <code>n_items</code>) into U (<code>n_users</code> × k) × V^T (k × <code>n_items</code>). k is the latent factor dimension (typically 20-200). U encodes each user&#x27;s &#x27;taste profile&#x27; in k dimensions; V encodes each item&#x27;s &#x27;topic profile&#x27; in k dimensions. Predicted rating: <code>R_hat</code>[u,i] = U[u,:] · V[i,:]. Learn U and V by minimizing reconstruction error on observed ratings (SGD or ALS).</p><p>Evaluation metrics: offline metrics: RMSE on held-out ratings (regression), Precision@K, Recall@K, NDCG@K (ranking quality). Online metrics: click-through rate, add-to-cart rate, purchase rate, time spent, return visits. Offline metrics don&#x27;t always predict online performance — a serendipitous recommendation (slightly unexpected but delightful) may score lower on RMSE but outperform online.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Recommendation systems. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Recommendation systems is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from surprise import SVD, Dataset, Reader, accuracy
+from surprise.model_selection import train_test_split, cross_validate
+import pandas as pd
+# Load ratings data (user_id, item_id, rating)
+ratings_df = pd.read_csv(&#x27;ratings.csv&#x27;)  # user_id, item_id, rating
+reader = Reader(rating_scale=(1, 5))
+data = Dataset.load_from_df(ratings_df[[&#x27;user_id&#x27;, &#x27;item_id&#x27;, &#x27;rating&#x27;]], reader)
+# Train-test split and SVD matrix factorization
+trainset, testset = train_test_split(data, test_size=0.2, random_state=42)
+svd = SVD(n_factors=100, lr_all=0.005, reg_all=0.02, n_epochs=20)
+svd.fit(trainset)
+# Evaluate
+predictions = svd.test(testset)
+print(f&#x27;RMSE: {accuracy.rmse(predictions):.4f}&#x27;)
+# Get top-10 recommendations for a user
+user_id = 42
+all_item_ids = ratings_df[&#x27;item_id&#x27;].unique()
+rated_items = ratings_df[ratings_df[&#x27;user_id&#x27;] == user_id][&#x27;item_id&#x27;].tolist()
+unrated = [i for i in all_item_ids if i not in rated_items]
+preds = [(i, svd.predict(user_id, i).est) for i in unrated]
+top_10 = sorted(preds, key=lambda x: x[1], reverse=True)[:10]
+print(&#x27;Top recommendations:&#x27;, top_10)</code></pre><pre><code># Implicit feedback (clicks, views) with implicit library
+import implicit
+import scipy.sparse as sparse
+user_item = sparse.csr_matrix(user_item_matrix)  # users × items, values = click counts
+model = implicit.als.AlternatingLeastSquares(factors=50, iterations=20, regularization=0.01)
+model.fit(user_item)  # fit on transposed matrix: items × users
+# Get recommendations
+user_items = user_item[user_id]
+recommendations = model.recommend(user_id, user_items, N=10, filter_already_liked_items=True)
+for item_id, score in zip(*recommendations): print(f&#x27;Item {item_id}: score={score:.3f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Recommendation systems, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Recommendation systems are one of the most economically valuable ML applications. Every major consumer platform (Amazon, Netflix, Spotify, <code>YouTube</code>, <code>TikTok</code>) uses sophisticated recommendation systems. Understanding matrix factorization, collaborative filtering, and evaluation metrics is essential for anyone working in consumer ML.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using RMSE as the only evaluation metric — RMSE measures rating prediction accuracy but not recommendation list quality. A system that predicts 4.5 instead of 5 but recommends the right items is better than one with lower RMSE that recommends obvious or irrelevant items. Use Precision@K and NDCG@K alongside RMSE.</li><li>Not handling the cold start problem — new users and new items have no interaction history. Fallback strategies: for new users, recommend popular items or ask for initial preferences. For new items, use content-based filtering (item features) until enough interaction data accumulates.</li><li>Evaluating on seen items only — if you test the recommender by asking it to predict ratings on items the user has already interacted with, you&#x27;re testing memorization, not generalization. Use a temporal holdout: train on interactions before date T, test on interactions after date T.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a movie recommendation system: (1) download the <code>MovieLens</code> 1M dataset, (2) implement user-based collaborative filtering using cosine similarity — compute the top-10 most similar users for each user, (3) train SVD with Surprise — compare RMSE and MAE with 5-fold cross-validation, (4) implement a hybrid: use SVD for users with &gt; 10 ratings, use popularity (most-rated items) for cold-start users, (5) evaluate offline: Precision@10 and NDCG@10 using a temporal holdout (last 20% of each user&#x27;s ratings as test).</div>
     </div>
   </div>
 </section>
@@ -65,17 +96,41 @@
       <h2>Content-based filtering</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Content-based filtering is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Content-based filtering recommends items similar to what a user has previously liked, based on item features rather than the behavior of other users. &#x27;You watched Inception (sci-fi, Christopher Nolan) — you might like Interstellar (sci-fi, Christopher Nolan).&#x27; Unlike collaborative filtering, content-based filtering does not require user interaction data from other users, making it ideal for cold-start scenarios.</p><p>Item representation: items are represented as feature vectors based on their attributes. For movies: genre (one-hot encoded), director, cast, plot synopsis (TF-IDF or embedding), rating (normalized). For articles: TF-IDF of the text, publication date, author, topic tags. For products: category, price, brand, product description embedding.</p><p>User profile: build a user profile by aggregating the features of items the user has positively interacted with. For movies: the user&#x27;s profile = average of the feature vectors of all movies they rated highly. Similarity = cosine similarity between the user profile vector and candidate item vectors. Recommend items with the highest similarity to the user profile.</p><p>Pros and cons: pros — solves cold start for new items (only need item features, not interaction data), explainable (&#x27;recommended because you watched sci-fi movies&#x27;), no need for other users&#x27; data (privacy-preserving). Cons — filter bubble (only recommends similar items, no serendipity), requires rich item metadata, cannot learn from implicit collective behavior (what other users with similar taste prefer).</p><p>Hybrid approach: combine content-based and collaborative filtering for the best of both. For new users (cold start): use content-based filtering on their stated preferences or browsing history. For existing users with rich interaction history: switch to collaborative filtering which leverages collective behavior. This hybrid avoids both cold start problems (new user, new item) and filter bubbles.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Content-based filtering. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Content-based filtering is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+# Item feature matrix
+movies = pd.DataFrame({&#x27;title&#x27;: [&#x27;Inception&#x27;, &#x27;Interstellar&#x27;, &#x27;The Matrix&#x27;, &#x27;Avengers&#x27;],
+    &#x27;genres&#x27;: [&#x27;Sci-Fi Thriller&#x27;, &#x27;Sci-Fi Drama&#x27;, &#x27;Sci-Fi Action&#x27;, &#x27;Action Superhero&#x27;],
+    &#x27;description&#x27;: [&#x27;dream heist multi-level&#x27;, &#x27;space time wormhole love&#x27;, &#x27;simulation red blue pill&#x27;, &#x27;superheroes infinity stones&#x27;]})
+# TF-IDF on combined features
+movies[&#x27;features&#x27;] = movies[&#x27;genres&#x27;] + &#x27; &#x27; + movies[&#x27;description&#x27;]
+tfidf = TfidfVectorizer(stop_words=&#x27;english&#x27;)
+feature_matrix = tfidf.fit_transform(movies[&#x27;features&#x27;])
+# Cosine similarity between items
+item_similarity = cosine_similarity(feature_matrix, feature_matrix)
+pd.DataFrame(item_similarity, index=movies[&#x27;title&#x27;], columns=movies[&#x27;title&#x27;]).round(3)</code></pre><pre><code># User profile + recommendation
+def get_content_recommendations(user_liked_titles, movies, item_similarity, n=5):
+    liked_indices = [movies[movies[&#x27;title&#x27;] == t].index[0] for t in user_liked_titles if t in movies[&#x27;title&#x27;].values]
+    if not liked_indices: return movies.head(n)[&#x27;title&#x27;].tolist()
+    # User profile = mean similarity to liked items
+    user_profile = item_similarity[liked_indices].mean(axis=0)
+    # Don&#x27;t recommend already-liked items
+    user_profile[liked_indices] = -1
+    top_indices = np.argsort(user_profile)[::-1][:n]
+    return movies.iloc[top_indices][&#x27;title&#x27;].tolist()
+print(get_content_recommendations([&#x27;Inception&#x27;, &#x27;The Matrix&#x27;], movies, item_similarity))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Content-based filtering, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Content-based filtering solves the cold-start problem that collaborative filtering cannot: for a new item with no interaction history, you can still recommend it to users who like similar items based on features alone. Understanding the full recommendation system toolkit — content-based, collaborative, hybrid — enables designing the right system for each business context.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Creating item feature vectors without domain-appropriate features — for movies, genre + director + cast are more informative than raw plot text. Choose features that humans would use to judge similarity.</li><li>Not normalizing item feature vectors — before computing cosine similarity, normalize feature vectors to unit length. Without normalization, items with more text (longer descriptions) have larger magnitude vectors and appear more similar to everything.</li><li>Building a pure content-based system for a mature product — once you have thousands of users with interaction history, collaborative filtering typically outperforms content-based. Use content-based as the cold-start fallback, switch to collaborative/hybrid once interaction data is available.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a movie recommendation system using content-based filtering: (1) download the <code>MovieLens</code> dataset with movie metadata (genres, tags, description), (2) build item feature vectors: TF-IDF on descriptions + one-hot genre encoding, (3) for 10 test users, compute recommendations using: item-item cosine similarity, user-profile cosine similarity, (4) compare recommendations to what the user actually watched next (precision@5), (5) implement a hybrid: use content-based for users with &lt; 10 ratings, collaborative for users with &gt; 10 ratings.</div>
     </div>
   </div>
 </section>
@@ -87,17 +142,31 @@
       <h2>Collaborative filtering</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Collaborative filtering is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Collaborative filtering (CF) is the most common approach to recommendation systems. It predicts a user&#x27;s preferences by finding patterns across many users. The core idea: users who have agreed on many items in the past will likely agree on future items. If Alice and Bob both loved movies X, Y, and Z, and Bob also loved movie W, Alice will probably love W too — even though Alice has never seen W.</p><p>User-based collaborative filtering: find the K users most similar to the target user (by cosine similarity or Pearson correlation of their item ratings). Predict the target user&#x27;s rating for an unseen item as the weighted average of similar users&#x27; ratings. Limitation: as the number of users grows to millions, computing pairwise similarity becomes expensive O(n²). Also, users rarely rate many items (sparse matrices) so similarity estimates are noisy.</p><p>Item-based collaborative filtering: compute item-item similarity (items rated similarly by the same users are similar). To predict a user&#x27;s rating for item I, find the K most similar items that the user has rated, and compute a weighted average. Item-item similarity is more stable than user-user similarity (items&#x27; characteristics change less than user preferences) and enables precomputing similarities offline.</p><p>Matrix Factorization (MF) is the dominant CF approach. Represent users as vectors U ∈ R^(<code>n_users</code> × K) and items as vectors V ∈ R^(<code>n_items</code> × K). The predicted rating: R̂_{u,i} = <code>U_u</code> · <code>V_i</code> (dot product). Train U and V by minimizing the reconstruction error on observed ratings: Σ (R_{u,i} - <code>U_u</code> · <code>V_i</code>)² + λ(||U||² + ||V||²). The K-dimensional vectors encode latent factors (for movies: genre preference, preferred era, action vs drama). SVD and ALS (Alternating Least Squares) are classic MF algorithms; NCF (Neural Collaborative Filtering) uses neural networks for non-linear MF.</p><p>The cold-start problem: new users (no rating history) and new items (no ratings) cannot be recommended via CF. Solutions: content-based filtering for new items (use item features — genre, cast, description), demographic-based recommendations for new users, and hybrid systems that combine CF with content-based. Collecting initial ratings (onboarding survey, implicit feedback from first interactions) reduces cold start.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Collaborative filtering. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Collaborative filtering is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>surprise library: from surprise import SVD, Dataset, Reader
+from surprise.model_selection import cross_validate
+data = Dataset.load_from_df(df[[&#x27;user_id&#x27;,&#x27;item_id&#x27;,&#x27;rating&#x27;]], Reader(rating_scale=(1,5)))
+svd = SVD(n_factors=50, n_epochs=20, lr_all=0.005, reg_all=0.02)
+cross_validate(svd, data, measures=[&#x27;RMSE&#x27;,&#x27;MAE&#x27;], cv=5, verbose=True)</code></pre><pre><code>Predict: svd.fit(trainset)
+prediction = svd.predict(uid=&#x27;user123&#x27;, iid=&#x27;item456&#x27;)
+print(f&#x27;Predicted rating: {prediction.est:.2f}&#x27;)</code></pre><pre><code>Neural CF with PyTorch:
+class NCF(nn.Module):
+    def __init__(self, n_users, n_items, K=32):
+        super().__init__()
+        self.user_emb = nn.Embedding(n_users, K)
+        self.item_emb = nn.Embedding(n_items, K)
+        self.mlp = nn.Sequential(nn.Linear(2*K, 64), nn.ReLU(), nn.Linear(64, 1))
+    def forward(self, user, item):
+        return self.mlp(torch.cat([self.user_emb(user), self.item_emb(item)], dim=-1)).squeeze()</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Collaborative filtering, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Collaborative filtering powers the recommendation systems at Netflix, Spotify, Amazon, and <code>YouTube</code> — the primary drivers of engagement and revenue for major platforms. Understanding CF, matrix factorization, and cold-start is essential for anyone building recommendation features.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Evaluating recommendations with RMSE alone — RMSE measures rating prediction accuracy, not the quality of the top-K list that users actually see. Use ranking metrics: NDCG@K, Recall@K, Precision@K.</li><li>Not handling the cold-start problem — a pure CF model returns no recommendations for new users or items. Always have a fallback strategy.</li><li>Ignoring implicit feedback — most platforms cannot rely on explicit ratings (1–5 stars). Use implicit signals: clicks, views, purchases, time spent. Treat positives as (user, item) pairs and use negative sampling.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a movie recommendation system on the <code>MovieLens</code> 100K dataset. Implement: (1) user-based CF with cosine similarity (top-20 similar users), (2) SVD matrix factorization with surprise, (3) NCF with <code>PyTorch</code>. Evaluate all three with: RMSE on ratings, Precision@10 and Recall@10. Implement a simple cold-start baseline (recommend top-20 globally popular movies). Compare all four methods.</div>
     </div>
   </div>
 </section>
@@ -109,17 +178,33 @@
       <h2>Matrix factorization intuition</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Matrix factorization intuition is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Recommendation, anomaly and time series, learn Matrix factorization intuition with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+        <p>Matrix factorization decomposes a large, sparse matrix (like a user-item ratings matrix) into two smaller dense matrices whose product approximates the original. The intuition: users can be described by a few latent factors (preferences for action, drama, comedy), and items by the same latent factors. A user&#x27;s predicted rating for an item is the dot product of their latent factor vectors.</p><p>SVD and collaborative filtering: Singular Value Decomposition (SVD) is the mathematically pure form of matrix factorization. For ML: approximate SVD where only k factors are used (truncated SVD). The Netflix Prize famously showed that matrix factorization outperformed k-nearest-neighbor collaborative filtering — the winning solution was based on SVD++.</p><p>Latent factor model: User u rates item i. We want to learn: user embedding u ∈ R^k (k=10-100 dimensions) and item embedding v ∈ R^k. Predicted rating: r̂(u,i) = u^T × v. Learn u and v by minimizing squared error on observed ratings: min ||R - UV^T||² + λ||U||² + λ||V||² (L2 regularization prevents overfitting). This is equivalent to regularized SVD.</p><p>Implicit feedback: most interaction data is implicit (clicks, views, purchases) rather than explicit (star ratings). Implicit feedback matrix factorization: treat non-zero interactions as positive signals (weight=1) and unobserved interactions as uncertain negatives (weight=0). The Alternating Least Squares (ALS) algorithm efficiently handles large implicit feedback matrices by treating user and item embeddings as separate optimization problems solved alternately.</p><p>Modern extensions: Neural Collaborative Filtering (NCF) replaces the dot product with a neural network — learns more complex user-item interactions. BERT4Rec treats recommendation as a masked item prediction problem (like BERT&#x27;s masked language modeling). These extensions improve ranking but at higher computational cost.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a tiny numeric example for Matrix factorization intuition: two features, three rows, or two vectors. Calculate the result and explain what the number says about the data.</p>
-        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Recommendation, anomaly and time series.</li><li>Change one input and describe why the result changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.decomposition import TruncatedSVD
+import numpy as np
+# Simple matrix factorization with sklearn
+# R = user-item matrix (rows=users, columns=items, values=ratings)
+# sparse: most ratings are unknown (NaN or 0)
+R = np.array([[4, 5, 0, 0, 1],
+               [0, 3, 4, 0, 0],
+               [1, 0, 5, 4, 0],
+               [0, 0, 0, 5, 3]])
+R_filled = np.where(R == 0, R.mean(), R)  # fill with mean for SVD
+svd = TruncatedSVD(n_components=2, random_state=42)
+U = svd.fit_transform(R_filled)    # user embeddings [4 users, 2 factors]
+VT = svd.components_               # item embeddings [2 factors, 5 items]
+R_pred = U @ VT                    # reconstructed matrix
+print(&#x27;User embeddings (2D):&#x27;); print(U.round(2))
+print(&#x27;\nOriginal vs Predicted for first user:&#x27;)
+print(f&#x27;Original: {R[0]}&#x27;); print(f&#x27;Predicted: {R_pred[0].round(2)}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Matrix factorization intuition by hand or in Python. Explain what each number means in one sentence.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Matrix factorization is the foundation of all collaborative filtering recommendation systems. Understanding the latent factor model — that users and items can be represented in a shared embedding space, and similarity in that space predicts preference — is the intuition behind Spotify&#x27;s recommendations, Netflix&#x27;s suggestions, and Amazon&#x27;s &#x27;customers also bought.&#x27; This same idea of learning embeddings extends to NLP (Word2Vec, BERT) and graph networks.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Conflating the rating matrix with the latent factor matrix — the rating matrix R is input data; U and V are learned representations. The predicted rating R̂ = UV^T approximates R, but R̂ includes predictions for unobserved (missing) ratings — that&#x27;s the point.</li><li>Not handling cold start — matrix factorization requires at least one observed interaction per user/item to learn embeddings. New users with zero history cannot be factorized. Handle with content-based features for cold-start users, then switch to collaborative filtering once interactions accumulate.</li><li>Treating implicit feedback as explicit ratings — a user viewing a product is not the same as giving it 5 stars. Implicit feedback models should distinguish &#x27;saw but didn&#x27;t click&#x27; (weak negative) from &#x27;clicked and purchased&#x27; (strong positive). Weight interactions by confidence rather than treating all as positive.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a recommendation system with matrix factorization: (1) download the <code>MovieLens</code> 100K dataset, (2) build the user-item rating matrix, (3) apply <code>TruncatedSVD</code> (k=50) and compute predicted ratings for all user-item pairs, (4) evaluate: for 100 test users with held-out ratings, compute RMSE and precision@10 (what fraction of top-10 recommendations were actually watched?), (5) visualize: project user embeddings to 2D with PCA — do users with similar tastes cluster together?, (6) compare SVD to a neural collaborative filtering model (use <code>PyTorch</code> Embedding layers) — which achieves better precision@10?</div>
     </div>
   </div>
 </section>
@@ -131,17 +216,42 @@
       <h2>Ranking metrics</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Ranking metrics is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Ranking metrics evaluate how well a system orders a list of items — specifically, how well it places relevant items near the top. Search engines, recommendation systems, and information retrieval systems are evaluated with ranking metrics, not classification accuracy, because the position of relevant items in the list matters as much as whether they&#x27;re included.</p><p>Precision@k: of the top-k items returned, what fraction are relevant? P@5 = (# relevant in top 5) / 5. Simple but doesn&#x27;t penalize for relevant items placed low. A system that returns all relevant items in position 1000 has P@1000 = 1 but is useless.</p><p>Mean Reciprocal Rank (MRR): for each query, compute the reciprocal rank of the FIRST relevant result: 1/rank. Average across queries. MRR=1 means the first result is always relevant. MRR=0.5 means the first relevant result is at rank 2 on average. Used when only one relevant item exists per query (e.g., factual QA: which document contains the answer?).</p><p>NDCG (Normalized Discounted Cumulative Gain): the most comprehensive ranking metric. Takes into account: whether relevant items are retrieved, the position of relevant items (earlier = better), and graded relevance (not all relevant items are equally relevant). DCG@k = Σ (2^<code>rel_i</code> - 1) / log2(i+1) for i=1..k. NDCG = DCG / IDCG (ideal DCG = DCG of perfect ranking). NDCG=1 is perfect; NDCG=0 is worst.</p><p>Recall@k: of all relevant items in the corpus, what fraction are in the top-k? Recall@k is the standard metric for RAG retrieval evaluation — &#x27;of all the documents that could answer the query, how many did we retrieve in the top k?&#x27;. Recall@5 measures: was the relevant document retrieved at all? Precision@5 measures: if I return 5 documents, how many are relevant?</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Ranking metrics. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Ranking metrics is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+# Ranking metric implementations
+def precision_at_k(relevant, retrieved_k):
+    return len(set(relevant) &amp; set(retrieved_k)) / len(retrieved_k)
+def recall_at_k(relevant, retrieved_k):
+    return len(set(relevant) &amp; set(retrieved_k)) / len(relevant)
+def reciprocal_rank(relevant, retrieved):
+    for rank, item in enumerate(retrieved, start=1):
+        if item in relevant: return 1.0 / rank
+    return 0.0
+def ndcg_at_k(relevance_scores, k):
+    &#x27;&#x27;
+    # relevance_scores: list of (actual_relevance_score) in order of system ranking
+    dcg = sum((2**rel - 1) / np.log2(i+2) for i, rel in enumerate(relevance_scores[:k]))
+    ideal = sum((2**rel - 1) / np.log2(i+2) for i, rel in enumerate(sorted(relevance_scores, reverse=True)[:k]))
+    return dcg / ideal if ideal &gt; 0 else 0.0
+# Example
+relevant_docs = {&#x27;doc1&#x27;, &#x27;doc3&#x27;, &#x27;doc7&#x27;}  # ground truth relevant docs
+retrieved = [&#x27;doc1&#x27;, &#x27;doc2&#x27;, &#x27;doc3&#x27;, &#x27;doc5&#x27;, &#x27;doc7&#x27;]  # system output, ordered by score
+print(f&#x27;P@3: {precision_at_k(relevant_docs, retrieved[:3]):.3f}&#x27;)
+print(f&#x27;P@5: {precision_at_k(relevant_docs, retrieved[:5]):.3f}&#x27;)
+print(f&#x27;Recall@5: {recall_at_k(relevant_docs, retrieved[:5]):.3f}&#x27;)
+print(f&#x27;MRR: {reciprocal_rank(relevant_docs, retrieved):.3f}&#x27;)
+# NDCG with graded relevance
+graded = [3, 0, 2, 0, 1]  # relevance scores for the 5 retrieved docs
+print(f&#x27;NDCG@5: {ndcg_at_k(graded, 5):.3f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Ranking metrics, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Ranking metrics capture what matters for retrieval systems: not just whether a relevant item is retrieved, but whether it appears near the top. A recommendation system with Recall@10=0.9 (retrieves 90% of relevant items in top 10) but NDCG@5=0.4 (relevant items are scattered throughout position 3-10 rather than at positions 1-2) provides a poor user experience because users rarely look beyond the top 3 results.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using accuracy instead of ranking metrics for recommendation/retrieval — accuracy measures classification; for ranking, you need to know WHERE in the ranked list relevant items appear. Use precision@k, recall@k, MRR, or NDCG.</li><li>Not choosing k appropriately — evaluate at the k that matches your system&#x27;s UX. For a search engine showing 10 results: evaluate P@10 and NDCG@10. For a chatbot showing the top RAG context document: evaluate Recall@1 and MRR.</li><li>Conflating MRR and MAP — MRR uses only the FIRST relevant result. MAP (Mean Average Precision) averages precision at each position where a relevant result appears — better for queries with multiple relevant documents. Use MRR for single-answer queries; MAP or NDCG for multiple-answer queries.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Evaluate a retrieval system with ranking metrics: (1) collect a corpus of 1000 documents and 50 queries with labeled relevant documents (1-5 per query), (2) implement BM25 and dense retrieval, (3) for each, compute: P@1, P@5, P@10, Recall@10, MRR, NDCG@10, (4) which metric best captures user satisfaction for your use case? (5) implement graded relevance: label documents as 0 (irrelevant), 1 (partially relevant), 2 (highly relevant), and recompute NDCG with graded labels — how does the ranking change vs binary relevance?</div>
     </div>
   </div>
 </section>
@@ -153,17 +263,27 @@
       <h2>Anomaly detection</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Anomaly detection is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Anomaly detection identifies rare data points that differ significantly from normal observations. Unlike classification (labeled positives and negatives), anomaly detection is usually semi-supervised or unsupervised: you have abundant normal examples but few or no labeled anomalies. Applications: fraud detection (rare fraudulent transactions among millions of legitimate ones), system health monitoring (rare server failures among normal operation), manufacturing defect detection, and cybersecurity intrusion detection.</p><p>Statistical methods: Z-score (flag points more than 3 standard deviations from the mean — works for univariate Gaussian data), IQR fences (points below Q1-3*IQR or above Q3+3*IQR — robust to outliers), and Mahalanobis distance (multivariate Z-score accounting for feature correlations). These work well for low-dimensional, approximately Gaussian data but fail on high-dimensional and non-Gaussian distributions.</p><p>Isolation Forest: an ensemble method that isolates anomalies by randomly selecting a feature and a random split value, recursively until each sample is isolated in its own leaf. Anomalies (rare, unusual points) are isolated with fewer splits (shorter path length) than normal points. The anomaly score is the inverse of average path length across all trees. Isolation Forest is fast, scalable, and works well in practice — it is the go-to starting point for anomaly detection.</p><p>Autoencoders for anomaly detection: train an autoencoder (encoder compresses the input to a low-dimensional latent representation; decoder reconstructs the original input) exclusively on normal data. The autoencoder learns to reconstruct normal patterns well. At inference, anomalies have high reconstruction error because the model has not learned to reconstruct unusual patterns. The reconstruction error is the anomaly score. Variational Autoencoders (VAEs) provide a probabilistic alternative.</p><p>Evaluation challenge: anomaly detection is hard to evaluate because labels are often unavailable. If labeled anomaly data exists, use F1 score, precision at K, and AUC-PR (precision-recall AUC, more informative than ROC-AUC for rare anomalies). Without labels, use the contamination parameter (estimated fraction of anomalies) to tune the threshold. Qualitative review by domain experts is often the most reliable evaluation.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Anomaly detection. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Anomaly detection is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Isolation Forest: from sklearn.ensemble import IsolationForest
+iso = IsolationForest(n_estimators=100, contamination=0.05, random_state=42)  # expect 5% anomalies
+predictions = iso.fit_predict(X)  # -1 = anomaly, 1 = normal
+scores = iso.score_samples(X)  # lower = more anomalous
+anom_idx = np.where(predictions == -1)[0]</code></pre><pre><code>Autoencoder: encoder = nn.Sequential(nn.Linear(input_dim, 32), nn.ReLU(), nn.Linear(32, 8))
+decoder = nn.Sequential(nn.Linear(8, 32), nn.ReLU(), nn.Linear(32, input_dim))
+reconstruction = decoder(encoder(X_normal))
+loss = F.mse_loss(reconstruction, X_normal)  # train on normal data only
+# At inference: high loss = anomaly</code></pre><pre><code>Threshold tuning: scores = iso.score_samples(X_test)
+threshold = np.percentile(scores, 5)  # flag bottom 5% as anomalies
+flagged = scores &lt; threshold</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Anomaly detection, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Anomaly detection is critical for any system that must be reliable and secure. Fraud, intrusion, equipment failure — these rare events cause enormous damage when missed. Traditional classification fails because labeled anomaly data is rare. Unsupervised anomaly detection catches what cannot be labeled in advance.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Setting contamination too high — if your actual anomaly rate is 0.1% but you set contamination=0.1, you flag 10% of data as anomalies with many false positives. Estimate the contamination carefully.</li><li>Training the autoencoder on data that includes anomalies — the autoencoder must train only on normal data, or it learns to reconstruct anomalies and loses discriminative power.</li><li>Ignoring class imbalance when evaluating — a model that flags everything as normal has 99.9% accuracy on 0.1% anomaly data. Always report precision, recall, and F1 on the anomaly class.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Detect fraudulent credit card transactions (Kaggle Credit Card Fraud dataset — 492 fraud out of 284K transactions). Apply: (1) Isolation Forest (contamination=0.002), (2) One-Class SVM, (3) autoencoder (train on legitimate transactions only). Evaluate with PR-AUC and F1 at the threshold that maximizes F1. Compare: which method achieves the best recall with precision &gt; 0.5? How does varying the contamination parameter affect precision-recall tradeoff?</div>
     </div>
   </div>
 </section>
@@ -175,17 +295,44 @@
       <h2>Isolation Forest</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Isolation Forest is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Isolation Forest is an anomaly detection algorithm based on the key insight: anomalies are rare and different — they are more easily isolated (separated from the rest) than normal points. It builds random decision trees where at each node, a feature and a split value are chosen randomly. A point is anomalous if it can be isolated in very few splits (short path length in the tree). Normal points require many splits to isolate because they are surrounded by other normal points.</p><p>Algorithm: (1) draw a subsample of <code>n_samples</code> (typically 256) from the dataset. (2) Build a random isolation tree: recursively select a random feature and a random split value until each point is isolated or a maximum depth is reached. (3) Repeat B times (<code>n_estimators</code>=100) to build a forest. (4) For each data point, compute its average path length across all trees. Short average path = anomaly. Normalize to an anomaly score between 0 (normal) and 1 (anomaly). Score &gt; 0.6 is typically considered anomalous.</p><p>Why it works: imagine a 2D dataset with 1000 normal points clustered together and 10 outliers far from the cluster. To isolate a normal point (inside the cluster), many splits are needed — you need to split the cluster many times to separate one point from its neighbors. To isolate an outlier (far from everything else), 1-2 splits suffice — it&#x27;s already separated. This path length difference is the anomaly signal.</p><p>Hyperparameters: <code>n_estimators</code> (number of trees, default=100 — more is better but diminishing returns), <code>max_samples</code> (subsample size, default=&#x27;auto&#x27; = min(256, <code>n_samples</code>) — larger subsamples give more accurate estimates but slower training), contamination (expected fraction of anomalies in the data, used to set the threshold — default=&#x27;auto&#x27; uses -0.5 as the threshold).</p><p>Isolation Forest vs One-Class SVM vs Autoencoder: Isolation Forest is computationally efficient (linear time and space), works well in high dimensions, and requires no training of a model in the traditional sense. One-Class SVM works well for low-dimensional data with a clear normal boundary but scales poorly. Autoencoder-based anomaly detection (high reconstruction error = anomaly) is more powerful for structured data (images, sequences) but requires more setup and hyperparameter tuning.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Isolation Forest. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Isolation Forest is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.ensemble import IsolationForest
+import numpy as np
+import matplotlib.pyplot as plt
+np.random.seed(42)
+# Normal data + outliers
+X_normal = np.random.randn(1000, 2)
+X_outliers = np.random.uniform(-6, 6, size=(20, 2))
+X = np.vstack([X_normal, X_outliers])
+true_labels = np.array([1]*1000 + [-1]*20)  # 1=normal, -1=outlier
+# Train Isolation Forest
+model = IsolationForest(n_estimators=100, contamination=0.02, random_state=42)
+model.fit(X)
+# Predict: 1=normal, -1=anomaly
+predictions = model.predict(X)
+scores = model.decision_function(X)  # higher = more normal
+# Evaluate
+from sklearn.metrics import classification_report
+print(classification_report(true_labels, predictions))</code></pre><pre><code># Anomaly scores
+print(f&#x27;Anomaly scores range: {scores.min():.3f} to {scores.max():.3f}&#x27;)
+# Visualize
+plt.figure(figsize=(10, 5))
+plt.subplot(1,2,1)
+plt.scatter(X[:,0], X[:,1], c=scores, cmap=&#x27;RdYlGn&#x27;, s=10)
+plt.colorbar(label=&#x27;Anomaly score (higher=normal)&#x27;)
+plt.title(&#x27;Isolation Forest anomaly scores&#x27;)
+plt.subplot(1,2,2)
+plt.scatter(X[:,0], X[:,1], c=predictions, cmap=&#x27;RdYlGn&#x27;, s=10)
+plt.title(&#x27;Predictions (green=normal, red=anomaly)&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Isolation Forest, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Isolation Forest is the go-to algorithm for anomaly detection in tabular data without labeled anomalies. It is fast, scalable, and effective out of the box. Applications: credit card fraud detection, network intrusion detection, manufacturing defect detection, sensor anomaly detection, and data quality checks.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Setting contamination too high or too low — contamination sets the fraction of training data treated as anomalies. If your data has 0.5% fraud, set contamination=0.005. Setting it too high causes normal points to be flagged; too low misses real anomalies.</li><li>Not scaling features before Isolation Forest — while Isolation Forest uses random splits, it may be biased toward high-variance features (those with large numerical ranges). <code>StandardScaler</code> before Isolation Forest gives more balanced feature treatment.</li><li>Using Isolation Forest on very high-dimensional data (&gt; 1000 features) — the &#x27;curse of dimensionality&#x27; affects the path length estimate in high dimensions. Use dimensionality reduction (PCA to 50-100 components) before Isolation Forest for high-dimensional data.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an anomaly detection pipeline for a financial transaction dataset: (1) load a credit card fraud dataset (Kaggle&#x27;s <code>creditcard.csv</code>), (2) train Isolation Forest with contamination=0.001 (match actual fraud rate), (3) evaluate: compute precision, recall, F1 at multiple contamination values (0.0005, 0.001, 0.005), plot precision-recall curve, (4) compare with: Local Outlier Factor, One-Class SVM, and a simple threshold on PCA reconstruction error, (5) visualize anomalies in 2D with UMAP — do the flagged transactions form distinct clusters?</div>
     </div>
   </div>
 </section>
@@ -197,17 +344,44 @@
       <h2>One-class SVM</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>One-class SVM is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Recommendation, anomaly and time series, study One-class SVM by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+        <p>One-Class SVM is an anomaly detection algorithm that learns the boundary of the normal class without requiring examples of anomalies. It finds a hypersphere (or hyperplane with RBF kernel) that tightly encloses the normal training data. At inference, points outside this boundary are classified as anomalies. The nu hyperparameter controls the fraction of training points allowed outside the boundary (upper bound on outliers + lower bound on support vectors).</p><p>Algorithm intuition: a standard SVM finds the maximum-margin boundary between two classes. One-Class SVM finds the tightest possible boundary around a single class — the training data. It maps data to a high-dimensional feature space (using RBF kernel) and finds the minimum-radius hypersphere enclosing most of the data. Points outside are anomalies.</p><p>Hyperparameters: nu — fraction of training points treated as outliers during training (0.01 to 0.1 typically). Lower nu = tighter boundary = more false positives. Higher nu = looser boundary = more false negatives. kernel — &#x27;rbf&#x27; (default, handles non-linear boundaries), &#x27;linear&#x27;, &#x27;polynomial&#x27;. gamma — RBF kernel bandwidth. High gamma = narrow kernel = tighter boundary. Use gamma=&#x27;scale&#x27; or &#x27;auto&#x27; to start.</p><p>When to use One-Class SVM vs Isolation Forest: One-Class SVM works well for low-dimensional data (&lt; 20 features) with a clear geometric boundary for the normal class. It is particularly effective for novelty detection (training data is all normal, need to detect if new data is different). Isolation Forest is better for high-dimensional tabular data, is faster, and scales to millions of samples. One-Class SVM does not scale well beyond ~10K samples.</p><p>Practical limitations: One-Class SVM is slow for large datasets (quadratic in <code>n_samples</code>). <code>sklearn</code>&#x27;s SGDOneClassSVM (online learning version) scales to larger datasets. One-Class SVM assumes the normal class is a connected region in feature space — if normal data has multiple distinct modes, it struggles. Mixture models or Isolation Forest handle multi-modal normal data better.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how One-class SVM changes the prediction, score, or interpretation.</p>
-        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply One-class SVM to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.svm import OneClassSVM
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+import numpy as np
+# Normal data (2D crescent) + outliers
+normal = np.random.randn(500, 2) * 0.5
+normal[:,0] += np.sin(np.linspace(0, 2*np.pi, 500)) * 2
+outliers = np.random.uniform(-5, 5, (20, 2))
+X_train = normal
+X_test = np.vstack([normal[:100], outliers])
+y_test = np.array([1]*100 + [-1]*20)
+# Pipeline: scale + OneClassSVM
+model = Pipeline([
+    (&#x27;scaler&#x27;, StandardScaler()),
+    (&#x27;ocsvm&#x27;, OneClassSVM(kernel=&#x27;rbf&#x27;, nu=0.05, gamma=&#x27;scale&#x27;))
+])
+model.fit(X_train)
+predictions = model.predict(X_test)  # 1=normal, -1=anomaly
+from sklearn.metrics import classification_report
+print(classification_report(y_test, predictions))</code></pre><pre><code># Compare nu values
+for nu in [0.01, 0.05, 0.1, 0.2]:
+    model = Pipeline([(&#x27;scaler&#x27;, StandardScaler()), (&#x27;ocsvm&#x27;, OneClassSVM(nu=nu, gamma=&#x27;scale&#x27;))])
+    model.fit(X_train)
+    preds = model.predict(X_test)
+    # Count false positives (normal called anomaly) and false negatives (anomaly called normal)
+    fp = ((preds == -1) &amp; (y_test == 1)).sum()
+    fn = ((preds == 1) &amp; (y_test == -1)).sum()
+    print(f&#x27;nu={nu}: FP={fp}, FN={fn}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how One-class SVM affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>One-Class SVM is a principled approach to novelty detection — detecting new types of input that differ from what the model was trained on. Applications: network intrusion detection (train on normal traffic, detect novel attack patterns), quality control (train on good products, detect defects), fraud detection for new customers (no fraud history available).</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not scaling features before One-Class SVM — the RBF kernel is distance-based. Features with large scales (salary in $100K vs age in years) dominate the distance calculation. Always use <code>StandardScaler</code> or <code>MinMaxScaler</code>.</li><li>Setting nu too high on clean training data — if your training data is truly clean (all normal), setting nu=0.1 tells the model to treat 10% of training data as outliers. This makes the boundary unnecessarily loose. For clean training data, use nu=0.01-0.05.</li><li>Using One-Class SVM for high-dimensional data — beyond ~50 features, One-Class SVM&#x27;s decision boundary becomes inaccurate (curse of dimensionality). Apply PCA first to reduce to 20-50 dimensions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare anomaly detection algorithms on a network intrusion dataset: (1) use KDD Cup 99 or NSL-KDD dataset, (2) train on normal traffic only, (3) evaluate: Isolation Forest, One-Class SVM (kernel=rbf, linear), DBSCAN, and a simple 3-sigma rule, (4) compute ROC-AUC, precision@recall=0.9, and inference latency for each, (5) implement a streaming anomaly detector: process 10,000 network packets per second, flag anomalies in real-time. Which algorithm meets the latency requirement?</div>
     </div>
   </div>
 </section>
@@ -219,17 +393,32 @@
       <h2>Time series forecasting</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Time series forecasting is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Time series forecasting predicts future values based on historical temporal data. Unlike regular tabular ML, time series data has a temporal ordering constraint: the past is known, the future is unknown, and future data must never be used to predict the past (no data leakage). Common applications: demand forecasting (predict product sales for inventory planning), financial forecasting (stock prices, economic indicators), capacity planning (predict server load), and anomaly detection (identify unusual patterns).</p><p>Classical time series methods: ARIMA (<code>AutoRegressive</code> Integrated Moving Average) models the series as a linear combination of past values and past errors. SARIMA extends ARIMA with seasonal components. Exponential smoothing (ETS) assigns exponentially decreasing weights to older observations. These classical methods are interpretable, fast, and effective for stationary or simply-seasonal series, but struggle with multiple seasonality, complex patterns, and incorporating external regressors.</p><p>ML-based forecasting: convert the time series problem into a supervised learning problem by creating lag features (the value at time t-1, t-2, ..., t-k become features for predicting t). Rolling statistics (rolling mean, rolling std, rolling max over windows of 7, 30, 90 days) capture trend and seasonality as features. This framing lets any ML model (XGBoost, <code>LightGBM</code>, LSTMs) be used for forecasting.</p><p>Walk-forward validation (also called time series cross-validation) is mandatory for honest model evaluation. Split the series chronologically: train on weeks 1–52, validate on weeks 53–54. Then train on weeks 1–54, validate on weeks 55–56. Continue rolling forward. Never use random cross-validation on time series — it allows future information to leak into training, dramatically inflating performance estimates.</p><p>Modern forecasting: Prophet (by Facebook/Meta) handles holidays, missing data, and multiple seasonality automatically with minimal tuning. Neural Forecast (Amazon Chronos, N-BEATS, TFT) uses deep learning to learn complex patterns. For production forecasting systems, often the best approach is an ensemble: classical model + ML model + neural model, weighted by validation performance on recent data.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Time series forecasting. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Time series forecasting is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Create lag features: df[&#x27;lag_1&#x27;] = df[&#x27;sales&#x27;].shift(1)
+df[&#x27;lag_7&#x27;] = df[&#x27;sales&#x27;].shift(7)
+df[&#x27;rolling_7_mean&#x27;] = df[&#x27;sales&#x27;].rolling(7).mean()
+df[&#x27;rolling_30_std&#x27;] = df[&#x27;sales&#x27;].rolling(30).std()
+df = df.dropna()</code></pre><pre><code>Walk-forward split:
+from sklearn.model_selection import TimeSeriesSplit
+tscv = TimeSeriesSplit(n_splits=5)
+for fold, (train_idx, val_idx) in enumerate(tscv.split(X)):
+    X_tr, X_val = X.iloc[train_idx], X.iloc[val_idx]
+    model.fit(X_tr, y_tr); pred = model.predict(X_val)</code></pre><pre><code>Prophet: from prophet import Prophet
+m = Prophet(yearly_seasonality=True, weekly_seasonality=True)
+df_prophet = df.rename(columns={&#x27;date&#x27;:&#x27;ds&#x27;, &#x27;sales&#x27;:&#x27;y&#x27;})
+m.fit(df_prophet)
+future = m.make_future_dataframe(periods=30)
+forecast = m.predict(future)
+m.plot(forecast)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Time series forecasting, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Time series forecasting is one of the most commercially valuable ML applications — every company that holds inventory, plans capacity, or manages resources needs forecasts. Understanding lag features, walk-forward validation, and seasonality handling is essential for time series ML.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using random cross-validation for time series — this allows future information to leak into training. Always use walk-forward/time series cross-validation.</li><li>Forgetting to lag features relative to the forecast horizon — if you are forecasting 7 days ahead, you cannot use values from days t-1 through t-6 (they would not be available at prediction time). Use <code>lag_7</code>, <code>lag_8</code>, etc.</li><li>Not checking for stationarity — ARIMA requires the series to be stationary (constant mean and variance over time). Apply ADF (Augmented Dickey-Fuller) test and difference the series if needed.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Forecast hourly electricity demand for the next 7 days using the UCI Electricity Load dataset. Build three models: (1) ARIMA with auto-selected parameters, (2) <code>LightGBM</code> with lag features (1h, 2h, 24h, 168h) + calendar features (hour, day of week, month), (3) Prophet. Evaluate each with walk-forward CV over 4 weeks. Report MAE, MAPE, and prediction intervals. Plot actual vs predicted for the best model.</div>
     </div>
   </div>
 </section>
@@ -241,17 +430,31 @@
       <h2>Lag features</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Lag features is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Lag features (also called temporal features) use the value of a variable at a previous time step as a feature for predicting the current time step. If yesterday&#x27;s sales were high, today&#x27;s sales are likely also high — the lag-1 feature captures this autocorrelation. Lag features are fundamental to time series modeling and tabular ML on sequential data.</p><p>Creating lag features: df[&#x27;<code>sales_lag1</code>&#x27;] = df[&#x27;sales&#x27;].shift(1) creates a lag-1 feature (yesterday&#x27;s sales). df[&#x27;<code>sales_lag7</code>&#x27;] = df[&#x27;sales&#x27;].shift(7) creates a lag-7 feature (same day last week). df[&#x27;<code>sales_lag30</code>&#x27;] = df[&#x27;sales&#x27;].shift(30) creates a lag-30 feature (last month). The .<code>shift()</code> method shifts values down by n rows, introducing <code>NaN</code> in the first n rows (which must be handled or dropped).</p><p>Lead and lag: shift(1) is a lag (past values). shift(-1) is a lead (future values — future data leakage!). Only use lags (positive shift) as features, never leads. Using shift(-1) as a feature means &#x27;what is tomorrow&#x27;s value&#x27; — this is direct data leakage and gives perfect prediction but is useless in production.</p><p>Group-level lags: for data with multiple entities (<code>user_id</code>, <code>store_id</code>), lags must be computed per entity to avoid lagging across entities. <code>df.groupby</code>(&#x27;<code>user_id</code>&#x27;)[&#x27;event&#x27;].shift(1) computes the lag-1 feature for each user independently. Without groupby, the lag-1 for user B&#x27;s first record would be user A&#x27;s last record — meaningless cross-entity contamination.</p><p>Difference features: df[&#x27;<code>sales_diff1</code>&#x27;] = df[&#x27;sales&#x27;] - df[&#x27;sales&#x27;].shift(1) measures the change from the previous period. Percentage change: df[&#x27;<code>sales_pct_change</code>&#x27;] = df[&#x27;sales&#x27;].<code>pct_change()</code>. Difference features capture trend and acceleration (how fast is the value changing?). They are often more informative than raw lag features for non-stationary time series.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Lag features. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Lag features is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+df = df.sort_values([&#x27;user_id&#x27;, &#x27;date&#x27;])  # CRITICAL: sort before creating lags
+# Create lags per entity (user)
+df[&#x27;sales_lag1&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].shift(1)
+df[&#x27;sales_lag7&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].shift(7)
+df[&#x27;sales_lag30&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].shift(30)
+# Difference features
+df[&#x27;sales_diff1&#x27;] = df[&#x27;sales&#x27;] - df[&#x27;sales_lag1&#x27;]
+df[&#x27;sales_pct_change&#x27;] = df[&#x27;sales&#x27;].pct_change()
+# Drop NaN rows introduced by lags
+df = df.dropna(subset=[&#x27;sales_lag1&#x27;, &#x27;sales_lag7&#x27;, &#x27;sales_lag30&#x27;])</code></pre><pre><code># Multiple lag features at once
+lag_periods = [1, 3, 7, 14, 28, 90]
+for lag in lag_periods:
+    df[f&#x27;sales_lag{lag}&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].shift(lag)
+    df[f&#x27;sales_diff{lag}&#x27;] = df[&#x27;sales&#x27;] - df[f&#x27;sales_lag{lag}&#x27;]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Lag features, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Lag features transform the time dimension into tabular features that standard ML models can use. A random forest cannot naturally learn from sequential data, but if you provide yesterday&#x27;s value as a feature, it can learn autocorrelation patterns. Lag features are essential for demand forecasting, anomaly detection in time series, and any sequential prediction problem.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not sorting data before creating lags — if the data is not sorted by time, shift(1) gives the wrong value. Always sort by (<code>entity_id</code>, timestamp) before creating lag features.</li><li>Not using groupby for entity-level lags — without groupby, lag features &#x27;bleed&#x27; across entities. User A&#x27;s last record becomes the lag-1 for User B&#x27;s first record — nonsensical.</li><li>Using future data (negative shift) — shift(-1) is a lead: &#x27;what is tomorrow&#x27;s value&#x27;. This is the most severe form of data leakage in time series. Only use positive shifts (past values) as features.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a time series feature engineering pipeline for retail demand forecasting: (1) for each product, create lag features: lag 1, 7, 14, 28, 365 (same day last year), (2) create difference features: day-over-day, week-over-week, month-over-month change, (3) create rolling features: 7-day, 30-day rolling mean and std, (4) create calendar features: day of week, month, <code>is_holiday</code>, <code>is_week_before_holiday</code>, (5) train XGBoost on these features to forecast 7-day ahead demand, (6) implement walk-forward validation (train on past, validate on next 7 days) and compute RMSE.</div>
     </div>
   </div>
 </section>
@@ -263,17 +466,26 @@
       <h2>Rolling features</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Rolling features is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Rolling features compute aggregate statistics over a sliding time window: the mean, sum, max, min, or std of the past W periods. A 7-day rolling mean smooths out day-to-day noise and captures the recent trend. A 30-day rolling std captures recent volatility. Rolling features are the most informative features for time series ML alongside lag features.</p><p>Creating rolling features: df[&#x27;<code>sales_rolling7_mean</code>&#x27;] = <code>df.groupby</code>(&#x27;<code>user_id</code>&#x27;)[&#x27;sales&#x27;].rolling(7).<code>mean()</code>.<code>reset_index</code>(level=0, drop=True). The window parameter specifies how many past periods to include. <code>min_periods</code> parameter: rolling(7, <code>min_periods</code>=1) computes the rolling mean even for the first 6 rows (using whatever data is available). Without <code>min_periods</code>, the first 6 rows get <code>NaN</code>.</p><p>Rolling window types: fixed window (rolling(7) — exactly the last 7 rows), expanding window (<code>expanding()</code> — all past rows), exponentially weighted (ewm(span=7) — exponentially decaying weights, more recent values have higher weight). The EWM is often more predictive than a simple rolling mean because it prioritizes recent data without fully ignoring older data.</p><p>Rolling aggregations: .rolling(W).<code>mean()</code> — average over W periods. .rolling(W).<code>std()</code> — standard deviation (captures volatility). .rolling(W).<code>max()</code> — maximum. .rolling(W).<code>min()</code> — minimum. .rolling(W).<code>sum()</code> — total. .rolling(W).<code>median()</code> — less sensitive to outliers. For time-indexed <code>DataFrames</code>: rolling(&#x27;7D&#x27;) uses 7 calendar days, not 7 rows — handles irregular time intervals correctly.</p><p>Careful with rolling and groupby: for multi-entity data, always apply rolling within each entity&#x27;s group. Without groupby: rolling(7) at the boundary between entity A and entity B computes the average of entity B&#x27;s first 3 records and entity A&#x27;s last 4 records — meaningless. Use: <code>df.groupby</code>(&#x27;<code>entity_id</code>&#x27;)[&#x27;value&#x27;].rolling(7).<code>mean()</code>.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Rolling features. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Rolling features is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+df = df.sort_values([&#x27;user_id&#x27;, &#x27;date&#x27;])
+# Rolling features per user
+df[&#x27;sales_roll7_mean&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].transform(lambda x: x.rolling(7, min_periods=1).mean())
+df[&#x27;sales_roll30_mean&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].transform(lambda x: x.rolling(30, min_periods=1).mean())
+df[&#x27;sales_roll30_std&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].transform(lambda x: x.rolling(30, min_periods=1).std())
+df[&#x27;sales_roll7_max&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].transform(lambda x: x.rolling(7).max())</code></pre><pre><code># Exponentially weighted moving average (EWMA)
+df[&#x27;sales_ewm7&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;sales&#x27;].transform(lambda x: x.ewm(span=7, adjust=False).mean())
+# Ratio: current value vs moving average (detects anomalies)
+df[&#x27;sales_vs_ma30&#x27;] = df[&#x27;sales&#x27;] / (df[&#x27;sales_roll30_mean&#x27;] + 1e-8)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Rolling features, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Rolling features are the most informative features for demand forecasting, anomaly detection, and any temporal prediction task. The rolling mean provides a &#x27;normal&#x27; baseline while the current value compared to the rolling mean detects deviations. In Kaggle time series competitions, rolling features are consistently among the top 3 most important features.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not using .<code>transform()</code> for rolling in a groupby — <code>df.groupby</code>(&#x27;id&#x27;)[&#x27;value&#x27;].rolling(7).<code>mean()</code> returns a multi-index Series. Use .<code>transform()</code> to get a flat Series aligned with the original <code>DataFrame</code> index.</li><li>Computing rolling features across entity boundaries — without groupby, rolling windows span entity boundaries, mixing data from different users/products. Always use groupby for multi-entity data.</li><li>Not accounting for the &#x27;future leak&#x27; in rolling features — when computing rolling features for the target at time t, only use data available at time t-1. Using df[&#x27;sales&#x27;].rolling(7).<code>mean()</code> at time t includes the current time&#x27;s sales in the computation — this is leakage.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a comprehensive rolling feature set for a stock price prediction task: (1) load daily stock prices (OHLCV), (2) compute rolling features: 5-day, 20-day, 50-day, 200-day moving average, (3) compute RSI (Relative Strength Index), MACD (Moving Average Convergence Divergence), and Bollinger Bands from rolling statistics, (4) compute rolling volatility (30-day rolling std of daily returns), (5) train XGBoost to predict next-day returns using these features, (6) implement walk-forward validation with 252-day training window (1 trading year) and 21-day test window. Report Sharpe ratio of the prediction-based trading strategy.</div>
     </div>
   </div>
 </section>
@@ -285,17 +497,38 @@
       <h2>Walk-forward validation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Walk-forward validation is a concept inside Recommendation, anomaly and time series that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Walk-forward validation (also called time series cross-validation or rolling origin validation) is the correct cross-validation procedure for time series data. Standard k-fold cross-validation randomly assigns samples to folds — this means future data can be in the training fold and past data in the test fold, violating temporal causality. Walk-forward validation ensures the test set is always AFTER the training set.</p><p>Fixed-origin walk-forward: train on all data from time 0 to t, test on t to t+h, then expand the training window to t+h and test on t+h to t+2h. Continue until the end of the data. The training window grows with each fold. This uses all available historical data for the final model but gives less data in early folds.</p><p>Rolling-window walk-forward: instead of expanding the training window, maintain a fixed-size window that slides forward. Train on data from t-W to t, test on t to t+h. Then train on t+1-W to t+1, test on t+1 to t+1+h. This simulates a production system that retrains on the past W periods (e.g., last 1 year). Useful when old data may be less relevant than recent data (concept drift).</p><p>Horizon-aware evaluation: the test set size (forecast horizon h) should match the intended deployment scenario. If you deploy a model that forecasts 7 days ahead, test on 7-day horizons. If you deploy monthly, test on 30-day horizons. Mismatching the evaluation horizon and the deployment horizon gives misleading results.</p><p><code>sklearn</code>&#x27;s <code>TimeSeriesSplit</code>: implements expanding-window walk-forward. <code>n_splits</code>=5 creates 5 folds, each larger than the previous. gap parameter introduces a gap between train and test (to simulate real-world delay in label availability). Use with <code>cross_val_score()</code> like any other CV strategy but with time-ordered data.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Recommendation, anomaly and time series and needs to apply Walk-forward validation. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Recommendation, anomaly and time series where Walk-forward validation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.model_selection import TimeSeriesSplit
+import numpy as np
+tscv = TimeSeriesSplit(n_splits=5, gap=7)  # 7-day gap between train and test
+scores = []
+for fold, (train_idx, val_idx) in enumerate(tscv.split(X)):
+    X_tr, X_val = X.iloc[train_idx], X.iloc[val_idx]
+    y_tr, y_val = y.iloc[train_idx], y.iloc[val_idx]
+    model = XGBRegressor(n_estimators=200).fit(X_tr, y_tr)
+    y_pred = model.predict(X_val)
+    rmse = np.sqrt(np.mean((y_val - y_pred)**2))
+    scores.append(rmse)
+    print(f&#x27;Fold {fold+1}: train={len(X_tr)}, val={len(X_val)}, RMSE={rmse:.4f}&#x27;)
+print(f&#x27;Mean RMSE: {np.mean(scores):.4f} ± {np.std(scores):.4f}&#x27;)</code></pre><pre><code># Rolling window validation
+window_size = 365  # 1 year
+horizon = 30      # 30-day forecast
+scores = []
+for t in range(window_size, len(df) - horizon, horizon):
+    train = df.iloc[t-window_size:t]
+    test = df.iloc[t:t+horizon]
+    model.fit(train[features], train[&#x27;target&#x27;])
+    preds = model.predict(test[features])
+    scores.append(mean_squared_error(test[&#x27;target&#x27;], preds, squared=False))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Walk-forward validation, explain it in 5 to 8 lines, and connect it to Recommendation, anomaly and time series.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Walk-forward validation is the only correct validation methodology for time series models. Using standard k-fold CV on time series data leaks future information into training and gives overly optimistic performance estimates. Walk-forward gives a realistic estimate of how the model will perform on future data.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using random k-fold CV on time series — this allows future data into the training fold. A model trained on January 2024 data and validated on December 2023 data appears to predict the past, not the future. Always use <code>TimeSeriesSplit</code>.</li><li>Not including a gap between train and test — in practice, labels are often not available immediately (e.g., default labels take 90 days to materialize). Add gap=horizon to <code>TimeSeriesSplit</code> to simulate real-world label delay.</li><li>Computing rolling features before the train/test split in walk-forward validation — rolling features computed on the full dataset include future data in the rolling window. Compute rolling features INSIDE each walk-forward fold&#x27;s training data.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement complete walk-forward validation for a demand forecasting problem: (1) create a realistic time series with weekly seasonality and trend, (2) generate lag and rolling features for each fold INSIDE the validation loop (not before splitting), (3) compare: standard k-fold CV accuracy vs walk-forward accuracy on the same model — demonstrate the optimistic bias of k-fold, (4) implement both expanding-window and rolling-window variants, (5) test 3 forecast horizons (1 day, 7 days, 30 days) and report how RMSE scales with horizon length.</div>
     </div>
   </div>
 </section>

@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>How to learn AI from zero | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -38,17 +39,17 @@
       <h2>AI vs ML vs DL vs Data Science vs GenAI</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>AI vs ML vs DL vs Data Science vs GenAI belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In How to learn AI from zero, treat AI vs ML vs DL vs Data Science vs GenAI as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>These five terms form a hierarchy. Artificial Intelligence (AI) is the broadest field — any technique that allows machines to mimic human intelligence: rule-based systems, expert systems, planning algorithms, and modern ML. Think of AI as the entire mountain. Machine Learning (ML) is a subset of AI where systems learn from data without being explicitly programmed. Instead of coding rules (if email contains &#x27;urgent wire transfer&#x27; → spam), ML learns from examples.</p><p>Deep Learning (DL) is a subset of ML that uses neural networks with many layers (deep networks). While classical ML algorithms (random forests, SVMs, logistic regression) work well on structured/tabular data with engineered features, deep learning excels at raw unstructured data: images, audio, text, video. A CNN learns to detect edges → shapes → objects automatically, without hand-engineered features.</p><p>Data Science is a broader discipline that combines statistics, data engineering, ML, and domain expertise to extract insights from data and inform decisions. A data scientist might build ML models, but also writes SQL, creates dashboards, designs experiments, and communicates findings to business stakeholders. Not all data science involves ML — descriptive statistics and visualizations are also data science.</p><p>Generative AI (<code>GenAI</code>) is the newest sub-field, focusing on models that generate new content: text (GPT-4, Claude), images (Stable Diffusion, DALL-E), code (<code>GitHub</code> Copilot), audio (Suno), and video (Sora). These models are typically large neural networks (LLMs, diffusion models) trained on vast internet-scale datasets. <code>GenAI</code> is a subset of DL, which is a subset of ML, which is a subset of AI.</p><p>Practical distinctions: if you want to predict a number (house price), that is ML regression. If you want to classify images, that is DL (CNNs). If you want to generate text or images, that is <code>GenAI</code>. If you want to analyze a dataset and answer business questions, that is Data Science. If you want to build a robot that navigates a room, that is AI (combining computer vision DL + reinforcement learning RL + path planning AI).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>A dashboard that explains sales trends is data science. A churn predictor is machine learning. An image classifier built with a CNN is deep learning. A chatbot that drafts an email is generative AI.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply AI vs ML vs DL vs Data Science vs GenAI and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>AI hierarchy: AI ⊃ ML ⊃ DL ⊃ GenAI</code></pre><pre><code>ML example: sklearn LogisticRegression().fit(X, y) — learns from data</code></pre><pre><code>DL example: a 10-layer CNN that learns to classify ImageNet images</code></pre><pre><code>GenAI example: GPT-4 generating a Python function from a description</code></pre><pre><code>Data Science: pd.read_csv(&#x27;sales.csv&#x27;).groupby(&#x27;region&#x27;)[&#x27;revenue&#x27;].sum().plot()</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply AI vs ML vs DL vs Data Science vs GenAI. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Understanding these distinctions prevents confusion in job titles, research papers, and tool selection. A &#x27;machine learning engineer&#x27; and a &#x27;data scientist&#x27; have different roles. Knowing where each technique fits helps you choose the right tool: classical ML for tabular data, DL for images/text, <code>GenAI</code> for generation tasks.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Thinking AI = <code>GenAI</code> — traditional AI (rule-based systems, game-playing algorithms) predates neural networks by decades.</li><li>Thinking all ML is deep learning — random forests and gradient boosting outperform neural networks on most tabular/structured data problems.</li><li>Thinking data science is the same as ML engineering — data scientists focus on insights and analysis; ML engineers focus on building and deploying production models.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>For each of the following tasks, identify whether it is best solved by classical ML, deep learning, generative AI, or rule-based AI, and explain why: (1) predict customer churn from CRM data, (2) transcribe a podcast to text, (3) generate product description from keywords, (4) detect objects in security camera footage, (5) calculate average order value by region from a CSV, (6) teach a robot arm to pick up objects. Write one paragraph justifying each choice.</div>
     </div>
   </div>
 </section>
@@ -60,17 +61,39 @@
       <h2>Correct learning order</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Correct learning order is a concept inside How to learn AI from zero that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Learning machine learning effectively requires building knowledge in the right order — foundations before frameworks, intuition before math, simple models before complex ones. Trying to learn <code>transformers</code> before understanding gradient descent, or fine-tuning GPT before understanding what a neural network is, leads to cargo-cult ML: code that sometimes works but cannot be debugged or improved because the underlying concepts are not understood.</p><p>The recommended path: (1) Python programming fundamentals — variables, functions, classes, data structures. Without fluent Python, every ML tutorial becomes twice as hard because you&#x27;re fighting the language at the same time as the concepts. (2) <code>NumPy</code> and Pandas — the data manipulation layer that all of ML runs on. (3) Basic probability and statistics — mean, variance, distributions, probability, Bayes&#x27; theorem. (4) Core ML concepts — supervised/unsupervised learning, train/test split, bias-variance tradeoff. (5) <code>sklearn</code> — the practical ML toolkit. (6) Neural networks — forward pass, backpropagation, gradient descent. (7) Deep learning frameworks (<code>PyTorch</code>). (8) Transformers and LLMs. (9) Production ML — deployment, monitoring, evaluation.</p><p>Common mistakes in learning order: jumping to deep learning without understanding <code>sklearn</code>. Using a library without understanding what it computes (using <code>StandardScaler</code> without understanding z-score normalization). Memorizing code patterns without understanding the underlying algorithm. Skipping the math entirely — you don&#x27;t need to prove theorems, but you need enough math to understand why algorithms work and when they fail.</p><p>Projects accelerate learning: implement each concept from scratch before using the library. Implement linear regression with gradient descent in <code>NumPy</code> before using <code>sklearn</code>&#x27;s <code>LinearRegression</code>. Implement a single attention head before using <code>torch</code>.<code>nn.MultiheadAttention</code>. Building from scratch forces you to understand the mechanism — you can&#x27;t fake your way through an implementation.</p><p>Spaced repetition and active recall: reading tutorials passively doesn&#x27;t build skill. After reading, close the tutorial and implement the concept from memory. Use spaced repetition (Anki) for key formulas and algorithms. Explain concepts to others (rubber duck debugging, blog posts). Build projects that require combining multiple concepts.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Before training a neural network, learn how to load a CSV, clean missing values, split train and test data, and measure whether a simple baseline already works.</p>
-        <ol><li>Set up a small realistic scenario from How to learn AI from zero where Correct learning order is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Self-assessment checklist
+checklist = [
+    (&#x27;Python&#x27;, [&#x27;Can write a class&#x27;, &#x27;Understands generators&#x27;, &#x27;Can use decorators&#x27;]),
+    (&#x27;NumPy&#x27;, [&#x27;Understands broadcasting&#x27;, &#x27;Can vectorize loops&#x27;, &#x27;Knows einsum&#x27;]),
+    (&#x27;Pandas&#x27;, [&#x27;Can do groupby-agg&#x27;, &#x27;Merges DataFrames&#x27;, &#x27;Handles missing data&#x27;]),
+    (&#x27;ML Concepts&#x27;, [&#x27;Explains overfitting&#x27;, &#x27;Explains bias-variance&#x27;, &#x27;Explains cross-validation&#x27;]),
+    (&#x27;sklearn&#x27;, [&#x27;Can build a full pipeline&#x27;, &#x27;Can run cross-validation&#x27;, &#x27;Can tune hyperparameters&#x27;]),
+    (&#x27;Deep Learning&#x27;, [&#x27;Can build MLP from scratch&#x27;, &#x27;Understands backprop&#x27;, &#x27;Can train in PyTorch&#x27;]),
+    (&#x27;NLP&#x27;, [&#x27;Knows tokenization&#x27;, &#x27;Understands attention&#x27;, &#x27;Can fine-tune BERT&#x27;]),
+    (&#x27;Production&#x27;, [&#x27;Can deploy a model&#x27;, &#x27;Can monitor drift&#x27;, &#x27;Can evaluate systematically&#x27;]),
+]
+for area, skills in checklist:
+    print(f&#x27;\n{area}:&#x27;)
+    for skill in skills:
+        status = input(f&#x27;  {skill}? (y/n): &#x27;)
+        print(f&#x27;  [{&#x27;DONE&#x27; if status==&#x27;y&#x27; else &#x27;TODO&#x27;}] {skill}&#x27;)</code></pre><pre><code># Learning path recommendation based on gaps
+def recommend_next(completed_areas):
+    path = [&#x27;Python&#x27;, &#x27;NumPy&#x27;, &#x27;Pandas&#x27;, &#x27;Statistics&#x27;, &#x27;ML Concepts&#x27;, &#x27;sklearn&#x27;, &#x27;Neural Networks&#x27;, &#x27;PyTorch&#x27;, &#x27;NLP&#x27;, &#x27;LLMs&#x27;, &#x27;Production&#x27;]
+    for area in path:
+        if area not in completed_areas:
+            return f&#x27;Next: {area}&#x27;
+    return &#x27;Complete! Work on projects.&#x27;
+print(recommend_next([&#x27;Python&#x27;, &#x27;NumPy&#x27;, &#x27;Pandas&#x27;]))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Correct learning order, explain it in 5 to 8 lines, and connect it to How to learn AI from zero.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Learning in the right order saves hundreds of hours of confused debugging. A well-ordered curriculum ensures each concept builds on the previous one, making each new concept easier to understand. Skipping steps feels faster initially but creates gaps that cause unexplained failures later.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Skipping <code>NumPy</code> to go straight to <code>PyTorch</code> — <code>PyTorch</code> tensors behave like <code>NumPy</code> arrays. Without <code>NumPy</code> fluency (broadcasting, indexing, vectorization), <code>PyTorch</code> is mysterious.</li><li>Learning frameworks without understanding what they compute — using adam optimizer without understanding gradient descent, or using LSTM without understanding RNNs. Frameworks hide complexity, which is good for productivity but bad for debugging when things go wrong.</li><li>Learning only the happy path — tutorials show models that work. Real-world ML involves models that don&#x27;t work: <code>NaN</code> losses, overfitting, silent bugs. Practice debugging: intentionally break a working model and learn to diagnose the failure.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Design your personalized 6-month learning roadmap: (1) take the self-assessment checklist above — identify your current level in each area, (2) for each gap, estimate hours needed based on your prior programming experience, (3) create a week-by-week schedule (12 hours/week) prioritizing the highest-leverage gaps, (4) define a capstone project for each major milestone: &#x27;by week 8, build a complete ML pipeline for a Kaggle dataset&#x27;, (5) set up tracking: commit to <code>GitHub</code> daily, write a weekly reflection on what you learned, and revisit this roadmap monthly to adjust.</div>
     </div>
   </div>
 </section>
@@ -82,17 +105,33 @@
       <h2>How to use this website</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>How to use this website is a concept inside How to learn AI from zero that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>This website is a structured self-learning curriculum for AI and machine learning, organized into 44 chapters covering the full path from Python basics to production AI systems. Each chapter corresponds to a focused topic area, and within each chapter, topics are presented in a logical learning order. The goal is to take you from zero (or wherever you are currently) to being able to build and deploy real AI systems.</p><p>How to navigate: the index page shows all 44 chapters grouped by track (Foundations, Core ML, Deep Learning, NLP, LLMs, Production). Click any chapter to open its lesson page. Each lesson page has: an overview explaining what the chapter covers and why it matters, a topics list with links to individual sections, and for each topic: a deep explanation, code examples, key mistakes to avoid, and a hands-on practice task.</p><p>Recommended usage pattern: read the explanation deeply (not just skimming), then implement the code examples yourself (type them out, don&#x27;t copy-paste), then complete the practice task before moving to the next topic. The practice tasks are designed to be substantial — they often take 1-3 hours but build real understanding that passive reading cannot.</p><p>Using the search: the search bar on the index page searches across all chapter titles and topic names. If you encounter a concept you don&#x27;t understand while working on a project, search for it here to find the relevant lesson.</p><p>When to revisit topics: the first time you read a concept, you understand it intellectually. The second time you revisit it (after applying it), you understand it deeply. Plan to revisit chapters after you&#x27;ve tried to use the concepts in a project — you&#x27;ll notice details you missed the first time.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying How to learn AI from zero and needs to apply How to use this website. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from How to learn AI from zero where How to use this website is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Study workflow for each topic
+# Step 1: Read the explanation (15-30 minutes)
+# Step 2: Type out the code examples (not copy-paste)
+print(&#x27;Understanding develops through doing, not reading&#x27;)
+# Step 3: Run the code, observe the outputs
+# Step 4: Modify the code to explore variations
+# Step 5: Do the practice task (1-3 hours)
+# Step 6: Move to the next topic only when you can explain this one</code></pre><pre><code># Spaced repetition schedule
+from datetime import datetime, timedelta
+def next_review(days_since_learned):
+    # Review after: 1 day, 3 days, 7 days, 21 days, 60 days
+    schedule = [1, 3, 7, 21, 60]
+    for d in schedule:
+        if days_since_learned &lt; d: return d
+    return None  # mastered
+today = datetime.now()
+print(f&#x27;Review linear regression learned today: in {next_review(0)} days ({today + timedelta(days=next_review(0))})&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for How to use this website, explain it in 5 to 8 lines, and connect it to How to learn AI from zero.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Knowing HOW to use a learning resource is as important as the resource itself. Many learners open a tutorial, read through it passively, and wonder why they cannot implement anything afterwards. Active learning — implementing code, doing practice tasks, returning to revisit — produces lasting understanding.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Reading passively without implementing — reading ML tutorials feels productive but builds little practical skill. You must write the code yourself, encounter the errors, and debug them to build real understanding.</li><li>Trying to memorize everything on the first pass — ML has hundreds of concepts. On the first pass, focus on understanding the idea and why it matters. The specific API details you can look up; the conceptual understanding you must build.</li><li>Skipping practice tasks — practice tasks are where learning consolidates. If you skip them, you will understand each concept in isolation but struggle to combine them in real projects.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Commit to the curriculum: (1) block 2-hour sessions in your calendar for studying (minimum 3 sessions per week), (2) create a <code>GitHub</code> repo called &#x27;ai-learning-projects&#x27; where you push code from every practice task, (3) pick one chapter from this site and complete ALL its practice tasks this week, (4) set up a note-taking system for concepts you find confusing — document your confusions and resolutions, (5) find a study partner or community (Discord, Slack, local meetup) — teaching concepts to others accelerates learning.</div>
     </div>
   </div>
 </section>
@@ -104,17 +143,34 @@
       <h2>6-month plan</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>6-month plan is a concept inside How to learn AI from zero that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A realistic 6-month plan to go from beginner-intermediate Python to building and deploying ML models assumes ~12 hours/week of focused study. The plan is divided into monthly milestones, each building directly on the previous month&#x27;s work. Progress is measured by projects completed, not hours studied — projects prove understanding that reading cannot fake.</p><p>Month 1 — Python and Data Foundations: complete Python basics (data structures, functions, classes, list comprehensions), <code>NumPy</code> (arrays, broadcasting, vectorization), Pandas (<code>DataFrames</code>, groupby, merge), and Matplotlib/Seaborn (basic EDA plots). Project: perform a complete EDA on a real dataset (Titanic, housing prices) and write a 1-page analysis report.</p><p>Month 2 — Core Machine Learning: supervised learning (linear regression, logistic regression, decision trees, random forests), unsupervised learning (k-means, PCA), the full <code>sklearn</code> pipeline (preprocessing, cross-validation, hyperparameter tuning). Statistics: probability, distributions, hypothesis testing. Project: build a churn prediction model with full pipeline, cross-validation, and feature importance analysis.</p><p>Month 3 — Advanced ML and First Neural Network: gradient boosting (XGBoost, <code>LightGBM</code>), feature engineering, handling imbalanced data, neural network fundamentals (forward pass, backpropagation), <code>PyTorch</code> basics. Project: Kaggle competition — aim for top 30% on a tabular competition using everything from months 1-3.</p><p>Month 4 — Deep Learning and NLP: CNNs and transfer learning for images, RNNs and <code>transformers</code> for text, BERT fine-tuning, tokenization. Month 5 — LLMs and RAG: <code>OpenAI</code>/Anthropic APIs, prompt engineering, RAG pipeline (embeddings, FAISS, chunking, retrieval), agents with tools. Month 6 — Production ML: <code>FastAPI</code> serving, Docker, MLflow experiment tracking, model monitoring, CI/CD. Final project: a complete end-to-end application (e.g., a document Q&amp;A chatbot with RAG, deployed to the cloud).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying How to learn AI from zero and needs to apply 6-month plan. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from How to learn AI from zero where 6-month plan is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Month-by-month project tracker
+plan = [
+    (&#x27;Month 1&#x27;, &#x27;EDA project&#x27;, [&#x27;Python&#x27;, &#x27;NumPy&#x27;, &#x27;Pandas&#x27;, &#x27;Matplotlib&#x27;]),
+    (&#x27;Month 2&#x27;, &#x27;Churn prediction&#x27;, [&#x27;sklearn&#x27;, &#x27;Cross-validation&#x27;, &#x27;Feature engineering&#x27;]),
+    (&#x27;Month 3&#x27;, &#x27;Kaggle competition&#x27;, [&#x27;XGBoost&#x27;, &#x27;LightGBM&#x27;, &#x27;PyTorch basics&#x27;]),
+    (&#x27;Month 4&#x27;, &#x27;BERT text classifier&#x27;, [&#x27;Transformers&#x27;, &#x27;Fine-tuning&#x27;, &#x27;NLP pipeline&#x27;]),
+    (&#x27;Month 5&#x27;, &#x27;RAG chatbot&#x27;, [&#x27;LLM APIs&#x27;, &#x27;Embeddings&#x27;, &#x27;FAISS&#x27;, &#x27;LangChain&#x27;]),
+    (&#x27;Month 6&#x27;, &#x27;Deployed app&#x27;, [&#x27;FastAPI&#x27;, &#x27;Docker&#x27;, &#x27;MLflow&#x27;, &#x27;Monitoring&#x27;]),
+]
+for month, project, skills in plan:
+    print(f&#x27;{month}: Build {project}&#x27;)
+    print(f&#x27;  Skills: {&#x27;, &#x27;.join(skills)}&#x27;)</code></pre><pre><code># Tracking progress
+import json
+from datetime import date
+tracker = {&#x27;start_date&#x27;: str(date.today()), &#x27;completed_topics&#x27;: [], &#x27;completed_projects&#x27;: []}
+# Update when you complete a topic or project
+tracker[&#x27;completed_topics&#x27;].append({&#x27;topic&#x27;: &#x27;NumPy broadcasting&#x27;, &#x27;date&#x27;: str(date.today()), &#x27;confidence&#x27;: 4})
+json.dump(tracker, open(&#x27;learning_tracker.json&#x27;, &#x27;w&#x27;), indent=2)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for 6-month plan, explain it in 5 to 8 lines, and connect it to How to learn AI from zero.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A concrete plan with monthly milestones and project-based checkpoints is 10× more effective than studying topics in whatever order feels interesting. Monthly projects create accountability and force you to integrate concepts rather than just accumulate isolated knowledge.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Planning to study every day — life interrupts. A plan that requires 7 days/week will fail. Plan 3 solid 4-hour sessions per week. Missing a day is not a failure; missing a week needs recovery.</li><li>Moving forward without completing projects — month 2&#x27;s churn project forces you to integrate everything from month 1. Skipping it to read month 3 material means you never tested whether you actually understood month 2.</li><li>Setting unrealistic targets — 12 hours/week is ambitious. If you have less time, extend the plan to 9 or 12 months. A slower plan completed is infinitely better than an abandoned one.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create your personal 6-month plan: (1) assess your current level in Python, <code>NumPy</code>, ML, and deep learning (rate 1-5), (2) adjust the timeline based on your starting level (advanced Python → start at Month 2), (3) identify your top 3 goal projects (what do you want to build by month 6?), (4) set up weekly check-ins: every Sunday, review what you completed vs planned, adjust next week&#x27;s plan, (5) share your plan with one other person who can hold you accountable.</div>
     </div>
   </div>
 </section>
@@ -126,17 +182,33 @@
       <h2>12-month plan</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>12-month plan is a concept inside How to learn AI from zero that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A structured 12-month AI learning plan transforms an overwhelming subject into a series of achievable monthly goals. Without a plan, learners jump between topics, never building deep expertise. With a plan, each month builds on the previous, creating a compounding knowledge base.</p><p>Months 1-3 — Foundations: Python fluency (<code>pandas</code>, <code>numpy</code>, <code>matplotlib</code>), statistics fundamentals (distributions, hypothesis testing, correlation), and basic ML (linear regression, logistic regression, decision trees). Goal: run a complete supervised learning experiment from raw data to evaluation metric. This phase feels slow but every advanced technique builds on these basics.</p><p>Months 4-6 — Core ML: scikit-learn mastery (cross-validation, pipelines, feature engineering), gradient boosting (XGBoost, <code>LightGBM</code>), and deep learning introduction (<code>PyTorch</code> tensors, autograd, simple neural networks). Goal: enter a Kaggle competition and reach the top 40% — this gives calibrated difficulty and feedback.</p><p>Months 7-9 — Specialization: pick one domain to go deep (NLP, computer vision, or tabular ML). For NLP: <code>transformers</code>, fine-tuning, RAG. For CV: CNNs, object detection, image classification. For tabular: feature engineering, ensembles, <code>AutoML</code>. Goal: build a real project with your chosen domain and deploy it publicly.</p><p>Months 10-12 — Production and Portfolio: MLOps (experiment tracking with MLflow, model serving with <code>FastAPI</code>, Docker containers), LLM applications (<code>LangChain</code>, RAG pipeline, agents), and portfolio completion (3 well-documented <code>GitHub</code> projects, a technical blog post, a capstone project). Goal: demonstrate production-readiness to a potential employer.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying How to learn AI from zero and needs to apply 12-month plan. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from How to learn AI from zero where 12-month plan is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Track your monthly progress
+month_goals = {
+    1: {&#x27;focus&#x27;: &#x27;Python + Pandas&#x27;, &#x27;deliverable&#x27;: &#x27;EDA on a real dataset&#x27;},
+    2: {&#x27;focus&#x27;: &#x27;Statistics&#x27;, &#x27;deliverable&#x27;: &#x27;Hypothesis testing on A/B experiment data&#x27;},
+    3: {&#x27;focus&#x27;: &#x27;Sklearn basics&#x27;, &#x27;deliverable&#x27;: &#x27;Full ML pipeline: data → model → evaluation&#x27;},
+    4: {&#x27;focus&#x27;: &#x27;Cross-validation + Feature engineering&#x27;, &#x27;deliverable&#x27;: &#x27;Kaggle competition entry&#x27;},
+    5: {&#x27;focus&#x27;: &#x27;XGBoost + LightGBM&#x27;, &#x27;deliverable&#x27;: &#x27;Kaggle top 40% submission&#x27;},
+    6: {&#x27;focus&#x27;: &#x27;PyTorch intro&#x27;, &#x27;deliverable&#x27;: &#x27;Train a neural network from scratch&#x27;},
+    7: {&#x27;focus&#x27;: &#x27;Transformers + BERT&#x27;, &#x27;deliverable&#x27;: &#x27;Fine-tuned text classifier&#x27;},
+    8: {&#x27;focus&#x27;: &#x27;RAG pipeline&#x27;, &#x27;deliverable&#x27;: &#x27;Q&amp;A bot over a document collection&#x27;},
+    9: {&#x27;focus&#x27;: &#x27;LLM applications&#x27;, &#x27;deliverable&#x27;: &#x27;Multi-turn agent with tools&#x27;},
+    10: {&#x27;focus&#x27;: &#x27;MLOps&#x27;, &#x27;deliverable&#x27;: &#x27;Model deployed as FastAPI + Docker&#x27;},
+    11: {&#x27;focus&#x27;: &#x27;Portfolio polish&#x27;, &#x27;deliverable&#x27;: &#x27;GitHub with 3 documented projects&#x27;},
+    12: {&#x27;focus&#x27;: &#x27;Capstone&#x27;, &#x27;deliverable&#x27;: &#x27;End-to-end ML system solving a real problem&#x27;},
+}
+for month, goal in month_goals.items():
+    print(f&#x27;Month {month}: {goal[&quot;focus&quot;]} → {goal[&quot;deliverable&quot;]}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for 12-month plan, explain it in 5 to 8 lines, and connect it to How to learn AI from zero.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A 12-month plan works because it front-loads the fundamentals (the boring but essential parts) and progressively increases complexity. The most common mistake in AI learning is skipping to LLMs before understanding gradient descent and cross-validation — these learners get stuck at the first bug because they lack the mental models to debug.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Planning to learn everything at once — trying to cover Python, statistics, linear algebra, ML, and deep learning in month 1 leads to burnout. Focus each month on one area until you can apply it independently, then move on.</li><li>Following the plan without building projects — reading books and watching tutorials without writing code is passive learning. The plan&#x27;s deliverables (competition entries, deployed models) are non-negotiable: they force active application.</li><li>Not adjusting the plan based on what interests you — if after month 6 you discover you love NLP more than computer vision, change the specialization. A rigid plan that doesn&#x27;t account for your interests creates resentment.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write your personal 12-month plan: (1) audit your current skills honestly (Python 1-5, statistics 1-5, ML 1-5, deep learning 1-5), (2) identify your target role (ML engineer, data scientist, AI researcher), (3) find 3 job descriptions for that role — list required skills, (4) create a month-by-month plan addressing skill gaps, (5) for each month, define: one learning resource, one project deliverable, one measurable success metric, (6) schedule monthly reviews: compare actual progress to plan, adjust the remaining months.</div>
     </div>
   </div>
 </section>
@@ -148,17 +220,38 @@
       <h2>Project-based learning</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Project-based learning is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In How to learn AI from zero, connect Project-based learning to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>Project-based learning is the most effective way to develop practical AI skills. Tutorials teach syntax; projects teach judgment — which tool to use, how to debug when nothing is documented, how to structure code others can read. Every hour spent building a complete project (from data to deployed model) is worth 5 hours of passive tutorial consumption.</p><p>Choosing the right project: the ideal first project is something you care about. If you follow soccer, build a match outcome predictor. If you&#x27;re interested in health, build a symptom checker. Personal interest sustains motivation through the debugging phases that kill tutorial-only learners. The topic matters less than the commitment to seeing it through to deployment.</p><p>Project structure: every AI project should have the same structure: (1) problem definition and success metric, (2) data collection and EDA, (3) baseline model (simple, interpretable), (4) improved model, (5) evaluation and error analysis, (6) deployment (notebook → API → public URL), (7) README and documentation. Projects that stop at step 4 don&#x27;t demonstrate production capability.</p><p>Showcasing on <code>GitHub</code>: a <code>GitHub</code> project that demonstrates real skill has: a clear README with problem statement, methodology, and results, a <code>requirements.txt</code> or <code>environment.yml</code> for reproducibility, clean code organized into functions or classes (not a 500-line notebook), model performance metrics with baseline comparison, and a deployment URL where others can test it live.</p><p>Learning by teaching: writing a blog post or tutorial about your project forces you to understand it deeply enough to explain it. When you attempt to explain why a feature was important or why one model beat another, you discover gaps in your understanding. This metacognitive exercise cements knowledge better than any other learning method.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add Project-based learning to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from How to learn AI from zero where Project-based learning is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Standard AI project structure
+project_structure = &quot;&quot;&quot;
+my_ml_project/
+├── README.md              # Problem statement, results, how to run
+├── requirements.txt       # All dependencies with versions
+├── data/
+│   ├── raw/               # Original, immutable data
+│   └── processed/         # Cleaned, featured data
+├── notebooks/
+│   ├── 01_eda.ipynb        # Exploration only
+│   └── 02_modeling.ipynb   # Experiments only
+├── src/
+│   ├── data.py            # Data loading and preprocessing
+│   ├── features.py        # Feature engineering
+│   ├── models.py          # Model training and evaluation
+│   └── evaluate.py        # Metrics and visualization
+├── tests/
+│   └── test_features.py   # Unit tests for src/
+├── api/
+│   └── main.py            # FastAPI serving
+└── Dockerfile             # For deployment
+&quot;&quot;&quot;</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add Project-based learning to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Employers and clients evaluate AI skills through projects, not certificates. A well-documented <code>GitHub</code> project that solves a real problem is more convincing than 10 completed courses. Project-based learning also reveals the skills that courses don&#x27;t teach: debugging production errors, handling messy real-world data, making tradeoffs between model quality and latency, and writing code that others can maintain.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Abandoning projects when they get hard — every ML project hits a phase where nothing works (the model doesn&#x27;t improve, the data has a bug you can&#x27;t find). This phase is the most valuable learning. Learners who push through develop genuine debugging skills. Treat the &#x27;stuck&#x27; phase as the core learning experience, not a signal to stop.</li><li>Choosing projects that are too complex too early — a first project should be completable in 2-4 weeks. End-to-end time matters more than technical complexity. Build a simple text classifier that works and is deployed before attempting a multi-modal model.</li><li>Not documenting the project properly — a <code>GitHub</code> repo with 50 files and no README is invisible to employers. Always write: what problem this solves, why it matters, how to run it, and what the results were. Add your evaluation metrics comparison with the baseline.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Start a new AI project from scratch this week: (1) choose a domain that genuinely interests you and identify a prediction/classification/generation problem within it, (2) find or collect data (at minimum 500 examples), (3) set up the project structure shown above, (4) build a baseline model in 3 hours: simple features, logistic regression, reported accuracy, (5) build one improved model: one additional feature engineering step, a better algorithm, or hyperparameter tuning, (6) deploy to a public URL (Streamlit Community Cloud, <code>HuggingFace</code> Spaces, or Render), (7) write a 500-word README with problem, approach, results, and how to run it.</div>
     </div>
   </div>
 </section>
@@ -170,17 +263,29 @@
       <h2>Portfolio mindset</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Portfolio mindset is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In How to learn AI from zero, connect Portfolio mindset to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>A portfolio mindset means treating every project, side experiment, and learning exercise as a potential addition to your public professional portfolio. Instead of accumulating private notebooks that no one can see, you document and share your work incrementally — each project building a public track record of your capabilities and interests.</p><p>What makes a strong AI portfolio: breadth AND depth. Breadth: show you can handle different problem types (classification, generation, retrieval, time series). Depth: at least one project where you go beyond basic tutorials — custom architecture, novel dataset, end-to-end deployment, or rigorous evaluation. Three deep projects are more impressive than ten shallow ones.</p><p><code>HuggingFace</code> Hub as portfolio: <code>HuggingFace</code> Hub lets you publish fine-tuned models and datasets. A fine-tuned model with a model card describing training data, evaluation metrics, and intended use is searchable and usable by others. Having a <code>HuggingFace</code> profile with models others have downloaded is a concrete signal of technical contribution.</p><p>Open source contributions: contributing to AI open source projects (<code>LangChain</code>, <code>transformers</code>, <code>sklearn</code>) demonstrates both technical skill and the ability to work within a large codebase. A single merged pull request fixing a bug or adding documentation is valuable portfolio material. Start with issues labeled &#x27;good first issue.&#x27;</p><p>Writing and sharing: blog posts, Twitter/X threads, and <code>LinkedIn</code> posts about what you&#x27;ve learned create a discoverable public record. Technical writing demonstrates communication skills (underrated in ML). Writing &#x27;how I built X&#x27; posts for each project creates a permanent, searchable record of your work. Medium, Substack, or a personal site all work.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add Portfolio mindset to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from How to learn AI from zero where Portfolio mindset is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Portfolio checklist
+portfolio_checklist = [
+    &#x27;GitHub profile with pinned repos for 3 best projects&#x27;,
+    &#x27;Each project README: problem, data, approach, results, demo link&#x27;,
+    &#x27;Deployed model or demo for at least one project (Streamlit/Spaces/HuggingFace)&#x27;,
+    &#x27;At least one fine-tuned model on HuggingFace Hub with model card&#x27;,
+    &#x27;Blog post or write-up for each major project&#x27;,
+    &#x27;LinkedIn profile updated with project descriptions and links&#x27;,
+    &#x27;Kaggle profile with competition submissions (shows comparison against others)&#x27;,
+    &#x27;One open source contribution (even documentation fix counts)&#x27;,
+]
+for item in portfolio_checklist:
+    print(f&#x27;[ ] {item}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add Portfolio mindset to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A portfolio mindset changes what you learn and how you learn it. Instead of &#x27;I&#x27;ll understand this later,&#x27; you think &#x27;how would I explain this to someone reading my README?&#x27; This shift from passive to active learning dramatically improves retention. More practically: in a competitive job market, a strong portfolio of public work differentiates you from candidates with the same educational background.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Waiting until projects are &#x27;perfect&#x27; to share them — &#x27;perfect&#x27; never comes. Ship a working v1 with a clear README. Iterations on a public project (v1 → v2 → v3) demonstrate growth and commitment more than a single perfectly polished project.</li><li>Copying tutorial projects exactly — a portfolio filled with Titanic survival, MNIST digit classification, and sentiment analysis from the same tutorials everyone does adds no differentiation. Apply the same techniques to a domain you care about using data you found yourself.</li><li>Not measuring and reporting results — a project without evaluation metrics is a science experiment with no conclusion. Always include: your metric, the baseline performance, your model&#x27;s performance, and whether the improvement is statistically significant.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build your portfolio foundation in one weekend: (1) create a <code>GitHub</code> profile README (special repo username/username) that summarizes your AI skills, current projects, and learning goals, (2) review your existing projects — which 3 best demonstrate your skills? Add README files to each, (3) deploy one project publicly (Streamlit Community Cloud is easiest), (4) write a 400-word blog post about one thing you learned building a project, (5) set a portfolio goal for the next 90 days: which specific project will you complete and share?</div>
     </div>
   </div>
 </section>

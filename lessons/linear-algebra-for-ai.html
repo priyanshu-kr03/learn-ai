@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Linear algebra for AI | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -38,17 +39,24 @@
       <h2>Scalars vectors matrices tensors</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Scalars vectors matrices tensors is a concept inside Linear algebra for AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Scalar: a single number with no dimensions (rank 0 tensor). Examples: learning rate = 0.001, loss = 0.45, accuracy = 0.87. In <code>NumPy</code>: <code>np.float32</code>(0.001). In <code>PyTorch</code>: <code>torch</code>.tensor(0.001).</p><p>Vector: a 1D array of scalars (rank 1 tensor). Examples: a word embedding [0.1, -0.3, 0.7, ...] of dimension 512, a sample feature vector [age, income, score] = [25, 50000, 0.8], a probability distribution [0.7, 0.2, 0.1] over 3 classes. In <code>NumPy</code>: <code>np.array</code>([1.0, 2.0, 3.0]). Vectors have a magnitude (length) and direction in n-dimensional space.</p><p>Matrix: a 2D array of scalars (rank 2 tensor). Examples: a weight matrix W of shape (<code>input_dim</code>, <code>output_dim</code>), a dataset X of shape (<code>n_samples</code>, <code>n_features</code>), an attention matrix of shape (<code>seq_len</code>, <code>seq_len</code>). Matrix multiplication combines two matrices into a new matrix. The rows represent one dimension (samples, sequence positions), columns represent another (features, hidden dimensions).</p><p>Tensor: a generalization to any number of dimensions (rank ≥ 3). Examples: a batch of images (<code>batch_size</code>, channels, height, width) = (32, 3, 224, 224) — rank 4, a batch of text sequences (<code>batch_size</code>, <code>seq_len</code>, <code>embedding_dim</code>) = (32, 128, 768) — rank 3, a batch of videos (batch, frames, channels, height, width) — rank 5. <code>PyTorch</code> and <code>TensorFlow</code> are named after tensors because all computation is tensor operations.</p><p>Why this matters: every data element in deep learning is a tensor. The model input is a tensor, the weights are tensors, the activations are tensors, the gradients are tensors. Understanding tensor shapes is the first step to debugging neural networks. A shape mismatch error is always a tensor with the wrong dimensions being fed to an operation expecting different dimensions.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Linear algebra for AI and needs to apply Scalars vectors matrices tensors. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Linear algebra for AI where Scalars vectors matrices tensors is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Scalar: loss = torch.tensor(0.45)
+Vector: embedding = torch.randn(512)
+Matrix: X = torch.randn(1000, 50)  # 1000 samples, 50 features
+Tensor: images = torch.randn(32, 3, 224, 224)  # batch of images</code></pre><pre><code>Dimensions: print(images.dim())   # 4 (rank-4 tensor)
+print(images.shape)  # torch.Size([32, 3, 224, 224])
+print(images.numel())  # 32*3*224*224 = 9633792 elements</code></pre><pre><code>Operations: v1 = torch.tensor([1.0, 2.0, 3.0])
+v2 = torch.tensor([4.0, 5.0, 6.0])
+dot = torch.dot(v1, v2)  # 1*4+2*5+3*6 = 32 (scalar)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Scalars vectors matrices tensors, explain it in 5 to 8 lines, and connect it to Linear algebra for AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Scalars, vectors, matrices, and tensors are the data types of machine learning. Every ML algorithm operates on these structures. Understanding the difference between a vector (1D) and matrix (2D) prevents shape errors. Understanding tensor rank enables you to reason about batch dimensions, sequence dimensions, and spatial dimensions.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing a shape (10,) with (10, 1) — a 1D vector and a column vector are different shapes. Many operations produce unexpected results due to this confusion. Use .reshape(-1, 1) to add a dimension.</li><li>Forgetting the batch dimension — neural networks process batches, not single samples. A model expecting (batch, features) will fail on a single sample (features,). Add a batch dimension: <code>x.unsqueeze</code>(0).</li><li>Treating tensors as immutable — both <code>NumPy</code> and <code>PyTorch</code> tensors are mutable. Operations like += modify the tensor in place; use + to create a new tensor.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement the following using tensors: (1) compute the pairwise Euclidean distance matrix between 100 random 512-dim vectors using matrix operations (no loops), (2) compute the softmax attention matrix (Q@K.T)/sqrt(d) for batch of 4 sequences of length 16 with d=64, (3) implement 2D convolution manually using matrix operations on a (1, 1, 8, 8) input and (3, 3) kernel. Verify each against <code>PyTorch</code>&#x27;s built-in implementations.</div>
     </div>
   </div>
 </section>
@@ -60,17 +68,25 @@
       <h2>Dot product</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Dot product is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Linear algebra for AI, learn Dot product with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+        <p>The dot product (inner product) of two vectors a and b is: a·b = Σ(<code>a_i</code> * <code>b_i</code>) — sum of element-wise products. For vectors a = [1, 2, 3] and b = [4, 5, 6]: a·b = 1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32. The dot product produces a scalar — a single number. It can also be written as a.T @ b (matrix multiplication of a column vector with a row vector).</p><p>Geometric interpretation: a·b = |a| * |b| * cos(θ) where |a| is the magnitude of a, |b| is the magnitude of b, and θ is the angle between them. When θ=0° (same direction): cos(0)=1, dot product is maximum. When θ=90° (perpendicular): cos(90)=0, dot product is 0. When θ=180° (opposite directions): cos(180)=-1, dot product is negative. This geometric meaning makes dot products perfect for measuring similarity.</p><p>Cosine similarity uses the normalized dot product: cos(θ) = a·b / (|a| * |b|). By dividing by the magnitudes, we get a value between -1 and +1 regardless of vector scale. cos(θ) = 1 means the vectors point in the same direction (identical meaning), cos(θ) = 0 means orthogonal (unrelated), cos(θ) = -1 means opposite meaning. This is used for: sentence similarity (how similar are two documents?), recommendation (user-item similarity), and nearest neighbor search.</p><p>In neural networks, the dot product is the core computation of linear layers and attention. A single neuron computes: output = w·x + b — the dot product of the weight vector and input vector, plus a bias. The output of a linear layer is the matrix product X @ W.T, which computes the dot product of each input vector with each weight vector simultaneously. Self-attention computes similarity between query and key vectors: score = Q · K / sqrt(<code>d_k</code>).</p><p>Projection: the dot product projects one vector onto another. <code>proj_a</code>(b) = (a·b / |a|²) * a — the component of b in the direction of a. In PCA, we project data onto principal components (eigenvectors) using dot products. In recommendation systems, the dot product of a user embedding with an item embedding measures how much the user &#x27;aligns with&#x27; the item.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a tiny numeric example for Dot product: two features, three rows, or two vectors. Calculate the result and explain what the number says about the data.</p>
-        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Linear algebra for AI.</li><li>Change one input and describe why the result changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+a = np.array([1, 2, 3]); b = np.array([4, 5, 6])
+dot = np.dot(a, b)  # 32
+print(dot)  # also a @ b, also sum(a * b)</code></pre><pre><code>Cosine similarity: def cosine_sim(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+print(cosine_sim(a, b))  # 0.9746 — nearly identical direction</code></pre><pre><code>Batch dot products: X = np.random.randn(100, 50)  # 100 user vectors
+item = np.random.randn(50)  # 1 item vector
+scores = X @ item  # dot product of each user with the item (100 scores)</code></pre><pre><code>Self-attention scores: Q, K = np.random.randn(10, 64), np.random.randn(10, 64)  # 10 tokens, d=64
+scores = Q @ K.T / np.sqrt(64)  # (10, 10) — attention score matrix</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Dot product by hand or in Python. Explain what each number means in one sentence.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>The dot product is the mathematical heart of deep learning. Every linear layer, every attention mechanism, every embedding similarity is computed with dot products. Understanding it geometrically (similarity as alignment) explains why cosine similarity works for semantic search and why attention scores measure relevance.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing <code>np.dot</code>(a, b) with <code>np.multiply</code>(a, b) — dot product sums the element-wise products; multiply returns element-wise products without summing.</li><li>Not normalizing vectors before using dot product as similarity — raw dot product is scale-dependent. Use cosine similarity for scale-invariant comparison.</li><li>Forgetting the 1/sqrt(d) scaling in attention — without it, dot products grow with d and push softmax into saturation (very peaky distributions). The scaling keeps gradients stable.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a nearest-neighbor search using dot products: embed 1000 sentences using a sentence transformer. For each of 10 test queries, find the 5 most similar sentences using: (1) raw dot product, (2) cosine similarity (normalize embeddings first). Show that cosine similarity gives better results when sentences have different lengths (different embedding magnitudes). Verify that normalizing embeddings first makes dot product = cosine similarity.</div>
     </div>
   </div>
 </section>
@@ -82,17 +98,38 @@
       <h2>Matrix multiplication</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Matrix multiplication is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Linear algebra for AI, learn Matrix multiplication with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+        <p>Matrix multiplication is the core computation of neural networks. Every linear layer, attention score, and embedding lookup is matrix multiplication. The result of multiplying matrix A (m×k) by matrix B (k×n) is matrix C (m×n) where C[i,j] = sum over k of A[i,k] × B[k,j]. The dimensions must be compatible: the number of columns in A must equal the number of rows in B. The result has m rows and n columns.</p><p>Geometric intuition: matrix multiplication applies a linear transformation. Multiplying a vector v by matrix A produces a new vector Av in a transformed space. A 2×2 matrix can rotate, scale, shear, or reflect 2D vectors. A 3×2 matrix maps 2D vectors to 3D space (projection). In neural networks, each linear layer weight matrix W transforms the input representation into a new, hopefully more task-useful representation.</p><p>Computational complexity: matrix multiplication of A (m×k) × B (k×n) requires m×k×n multiply-add operations. For multiplying two 1000×1000 matrices: 10^9 operations. This is why GPUs are essential for deep learning — they have thousands of cores executing these operations in parallel. The O(n^3) complexity of naive matrix multiplication is why reducing matrix dimensions (bottleneck layers) helps.</p><p>Broadcasting in practice: <code>numpy</code> and <code>PyTorch</code> extend matrix multiplication to batches via broadcasting. <code>torch</code>.bmm(A, B) multiplies batches of matrices. In transformer attention: queries Q (batch × <code>seq_len</code> × <code>d_k</code>), keys K (batch × <code>seq_len</code> × <code>d_k</code>). Attention scores = Q @ K.transpose(-2,-1) / sqrt(<code>d_k</code>) produces (batch × <code>seq_len</code> × <code>seq_len</code>) — one attention score matrix per sequence position per batch.</p><p>Numerical stability: matrix multiplication with very large or very small values can cause overflow/underflow in float32. float16 is particularly prone — transformer attention scores are divided by sqrt(<code>d_k</code>) to prevent softmax saturation from large dot products. Mixed precision training (float16 for most operations, float32 for numerically sensitive ones) provides a good balance of speed and stability.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a tiny numeric example for Matrix multiplication: two features, three rows, or two vectors. Calculate the result and explain what the number says about the data.</p>
-        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Linear algebra for AI.</li><li>Change one input and describe why the result changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+import torch
+# Manual matrix multiplication
+A = np.array([[1,2,3],[4,5,6]])      # 2×3
+B = np.array([[7,8],[9,10],[11,12]]) # 3×2
+C = A @ B  # 2×2 result
+# Verify: C[i,j] = sum(A[i,:] * B[:,j])
+print(&#x27;C[0,0]:&#x27;, sum(A[0,k]*B[k,0] for k in range(3)))  # = 58
+print(&#x27;numpy @:&#x27;, C)</code></pre><pre><code># Batched matrix multiplication in PyTorch
+batch, seq, d_model, d_k = 2, 5, 8, 4
+Q = torch.randn(batch, seq, d_k)
+K = torch.randn(batch, seq, d_k)
+V = torch.randn(batch, seq, d_model)
+# Scaled dot-product attention
+scores = Q @ K.transpose(-2,-1) / (d_k ** 0.5)  # (batch, seq, seq)
+weights = torch.softmax(scores, dim=-1)
+output = weights @ V  # (batch, seq, d_model)
+print(&#x27;Attention output shape:&#x27;, output.shape)</code></pre><pre><code># Efficiency: einsum vs matmul
+import time
+A, B = torch.randn(1000,1000), torch.randn(1000,1000)
+t0 = time.time(); _ = A @ B; print(f&#x27;matmul: {time.time()-t0:.4f}s&#x27;)
+t0 = time.time(); _ = torch.einsum(&#x27;ij,jk-&gt;ik&#x27;, A, B); print(f&#x27;einsum: {time.time()-t0:.4f}s&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Matrix multiplication by hand or in Python. Explain what each number means in one sentence.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Every forward pass and backward pass in a neural network is primarily matrix multiplication. The entire architecture of <code>transformers</code> — Q@K^T for attention, W@x for feed-forward layers, embedding lookups — is matrix operations. Profiling neural network performance always traces back to matrix multiplication efficiency.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing element-wise multiplication (*) with matrix multiplication (@) — A * B multiplies corresponding elements (must be same shape), A @ B is matrix multiplication (inner dimensions must match). In <code>PyTorch</code>, * is element-wise, @ and <code>torch.matmul()</code> are matrix multiplication.</li><li>Wrong dimension order — remember: (m×k) @ (k×n) = (m×n). The inner dimensions k must match. A (3×5) @ B (5×7) = C (3×7). If you get &#x27;mat1 and mat2 shapes cannot be multiplied&#x27;, check and transpose the right matrix.</li><li>Not using GPU for large matrix operations — matrix multiplication on CPU for 4096×4096 matrices takes seconds. On GPU (CUDA), the same operation takes milliseconds. Always use .to(&#x27;cuda&#x27;) for large matrix operations in deep learning.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement scaled dot-product attention from scratch: (1) write a function attention(Q, K, V, mask=None) that computes: scores = Q @ K.T / sqrt(<code>d_k</code>), apply mask (set masked positions to -inf before softmax), weights = softmax(scores), output = weights @ V, (2) verify shapes are correct for: Q/K/V of shape (batch=2, heads=4, seq=10, <code>d_k</code>=64), (3) implement multi-head attention by splitting <code>d_model</code> into h heads and projecting, (4) compare your implementation output with <code>torch</code>.<code>nn.MultiheadAttention</code>, (5) profile: how much faster is attention on GPU vs CPU for <code>seq_len</code>=1024?</div>
     </div>
   </div>
 </section>
@@ -104,17 +141,46 @@
       <h2>Transpose and inverse intuition</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Transpose and inverse intuition is a concept inside Linear algebra for AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Matrix transposition and inversion are fundamental linear algebra operations that appear constantly in ML: in the attention mechanism (QK^T), in linear regression solutions (X^T X)^{-1} X^T y, and in gradient calculations. Understanding them intuitively makes reading ML papers and code much faster.</p><p>Transpose (A^T): &#x27;flip a matrix over its diagonal.&#x27; The element at row i, column j moves to row j, column i. A (3×5) matrix becomes (5×3) after transposition. In ML: A^T is used to match dimensions for matrix multiplication. The dot product of two vectors u and v is u^T v (or u·v). The outer product of u and v is u v^T (a rank-1 matrix).</p><p>Why QK^T in attention: Q is (batch, seq, <code>d_k</code>), K is (batch, seq, <code>d_k</code>). To compute similarity between every query and every key, we need (batch, seq, seq). Q × K^T gives exactly this: for each query position, the dot product with each key position. This is why transposing K is necessary — to align the dimensions for matrix multiplication.</p><p>Inverse (A^{-1}): A^{-1} &#x27;undoes&#x27; A. A × A^{-1} = I (identity matrix). The ordinary least squares solution to Ax = b is x = A^{-1}b. In practice, you never compute the inverse explicitly (numerical instability and O(n^3) cost). Instead: `<code>np.linalg.solve</code>(A, b)` computes the same result more stably via LU decomposition.</p><p>Pseudoinverse (A^+): when A is not square or not invertible (which happens frequently in ML — more features than samples, or correlated features), use the Moore-Penrose pseudoinverse. X^+ = (X^T X)^{-1} X^T is the left pseudoinverse used in linear regression. In <code>numpy</code>: `<code>np.linalg.pinv</code>(X)`. <code>sklearn</code>&#x27;s <code>LinearRegression</code> uses this under the hood.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Linear algebra for AI and needs to apply Transpose and inverse intuition. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Linear algebra for AI where Transpose and inverse intuition is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+# Transpose
+A = np.array([[1, 2, 3], [4, 5, 6]])  # shape (2, 3)
+print(&#x27;A:&#x27;, A.shape)
+print(&#x27;A^T:&#x27;, A.T.shape)  # (3, 2)
+# Dot product as transpose multiplication
+u, v = np.array([1., 2., 3.]), np.array([4., 5., 6.])
+print(&#x27;u . v =&#x27;, u @ v)       # scalar: 1*4 + 2*5 + 3*6 = 32
+print(&#x27;u^T @ v =&#x27;, u @ v)    # same result: matrix form of dot product
+# Outer product
+print(&#x27;u @ v^T shape:&#x27;, np.outer(u, v).shape)  # (3, 3) rank-1 matrix
+# QK^T in attention
+Q = np.random.rand(4, 8, 64)  # batch=4, seq=8, d_k=64
+K = np.random.rand(4, 8, 64)
+scores = Q @ K.transpose(0, 2, 1)  # (4, 8, 64) @ (4, 64, 8) = (4, 8, 8)
+print(&#x27;Attention scores shape:&#x27;, scores.shape)  # (4, 8, 8): 8 queries x 8 keys</code></pre><pre><code># Linear regression: normal equations
+np.random.seed(42)
+n, p = 100, 5
+X = np.column_stack([np.ones(n), np.random.randn(n, p)])
+beta_true = np.array([2., 1., -0.5, 0.3, 0., -1.])
+y = X @ beta_true + np.random.randn(n) * 0.5
+# Closed-form solution: beta = (X^T X)^{-1} X^T y
+# Method 1: direct inverse (unstable for ill-conditioned matrices)
+beta_inv = np.linalg.inv(X.T @ X) @ X.T @ y
+# Method 2: solve (numerically stable)
+beta_solve = np.linalg.solve(X.T @ X, X.T @ y)
+# Method 3: pseudoinverse (most robust)
+beta_pinv = np.linalg.pinv(X) @ y
+print(&#x27;True beta:&#x27;, beta_true)
+print(&#x27;Estimated (solve):&#x27;, beta_solve.round(3))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Transpose and inverse intuition, explain it in 5 to 8 lines, and connect it to Linear algebra for AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Transpose and inverse appear in nearly every ML formula you&#x27;ll encounter in papers and code. Not understanding them means you must skip over equations rather than reading them fluently. Understanding A^T as &#x27;flip over the diagonal&#x27; and the normal equations as &#x27;closed-form linear regression&#x27; unlocks the ability to derive, debug, and implement ML algorithms directly from their mathematical formulation.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Computing A^{-1} explicitly and then multiplying — <code>np.linalg.inv</code>(A) @ b is slower and numerically less stable than <code>np.linalg.solve</code>(A, b). Solve uses LU decomposition which avoids amplifying numerical errors. Never compute the explicit inverse unless you need to reuse it for many right-hand sides.</li><li>Confusing (A^T)^{-1} with (A^{-1})^T — for invertible A: (A^T)^{-1} = (A^{-1})^T. They are equal, but this identity is not obvious. Remembering this prevents errors when rearranging matrix equations.</li><li>Forgetting that matrix multiplication is not commutative — AB ≠ BA in general. Dimension compatibility: A (m×k) @ B (k×n) = C (m×n). A^T @ B requires A to be (k×m) for A^T to be (m×k). Wrong multiplication order is the most common matrix dimension error.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement the normal equations from scratch: (1) generate synthetic linear regression data with n=100 samples, p=5 features, (2) implement least squares using: explicit inverse, <code>np.linalg.solve</code>, <code>np.linalg.pinv</code>, (3) verify all three give the same coefficients (within floating point tolerance), (4) add one more feature that is a linear combination of existing features (creates a singular matrix) — which method breaks? Which is most robust? (5) implement gradient descent for linear regression and verify it converges to the same solution as the normal equations.</div>
     </div>
   </div>
 </section>
@@ -126,17 +192,38 @@
       <h2>Eigenvalues intuition</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Eigenvalues intuition is a concept inside Linear algebra for AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Eigenvalues and eigenvectors describe the directions in which a matrix transformation stretches (or compresses) space without rotating it. If A × v = λ × v, then v is an eigenvector of A and λ is its eigenvalue. The matrix A, when multiplied by v, produces a vector in the SAME direction as v but scaled by λ. Positive λ &gt; 1 = stretch, 0 &lt; λ &lt; 1 = compress, λ &lt; 0 = flip direction.</p><p>Intuition with examples: consider a 2×2 matrix that represents &#x27;scale x-direction by 3, scale y-direction by 0.5&#x27;. Its eigenvectors are (1,0) and (0,1) with eigenvalues 3 and 0.5. For any other direction, the transformation ROTATES the vector as well as scaling it — but these two special directions (eigenvectors) only scale. The eigenvectors are the &#x27;invariant directions&#x27; of the transformation.</p><p>PCA uses eigendecomposition: the covariance matrix Σ of the data has eigenvectors that point in the directions of maximum variance (principal components) and eigenvalues that equal the variance explained by each direction. The eigenvector with the largest eigenvalue points in the direction of most variance in the data. PCA = sort eigenvectors by eigenvalue and project the data onto the top k.</p><p>Eigenvalues in deep learning: the Hessian matrix (second-order derivatives) has eigenvalues that describe the curvature of the loss landscape. Large eigenvalues = sharp curvature = difficult to optimize (gradient descent steps may overshoot). Small eigenvalues = flat landscape. The condition number (<code>max_eigenvalue</code> / <code>min_eigenvalue</code>) measures how &#x27;elongated&#x27; the loss landscape is — high condition number = gradient descent converges slowly, motivating adaptive optimizers like Adam.</p><p>Spectral methods: Graph neural networks use the eigendecomposition of the graph Laplacian (spectral graph convolution). Word2Vec&#x27;s PMI matrix eigendecomposition produces word embeddings. <code>PageRank</code> is the dominant eigenvector of a web graph&#x27;s transition matrix. Understanding eigenvalues opens the door to a deep class of ML algorithms grounded in linear algebra.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Linear algebra for AI and needs to apply Eigenvalues intuition. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Linear algebra for AI where Eigenvalues intuition is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+import matplotlib.pyplot as plt
+# Eigendecomposition of a covariance matrix
+np.random.seed(42)
+data = np.random.multivariate_normal([0,0], [[3,2],[2,2]], size=500)
+cov = np.cov(data.T)
+eigenvalues, eigenvectors = np.linalg.eig(cov)
+print(&#x27;Eigenvalues:&#x27;, eigenvalues)  # variance along each PC
+print(&#x27;Eigenvectors:\n&#x27;, eigenvectors)  # principal component directions
+# Verify: A @ v = λ @ v
+for i in range(2):
+    lhs = cov @ eigenvectors[:,i]
+    rhs = eigenvalues[i] * eigenvectors[:,i]
+    print(f&#x27;Eigenvector {i} check: {np.allclose(lhs, rhs)}&#x27;)</code></pre><pre><code># PCA via eigendecomposition vs sklearn
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+pca.fit(data)
+print(&#x27;sklearn PCA explained variance:&#x27;, pca.explained_variance_)
+print(&#x27;Matches eigenvalues:&#x27;, np.allclose(sorted(pca.explained_variance_, reverse=True), sorted(eigenvalues, reverse=True)))
+# Variance explained ratio
+for i, (ev, ratio) in enumerate(zip(pca.explained_variance_, pca.explained_variance_ratio_)):
+    print(f&#x27;PC{i+1}: eigenvalue={ev:.3f}, explains {ratio*100:.1f}% of variance&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Eigenvalues intuition, explain it in 5 to 8 lines, and connect it to Linear algebra for AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Eigenvalues underpin PCA, SVD, spectral clustering, and the theory of neural network optimization. When you run PCA to reduce 1000 features to 50, you are computing eigendecomposition of the covariance matrix. When Adam optimizer works better than SGD, the explanation is in the eigenvalue structure of the Hessian.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing eigenvectors with principal components — in PCA, the principal components ARE the eigenvectors of the covariance matrix. But <code>numpy</code>.<code>linalg.eig</code> returns eigenvectors unsorted — sort by eigenvalue magnitude for PCA.</li><li>Using <code>numpy</code>.<code>linalg.eig</code> for symmetric matrices — symmetric positive-definite matrices (covariance matrices) should use <code>numpy</code>.<code>linalg.eigh</code> (hermitian/symmetric version) which is faster and always returns real eigenvalues. <code>numpy</code>.<code>linalg.eig</code> may return complex numbers for numerical reasons.</li><li>Interpreting eigenvalue magnitude as &#x27;importance&#x27; without normalizing — eigenvalue magnitude depends on the data&#x27;s scale. If features are not standardized before PCA, features with large variance dominate. Always <code>StandardScale</code> before PCA.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement PCA from scratch using eigendecomposition and compare with <code>sklearn</code>: (1) generate a 3D dataset with correlated features, (2) compute the covariance matrix, its eigenvalues and eigenvectors, (3) implement PCA as: center data, compute covariance, eigendecompose, sort by eigenvalue, project onto top-2 PCs, (4) compare with <code>sklearn</code>&#x27;s PCA — are the results identical (up to sign)?, (5) visualize: 3D data and the eigenvectors as arrows in 3D space, the 2D PCA projection, (6) compute the explained variance ratio and find the minimum number of PCs to explain 95% of the variance.</div>
     </div>
   </div>
 </section>
@@ -148,17 +235,25 @@
       <h2>Norm and distance</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Norm and distance is a concept inside Linear algebra for AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A norm is a function that assigns a non-negative length (magnitude) to a vector. The L1 norm (Manhattan norm) is the sum of absolute values: ||x||_1 = Σ|<code>x_i</code>|. The L2 norm (Euclidean norm) is the square root of the sum of squares: ||x||_2 = sqrt(Σx_i²). The L∞ norm (Chebyshev norm) is the maximum absolute value: ||x||_∞ = max|<code>x_i</code>|. Each norm defines a different geometry and is appropriate for different problems.</p><p>Euclidean distance between two points is ||x - y||_2 = sqrt(Σ(<code>x_i</code> - <code>y_i</code>)²). Manhattan distance is ||x - y||_1 = Σ|<code>x_i</code> - <code>y_i</code>|. These are the distance metrics underlying KNN and clustering algorithms. Euclidean distance measures &#x27;as the crow flies&#x27; distance; Manhattan measures &#x27;city block&#x27; distance. For high-dimensional spaces, Manhattan distance is often more reliable than Euclidean (curse of dimensionality).</p><p>L1 and L2 regularization add norm penalties to the loss function. L1 regularization (Lasso): loss + λ*||w||_1 — pushes weights to exactly zero, producing sparse models. L2 regularization (Ridge): loss + λ*||w||_2² — shrinks weights toward zero but rarely to exactly zero, producing small but non-zero weights. L1 is used for feature selection (sparse solutions); L2 prevents any single weight from dominating. <code>ElasticNet</code> combines both.</p><p>Normalization in ML: normalizing vectors to unit length (||x||_2 = 1) makes distances between normalized vectors equivalent to cosine similarity, which is angle-based rather than magnitude-based. <code>sklearn</code>&#x27;s Normalizer applies L2 normalization: each row of X is divided by its L2 norm. This is appropriate before cosine similarity-based operations (text TF-IDF vectors, embedding similarity).</p><p>Mahalanobis distance accounts for correlations between features: <code>d_M</code>(x,y) = sqrt((x-y)^T Σ^{-1} (x-y)) where Σ is the covariance matrix. If features are correlated and on different scales, Euclidean distance gives misleading results. Mahalanobis distance is scale-invariant and accounts for correlations — it&#x27;s equivalent to Euclidean distance after standardization and decorrelation (whitening).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Linear algebra for AI and needs to apply Norm and distance. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Linear algebra for AI where Norm and distance is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+x = np.array([3.0, 4.0])
+L1 = np.linalg.norm(x, ord=1)   # |3|+|4| = 7
+L2 = np.linalg.norm(x, ord=2)   # sqrt(9+16) = 5
+Linf = np.linalg.norm(x, ord=np.inf)  # max(3,4) = 4</code></pre><pre><code>Distance: a = np.array([1,2,3]); b = np.array([4,5,6])
+euclidean = np.linalg.norm(a - b)  # sqrt(9+9+9) ≈ 5.196
+manhattan = np.linalg.norm(a - b, ord=1)  # 9</code></pre><pre><code>Normalize: from sklearn.preprocessing import normalize
+X_norm = normalize(X, norm=&#x27;l2&#x27;)  # each row has L2 norm = 1
+# Verify: np.linalg.norm(X_norm[0]) ≈ 1.0</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Norm and distance, explain it in 5 to 8 lines, and connect it to Linear algebra for AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Norms and distances are the mathematical foundation of distance-based ML: KNN, clustering, SVM, embedding similarity, regularization. Understanding why L1 produces sparse solutions and L2 does not explains how regularization controls model complexity. Understanding when to use cosine vs Euclidean distance prevents wrong similarity computations.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using Euclidean distance on unnormalized high-dimensional vectors — in high dimensions, all points are approximately equidistant (curse of dimensionality). Use cosine similarity instead.</li><li>Applying L1 when you want smooth solutions — L1 regularization produces discontinuous solutions at 0. For smooth, small-but-non-zero weights, use L2.</li><li>Computing distances without scaling features first — features on different scales distort distances. Standardize features before computing Euclidean distances.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare L1, L2, and Mahalanobis distances in anomaly detection: generate 1000 normal samples from N(0, Σ) with correlated features and 50 anomalies. Compute distances from each point to the center using all three metrics. Compare: which metric correctly identifies more true anomalies in the top-50 most distant points? Show why Mahalanobis outperforms Euclidean when features are correlated.</div>
     </div>
   </div>
 </section>
@@ -170,17 +265,26 @@
       <h2>Cosine similarity</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Cosine similarity is a concept inside Linear algebra for AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Cosine similarity measures the cosine of the angle between two vectors: cos(θ) = (A·B)/(||A|| * ||B||). It ranges from -1 (opposite direction) to +1 (same direction). A cosine similarity of 1 means the vectors point in the same direction (regardless of magnitude). This makes it ideal for text and embedding similarity — two documents about &#x27;machine learning&#x27; should be similar whether they are short or long.</p><p>Why cosine similarity is preferred for text: a long document about machine learning and a short document about machine learning have different TF-IDF vector magnitudes (the long one has larger values because terms appear more times). But their direction is similar. Cosine similarity normalizes by magnitude — it measures direction (topic) rather than magnitude (length). Euclidean distance would incorrectly find the long document dissimilar from the short one.</p><p>In embedding spaces (word2vec, BERT, sentence <code>transformers</code>), semantically similar concepts have high cosine similarity. king - man + woman ≈ queen: the difference vectors are parallel in the embedding space. Semantic search retrieves documents with high cosine similarity to the query embedding. This is how all modern embedding-based retrieval works.</p><p>Computing cosine similarity efficiently: for large sets of vectors, precompute normalized embeddings (divide each by its L2 norm), then use matrix multiplication to compute all pairwise dot products: similarities = <code>X_norm</code> @ <code>X_norm</code>.T. Since vectors are normalized, dot products equal cosine similarities. This vectorized approach is 100–1000× faster than computing similarities in a Python loop.</p><p>Cosine similarity vs dot product: normalized dot product = cosine similarity. For semantic search, normalizing embeddings before computing dot products enables using efficient MIPS (Maximum Inner Product Search) algorithms — the same algorithms used in FAISS and vector databases — for cosine similarity search.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Set up a small realistic scenario from Linear algebra for AI where Cosine similarity is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+a = np.array([1.0, 0.0, 1.0])  # document about topic A
+b = np.array([2.0, 0.0, 2.0])  # same topic, longer document
+c = np.array([0.0, 1.0, 0.0])  # different topic
+print(cosine_similarity(a, b))  # 1.0 — same direction
+print(cosine_similarity(a, c))  # 0.0 — orthogonal</code></pre><pre><code>Batch similarities: X_norm = X / np.linalg.norm(X, axis=1, keepdims=True)
+similarity_matrix = X_norm @ X_norm.T  # (n × n) all-pairs</code></pre><pre><code>sklearn: from sklearn.metrics.pairwise import cosine_similarity
+sim = cosine_similarity(query_embeddings, doc_embeddings)  # (n_queries, n_docs)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Cosine similarity, explain it in 5 to 8 lines, and connect it to Linear algebra for AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Cosine similarity is the universal metric for semantic similarity in NLP and embedding-based search. Understanding it enables you to build semantic search, find similar users/items in recommendation systems, and cluster documents by topic.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using Euclidean distance instead of cosine similarity for text embeddings — Euclidean distance penalizes different magnitudes (document lengths) rather than topic similarity.</li><li>Not normalizing before using dot products as similarities — raw dot products are scale-dependent. Normalize to unit vectors first.</li><li>Expecting cosine similarity to work for vectors with many near-zero dimensions — sparse vectors (TF-IDF) need dot product computation on only non-zero dimensions for efficiency. Use sparse matrix operations.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a document similarity system using cosine similarity: (1) embed 500 Wikipedia paragraphs with a sentence transformer, (2) build a brute-force search: for any query, rank all docs by cosine similarity, (3) compute the full pairwise similarity matrix, (4) find the 10 most similar pairs of documents, (5) find semantic duplicates (similarity &gt; 0.95). Compare search times for brute-force vs FAISS IVF index. Report: how much faster is FAISS?</div>
     </div>
   </div>
 </section>

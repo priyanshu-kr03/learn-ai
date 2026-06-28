@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>LLM app architecture | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -29,7 +30,7 @@
       <header class="content-head">
         <span class="eyebrow">10 AI System Design</span>
         <h1>LLM app architecture</h1>
-        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 38</span></div>
+        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 42</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">Frontend backend model provider</span><span class="tag">Prompt versioning</span><span class="tag">RAG architecture</span><span class="tag">Tool layer</span><span class="tag">Streaming</span><span class="tag">Caching</span><span class="tag">Rate limiting</span><span class="tag">Observability</span><span class="tag">Evals</span><span class="tag">Cost optimization</span><span class="tag">Security design</span></div>
       </header>
@@ -42,17 +43,41 @@
       <h2>Frontend backend model provider</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Frontend backend model provider is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In LLM app architecture, study Frontend backend model provider by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+        <p>The frontend-backend-model provider architecture is the standard three-tier design for production AI applications. Each tier has a single responsibility: the frontend handles user interface and interaction, the backend handles business logic and orchestration, and the model provider supplies AI capabilities via API.</p><p>Frontend: the user-facing interface. Technologies: React/Next.js for web apps, React Native/Swift/Kotlin for mobile, voice interfaces for smart speakers. The frontend sends user inputs to the backend API and renders AI responses. The frontend should NEVER call model provider APIs directly — API keys would be exposed to users who can inspect network requests.</p><p>Backend: the application server. Technologies: <code>FastAPI</code> (Python), Express.js (Node), Spring Boot (Java). Responsibilities: authenticate users, validate inputs, call the model provider API, apply business logic to the response, log usage, apply rate limits, and return formatted responses to the frontend. The backend holds API keys securely in environment variables.</p><p>Model provider: the AI capability layer. Commercial providers: Anthropic (Claude API), <code>OpenAI</code> (GPT-4), Google (Gemini). Self-hosted: vLLM, Ollama, TGI (Text Generation Inference). The backend calls the model provider, which returns completions, embeddings, or structured outputs. Switching providers (from <code>OpenAI</code> to Anthropic) only requires changing the backend&#x27;s model provider integration, not the frontend.</p><p>Separation of concerns in practice: the frontend sends &#x27;please summarize this document.&#x27; The backend: authenticates the request, retrieves the document from storage, chunks it, calls Anthropic&#x27;s API, assembles the summary, logs the request and response, and returns the summary. The model provider only sees &#x27;please summarize [text]&#x27; — it has no knowledge of the user&#x27;s identity or the document&#x27;s storage location.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how Frontend backend model provider changes the prediction, score, or interpretation.</p>
-        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Frontend backend model provider to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Backend API that calls Anthropic securely
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel
+import anthropic
+import os
+app = FastAPI()
+client = anthropic.Anthropic(api_key=os.environ[&#x27;ANTHROPIC_API_KEY&#x27;])  # Never hardcode
+security = HTTPBearer()
+USERS_DB = {&#x27;user_token_123&#x27;: {&#x27;id&#x27;: &#x27;user1&#x27;, &#x27;credits&#x27;: 100}}  # Simplified
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    user = USERS_DB.get(credentials.credentials)
+    if not user: raise HTTPException(401, &#x27;Invalid token&#x27;)
+    return user
+class ChatRequest(BaseModel): message: str; max_tokens: int = 500
+@app.post(&#x27;/chat&#x27;)
+async def chat(request: ChatRequest, user: dict = Depends(get_current_user)):
+    if user[&#x27;credits&#x27;] &lt;= 0: raise HTTPException(402, &#x27;Insufficient credits&#x27;)
+    response = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;, max_tokens=request.max_tokens,
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: request.message}]
+    )
+    # Deduct credits based on tokens used
+    user[&#x27;credits&#x27;] -= response.usage.output_tokens / 1000
+    return {&#x27;response&#x27;: response.content[0].text, &#x27;credits_remaining&#x27;: user[&#x27;credits&#x27;]}</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Frontend backend model provider affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>The three-tier architecture is not just best practice — it&#x27;s a security requirement. Exposing model provider API keys in the frontend means any user can extract the key from browser dev tools and make unlimited API calls at your expense. The backend-as-proxy pattern is the only way to safely call commercial AI APIs in user-facing applications.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Calling the LLM API from the frontend — the API key is visible in browser network requests. Never call Anthropic, <code>OpenAI</code>, or any other API with secrets from client-side code. All such calls must go through your backend.</li><li>Not adding user authentication before AI calls — without authentication, anyone can call your backend AI endpoints. Even a simple API key system prevents anonymous abuse. For production: JWT tokens, OAuth, or session cookies.</li><li>Not implementing caching at the backend layer — the backend is the right place to implement response caching (semantic caching, exact match). The frontend should not cache LLM responses — that belongs in the application layer that can access the database.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a three-tier AI application: (1) implement a <code>FastAPI</code> backend with: user authentication (API key header), request logging, rate limiting (10 req/min per user), Anthropic API call, response caching (exact match on message hash), (2) build a simple frontend (HTML + <code>JavaScript</code>) that calls your backend (not Anthropic directly), (3) verify the API key is never visible in the frontend code or network requests, (4) test rate limiting: make 15 requests quickly — do the last 5 get a 429 response?, (5) add cost tracking: log token usage per user, compute daily cost per user.</div>
     </div>
   </div>
 </section>
@@ -64,19 +89,47 @@
       <h2>Prompt versioning</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Prompt versioning is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In LLM app architecture, test Prompt versioning with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Prompt versioning is the practice of tracking changes to LLM prompts over time, enabling rollback, A/B testing, and systematic improvement. As prompts evolve (you add examples, refine instructions, change the format), prompt versioning ensures you can always return to a working version and understand what changed between versions.</p><p>Why version prompts: prompt changes can unexpectedly break downstream behavior. &#x27;Added a formatting instruction&#x27; seems harmless but might reduce the model&#x27;s accuracy on edge cases. Without versioning, you can&#x27;t compare the new prompt&#x27;s performance to the old one, or roll back if quality drops.</p><p>Version control approaches: simple text files in Git (each prompt is a .txt or .md file, changes tracked by git history). Langfuse or <code>PromptLayer</code> (purpose-built prompt management platforms with version history, performance tracking, and A/B testing). Environment-specific prompts (different prompt versions for dev/staging/prod in a config file). The simplest approach: a JSON file mapping {<code>prompt_name</code>: version: <code>prompt_text</code>} committed to Git.</p><p>Prompt testing before deployment: before promoting a new prompt version to production, run it through your evaluation pipeline. Compare: mean quality score, per-category scores, failure modes. A new prompt is only deployed if it performs &gt; current version on the evaluation set without regressions on any category.</p><p>Prompt engineering best practices under versioning: small, targeted changes (one change per version), clear commit messages (&#x27;v3: added 2 few-shot examples to improve JSON formatting&#x27;), and semantic versioning (v1 = major behavior change, v1.1 = minor tweak, v1.0.1 = fix edge case).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to Prompt versioning, the response, and one failure case.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Prompt versioning changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import json
+import hashlib
+from datetime import datetime
+import os
+# Simple prompt version manager
+class PromptVersionManager:
+    def __init__(self, storage_path=&#x27;prompts.json&#x27;):
+        self.path = storage_path
+        self.prompts = self._load()
+    def _load(self): return json.load(open(self.path)) if os.path.exists(self.path) else {}
+    def _save(self): json.dump(self.prompts, open(self.path, &#x27;w&#x27;), indent=2)
+    def save_version(self, name: str, content: str, description: str = &#x27;&#x27;) -&gt; str:
+        hash_id = hashlib.md5(content.encode()).hexdigest()[:8]
+        if name not in self.prompts: self.prompts[name] = {&#x27;versions&#x27;: [], &#x27;current&#x27;: None}
+        version = {&#x27;id&#x27;: hash_id, &#x27;content&#x27;: content, &#x27;description&#x27;: description, &#x27;created_at&#x27;: datetime.now().isoformat()}
+        self.prompts[name][&#x27;versions&#x27;].append(version)
+        self.prompts[name][&#x27;current&#x27;] = hash_id
+        self._save()
+        return hash_id
+    def get(self, name: str, version_id: str = None) -&gt; str:
+        p = self.prompts.get(name)
+        if not p: raise ValueError(f&#x27;Prompt {name} not found&#x27;)
+        vid = version_id or p[&#x27;current&#x27;]
+        return next(v[&#x27;content&#x27;] for v in p[&#x27;versions&#x27;] if v[&#x27;id&#x27;] == vid)
+    def rollback(self, name: str, version_id: str): self.prompts[name][&#x27;current&#x27;] = version_id; self._save()
+pmgr = PromptVersionManager()
+pmgr.save_version(&#x27;system_prompt&#x27;, &#x27;You are a helpful assistant.&#x27;, &#x27;Initial version&#x27;)
+pmgr.save_version(&#x27;system_prompt&#x27;, &#x27;You are a helpful, concise assistant. Always respond in bullet points.&#x27;, &#x27;Added formatting requirement&#x27;)
+print(pmgr.get(&#x27;system_prompt&#x27;))  # Gets current version</code></pre>
       </div>
       <pre><code>Task: Classify the customer message.
 Return JSON with keys: label, reason.
 Message: &quot;I want to cancel my plan&quot; </code></pre>
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Prompt versioning. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Prompt versioning is the foundation of systematic prompt engineering. Without it, &#x27;the model used to work better&#x27; is just an observation you can&#x27;t act on — you don&#x27;t know what the previous prompt was. With versioning, you can: reproduce any historical behavior, A/B test prompt variants, and make evidence-based decisions about which prompt to use in production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Storing prompts as string literals in code — when a prompt is a string constant in a Python file, changing it is a code deployment. Using a prompt management system (or even a JSON file) separates prompt engineering from code deployment, allowing faster iteration.</li><li>Not evaluating before promoting to production — every prompt change should go through the evaluation pipeline. A prompt that improves instruction following might degrade safety behaviors or format compliance in ways that aren&#x27;t obvious without systematic testing.</li><li>Over-versioning trivial changes — not every prompt tweak needs a version. Version at meaningful milestones: when you change the behavior, add examples, or modify the task framing. Don&#x27;t create v1.0.1, v1.0.2, v1.0.3 for typo fixes — fix typos in-place and record the final state.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a prompt versioning workflow: (1) create a prompt version manager using the code above (or Langfuse), (2) save 5 iterations of a system prompt for a customer support chatbot (each with a description of what changed), (3) run your evaluation pipeline on each version — which version performs best?, (4) implement A/B testing: route 50% of traffic to v3, 50% to v4, compare quality metrics, (5) if v4 is better, promote it as the current version; if v3 is better, rollback v4.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -88,17 +141,27 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>RAG architecture</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>RAG architecture is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In LLM app architecture, test RAG architecture with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>RAG (Retrieval-Augmented Generation) is an architecture that combines a vector retrieval system with a generative language model. Instead of relying solely on the LLM&#x27;s parametric knowledge (baked in during pretraining), RAG retrieves relevant context from an external knowledge base at query time and provides it to the LLM as part of the prompt. This enables the LLM to answer questions about information it was not trained on — private documents, real-time data, and domain-specific knowledge.</p><p>The RAG pipeline has four stages: (1) Ingestion — chunk documents into passages (typically 256–512 tokens with 50-token overlap), encode each chunk into a dense vector using a text embedding model (e.g., text-embedding-3-small, BAAI/bge-large-en), and store vectors in a vector database (FAISS, Chroma, Pinecone, pgvector). (2) Retrieval — encode the query, find the top-K most similar document chunks by cosine similarity. (3) Augmentation — insert retrieved chunks into the prompt as context. (4) Generation — the LLM generates an answer conditioned on the query and retrieved context.</p><p>Chunking strategy is critical and often underestimated. Fixed-size chunking (512 tokens, 50-token overlap) is simple but splits sentences mid-thought. Semantic chunking uses embedding similarity to find natural break points. Hierarchical chunking creates document-level and paragraph-level chunks and retrieves both. Sentence-window retrieval retrieves individual sentences but passes their surrounding window to the LLM for context. Poor chunking is the most common source of RAG failures.</p><p>Hybrid search combines dense retrieval (semantic similarity via embeddings) with sparse retrieval (keyword matching via BM25). Dense retrieval finds semantically similar passages even when they use different words. Sparse retrieval (BM25) is better at exact keyword matches (product codes, names, specific terminology). Combining them with a reranker (a cross-encoder that scores query-passage pairs) consistently outperforms either alone. The Reciprocal Rank Fusion (RRF) algorithm combines rankings from multiple retrieval systems without score normalization.</p><p>Evaluating RAG systems requires domain-specific test sets with 50–200 question-answer pairs covering the document collection. Metrics: context relevance (are retrieved chunks actually relevant to the query?), groundedness (is the LLM&#x27;s answer supported by the retrieved context?), answer relevance (does the answer address the question?). RAGAS is a popular framework that automates these evaluations using an LLM judge. Human evaluation of a random sample is the gold standard.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Chat with PDF: split the PDF into chunks, embed them, retrieve the most relevant passages for a question, and answer only from those passages with citations.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how RAG architecture changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Ingestion: from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+textSplitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=50)
+chunks = textSplitter.split_documents(docs)
+vectorstore = Chroma.from_documents(chunks, OpenAIEmbeddings())</code></pre><pre><code>Retrieval: retriever = vectorstore.as_retriever(search_type=&#x27;similarity&#x27;, search_kwargs={&#x27;k&#x27;: 5})
+relevant_docs = retriever.get_relevant_documents(query)</code></pre><pre><code>Augment and generate:
+context = &#x27;\n\n&#x27;.join([doc.page_content for doc in relevant_docs])
+prompt = f&#x27;Answer based on context below:\n{context}\n\nQuestion: {query}&#x27;
+response = llm(prompt)</code></pre><pre><code>Hybrid search with reranker: pip install rank_bm25 sentence-transformers
+# BM25 retrieval + dense retrieval → top-20 each → cross-encoder reranker → top-5</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG architecture. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>RAG is the most important LLM application pattern in enterprise AI. It enables LLMs to work with private, current, and domain-specific information — the use cases companies actually need. Understanding RAG architecture, chunking, retrieval, and evaluation is essential for anyone building LLM-powered applications.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not overlapping chunks — if a relevant sentence spans a chunk boundary, it will not be fully retrieved. Always use <code>chunk_overlap</code> of 10–20% of <code>chunk_size</code>.</li><li>Retrieving too few chunks (K=1–2) or too many (K=20+) — too few misses relevant context; too many fills the context window with noise. K=3–7 is typically optimal.</li><li>Not evaluating retrieval separately from generation — a RAG system can fail at retrieval (relevant docs not retrieved) or generation (retrieved correctly but answer is wrong). Diagnose each separately.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a RAG system over the Wikipedia article for &#x27;machine learning&#x27;. Use <code>RecursiveCharacterTextSplitter</code> to chunk it. Embed with <code>OpenAI</code> text-embedding-3-small (or a free <code>HuggingFace</code> model). Store in Chroma. Build a Q&amp;A interface. Test with 20 questions. Evaluate: (1) retrieval recall (does the relevant chunk appear in top-5?), (2) answer accuracy (is the answer correct?). Experiment with chunk sizes: 256, 512, 1024. Report which gives best retrieval recall.</div>
     </div>
   </div>
 </section>
@@ -110,17 +173,43 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Tool layer</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Tool layer is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In LLM app architecture, test Tool layer with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>The tool layer in an LLM agent system is the collection of tools available to the agent, their definitions, implementation, validation, and the dispatch mechanism that executes tool calls. A well-designed tool layer enables the agent to take meaningful actions; a poorly designed one is a source of errors, security vulnerabilities, and agent failures.</p><p>Tool design principles: each tool should do exactly one thing. Tools should be idempotent where possible (calling a tool twice should not cause double effects). Tools should have clear, informative descriptions (the model decides which tool to call based on the description). Tools should return structured, parseable output (JSON &gt; free text).</p><p>Tool categories: read tools (safe, no side effects — web search, database query, file read, calculator), write tools (side effects — send email, database write, file create), system tools (dangerous — execute code, shell commands). Apply permission levels: read tools always allowed, write tools require user-tier authentication, system tools require explicit human approval.</p><p>Tool registration and dispatch: maintain a registry of available tools. When the model returns a tool call, the dispatcher: (1) validates the tool exists, (2) validates the tool call format against the tool&#x27;s schema, (3) checks permissions, (4) executes the tool, (5) handles errors gracefully, (6) returns the result. A clean dispatcher abstracts these concerns from both the tool implementations and the agent loop.</p><p>Tool observability: log all tool calls: tool name, inputs, outputs, execution time, success/failure. This log enables: debugging agent failures, auditing what actions were taken, measuring tool reliability (which tools fail most often?), and improving tool descriptions (which tools are called incorrectly most often?).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Tool layer changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from typing import Callable, Any
+from pydantic import BaseModel
+import json
+# Tool registry
+class Tool:
+    def __init__(self, name: str, description: str, fn: Callable, param_model: type):
+        self.name = name; self.description = description; self.fn = fn; self.param_model = param_model
+    @property
+    def schema(self) -&gt; dict:
+        return {&#x27;name&#x27;: self.name, &#x27;description&#x27;: self.description, &#x27;input_schema&#x27;: self.param_model.model_json_schema()}
+class ToolRegistry:
+    def __init__(self): self.tools = {}
+    def register(self, tool: Tool): self.tools[tool.name] = tool
+    def get_schemas(self) -&gt; list: return [t.schema for t in self.tools.values()]
+    def dispatch(self, tool_name: str, tool_input: dict) -&gt; dict:
+        if tool_name not in self.tools: return {&#x27;error&#x27;: f&#x27;Tool {tool_name} not found&#x27;}
+        tool = self.tools[tool_name]
+        try:
+            params = tool.param_model(**tool_input)  # Pydantic validation
+            result = tool.fn(**params.model_dump())
+            return {&#x27;result&#x27;: result, &#x27;success&#x27;: True}
+        except Exception as e: return {&#x27;error&#x27;: str(e), &#x27;success&#x27;: False}
+# Register tools
+class SearchParams(BaseModel): query: str; max_results: int = 5
+registry = ToolRegistry()
+registry.register(Tool(&#x27;search_web&#x27;, &#x27;Search the web for current information&#x27;, lambda query, max_results: f&#x27;Results for {query}&#x27;, SearchParams))
+print(json.dumps(registry.get_schemas(), indent=2))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Tool layer. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A well-designed tool layer is what makes agent systems reliable and maintainable. Without a proper tool layer, every agent has ad-hoc tool dispatch, scattered validation, and no consistent error handling. With a tool registry and dispatcher, tool management is centralized: adding a new tool means registering it in one place; changing validation logic updates all tools at once; adding logging or rate limiting to all tools requires one change.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not returning structured output from tools — a tool that returns &#x27;The weather in London is 15 degrees&#x27; forces the model to parse prose to extract the temperature. A tool that returns {&#x27;location&#x27;: &#x27;London&#x27;, &#x27;temperature&#x27;: 15, &#x27;unit&#x27;: &#x27;celsius&#x27;} is unambiguous. Always return structured JSON from tools.</li><li>Not rate-limiting expensive tools — a web search tool with no rate limiting can be called 100 times per agent run at your API cost. Add rate limiting at the tool dispatch level for tools that have external costs.</li><li>Exposing too many tools at once — giving an agent 20 tools increases the chance of the model calling the wrong one. Present only the tools relevant to the current task. Use a dynamic tool selection mechanism: given the user&#x27;s intent, which 3-5 tools are most likely needed?</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a tool layer for a research agent: (1) implement 5 tools: <code>web_search</code>, <code>get_webpage</code>, <code>run_calculator</code>, <code>summarize_text</code>, <code>save_result</code>, (2) build a <code>ToolRegistry</code> with Pydantic validation for each tool&#x27;s parameters, (3) implement a dispatcher that: validates tool calls, executes with timeout (10s), logs all calls, returns structured results, (4) run an agent loop with these tools on a research task, (5) analyze the tool call log: which tool was called most? Which had the highest failure rate? What were the most common validation errors?</div>
     </div>
   </div>
 </section>
@@ -132,17 +221,41 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Streaming</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Streaming is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Streaming in the context of LLM APIs means sending partial responses back to the client token by token as they are generated, rather than waiting for the entire response to complete. Without streaming, a user sending a query to an LLM must wait the full response generation time (10-60 seconds for long responses) before seeing anything. With streaming, the first token appears within milliseconds of inference starting, and the response accumulates in real time.</p><p>How LLM streaming works: LLMs generate text autoregressively — one token at a time. Without streaming: generate all N tokens, then send. With streaming: send each token as it is generated using Server-Sent Events (SSE) or <code>WebSockets</code>. The user sees the response build up progressively, which dramatically improves perceived responsiveness even though total generation time is the same.</p><p>Streaming with the Anthropic SDK: <code>client.messages.stream()</code> returns a stream context manager. In a with block, iterate over <code>stream.text_stream</code> (yields string chunks) or <code>stream.content_stream</code> (yields typed content blocks). <code>stream.get_final_message()</code> waits for completion and returns the full message object. Use streaming for any response that might be more than a few sentences — it fundamentally changes the user experience.</p><p>Streaming in <code>FastAPI</code> (Server-Sent Events): use <code>StreamingResponse</code> with an async generator. The generator yields text chunks as they are produced by the LLM. The client receives a server-sent event for each chunk and can display it immediately. For streaming chat interfaces (like <code>ChatGPT</code>&#x27;s typing effect), this is the standard implementation.</p><p>Streaming for non-LLM cases: streaming is also useful for: model inference that takes &gt; 500ms (stream intermediate results), real-time data processing pipelines (stream prediction results as data arrives), and large file processing (stream output rows to avoid holding all results in memory).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Streaming. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from LLM app architecture where Streaming is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+client = anthropic.Anthropic()
+# Streaming response
+with client.messages.stream(
+    model=&#x27;claude-opus-4-8&#x27;, max_tokens=1024,
+    messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: &#x27;Explain quantum entanglement in simple terms.&#x27;}]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end=&#x27;&#x27;, flush=True)  # print each chunk as it arrives
+    message = stream.get_final_message()
+print(f&#x27;\nTotal tokens: {message.usage.input_tokens + message.usage.output_tokens}&#x27;)</code></pre><pre><code># FastAPI streaming endpoint
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+app = FastAPI()
+@app.get(&#x27;/generate&#x27;)
+async def generate(prompt: str):
+    async def event_generator():
+        with client.messages.stream(
+            model=&#x27;claude-opus-4-8&#x27;, max_tokens=512,
+            messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: prompt}]
+        ) as stream:
+            for text in stream.text_stream:
+                yield f&#x27;data: {text}\n\n&#x27;  # SSE format
+        yield &#x27;data: [DONE]\n\n&#x27;
+    return StreamingResponse(event_generator(), media_type=&#x27;text/event-stream&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Streaming, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Streaming is what makes LLM-powered applications feel responsive. A 5-second response that streams feels instantaneous; a 5-second response without streaming feels broken. For any consumer-facing LLM application, streaming is a requirement, not an optimization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Buffering the entire stream before rendering — using &#x27;&#x27;.join([c for c in <code>stream.text_stream</code>]) loads all chunks into memory before rendering. Render each chunk as it arrives.</li><li>Not handling stream interruption — network timeouts, client disconnections, or API errors can interrupt a stream mid-generation. Implement try/except around the stream and return a graceful error message if the stream is interrupted.</li><li>Using streaming for short, fast responses — for responses that take &lt; 500ms to generate, the overhead of streaming infrastructure outweighs the benefit. Use streaming only when response generation takes &gt; 1 second.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a streaming LLM chat interface: (1) implement a <code>FastAPI</code> endpoint that streams Anthropic responses using SSE, (2) build a simple HTML/<code>JavaScript</code> front-end that connects to the SSE endpoint and displays tokens as they arrive, (3) implement a typing indicator (show &#x27;...&#x27; until the first token arrives), (4) implement stream cancellation: allow the user to stop the response mid-generation (send a signal to the server to abort the stream), (5) measure the subjective responsiveness difference: compare batch mode (wait for full response) vs streaming mode using a 500-word response.</div>
     </div>
   </div>
 </section>
@@ -154,17 +267,42 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Caching</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Caching is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Caching stores the results of expensive computations so that repeated requests return the cached result instantly, without re-running the computation. In ML systems, caching is used for: LLM responses (same prompt returns same response), embedding computations (same text returns same embedding), preprocessing pipelines (same raw input returns same features), and model predictions (same input returns same prediction). Caching dramatically reduces cost and latency for workloads with repeated inputs.</p><p>Cache strategies: (1) exact match caching — cache based on exact input hash. Fast lookup, but two semantically identical queries with different wording are treated as different. (2) Semantic caching — cache based on embedding similarity. &#x27;What is the capital of France?&#x27; and &#x27;Which city is France&#x27;s capital?&#x27; return the same cached response. (3) Prefix caching — cache the KV cache for common prompt prefixes (system prompt). Anthropic and <code>OpenAI</code> offer this natively — saves 90% of token costs for a long system prompt reused across many requests.</p><p>Redis for distributed caching: Redis is the standard in-memory cache for production systems. redis-py provides Python access: <code>redis_client.get</code>(key) → cached value, <code>redis_client.setex</code>(key, <code>ttl_seconds</code>, value) → set with expiration. TTL (time-to-live): how long a cached value remains valid. For deterministic computations (embeddings), TTL can be very long (days). For dynamic content (LLM responses that depend on current date), TTL should be short (hours).</p><p>Cache invalidation: when the underlying data changes (model is updated, documents are reindexed), cached values become stale. Strategies: (1) TTL expiration (automatic, no explicit invalidation needed), (2) key versioning (include model version in cache key — old version&#x27;s cache entries are naturally orphaned), (3) explicit invalidation (when data changes, delete affected cache entries). The hardest problem in computer science: knowing when to invalidate.</p><p>LLM prompt caching: Anthropic&#x27;s prompt caching feature caches the transformer KV state for a fixed system prompt prefix. On the first request, the full prompt is processed (full token cost). On subsequent requests that reuse the same system prompt prefix, only new tokens are processed (90% cost reduction). Set <code>cache_control</code>: {&#x27;type&#x27;: &#x27;ephemeral&#x27;} on the system prompt content block to enable it.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Caching. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from LLM app architecture where Caching is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import redis
+import hashlib
+import json
+redis_client = redis.Redis(host=&#x27;localhost&#x27;, port=6379, db=0)
+def get_embedding_cached(text: str, embed_fn, ttl=86400) -&gt; list:
+    # Create cache key from text
+    cache_key = f&#x27;embed:{hashlib.sha256(text.encode()).hexdigest()[:16]}&#x27;
+    # Check cache
+    cached = redis_client.get(cache_key)
+    if cached:
+        return json.loads(cached)
+    # Compute and cache
+    embedding = embed_fn(text)
+    redis_client.setex(cache_key, ttl, json.dumps(embedding))
+    return embedding</code></pre><pre><code># Anthropic prompt caching
+response = client.messages.create(
+    model=&#x27;claude-opus-4-8&#x27;, max_tokens=1024,
+    system=[{
+        &#x27;type&#x27;: &#x27;text&#x27;,
+        &#x27;text&#x27;: &#x27;You are a helpful assistant.&#x27; + &#x27;(very long system prompt...)&#x27; * 500,
+        &#x27;cache_control&#x27;: {&#x27;type&#x27;: &#x27;ephemeral&#x27;}  # cache this prefix
+    }],
+    messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: &#x27;What is machine learning?&#x27;}]
+)
+print(f&#x27;Cache hit: {response.usage.cache_read_input_tokens} tokens from cache&#x27;)
+print(f&#x27;Cache miss: {response.usage.cache_creation_input_tokens} tokens written to cache&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Caching, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Caching is the highest ROI optimization for LLM applications in production. Prompt caching alone can reduce LLM API costs by 50-90% for applications with repeated system prompts. Embedding caching eliminates redundant computation for static documents. Understanding cache design is essential for cost-efficient production ML systems.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not including the model version in the cache key — if you update the model, the old cached predictions/embeddings are stale but will still be served. Always include the model version in the cache key.</li><li>Caching non-deterministic or time-sensitive outputs — caching a response that includes the current date and time, or a response generated with temperature &gt; 0, gives different results each time. Only cache outputs that are deterministic and time-stable.</li><li>No cache size limit — unbounded caches grow indefinitely, eventually consuming all available memory. Set a max memory limit (Redis: maxmemory 2gb, maxmemory-policy allkeys-lru) and use LRU eviction to remove least-recently-used items when the limit is reached.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a multi-level caching system for an LLM application: (1) implement exact-match caching using Redis with SHA-256 hashed keys and 24-hour TTL for embedding computations, (2) implement semantic caching using FAISS: embed incoming queries, if the closest cached query has cosine similarity &gt; 0.95, return its cached response, (3) implement prompt caching for Anthropic API (<code>cache_control</code> on system prompt), (4) measure cost reduction: simulate 1000 requests where 30% are repeat queries — compute cached vs uncached token counts and dollar cost, (5) implement cache warming: before going live, pre-populate the cache with the 100 most common queries from historical logs.</div>
     </div>
   </div>
 </section>
@@ -176,17 +314,44 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Rate limiting</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Rate limiting matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In LLM app architecture, learn Rate limiting by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Rate limiting controls how many requests an API or service can receive per unit time, protecting it from overload and ensuring fair usage. In AI API contexts, you encounter rate limits as a consumer (<code>OpenAI</code> limits your requests per minute) and must implement rate limiting as a provider (your <code>FastAPI</code> app limits how often users can call your LLM endpoint).</p><p>Common rate limit types: requests per minute (RPM) — total API calls per minute. Tokens per minute (TPM) — total tokens (input + output) consumed per minute, relevant for LLM APIs where a single request might consume 2,000 tokens. Requests per day — daily budget, often for free tiers. Concurrent requests — how many simultaneous requests you can have in flight.</p><p>Handling rate limits as a consumer: exponential backoff — when you receive a 429 (Too Many Requests), wait 2^n seconds before retry, where n is the retry attempt number. Add jitter (random noise) to prevent thundering herd: `wait = (2 ** attempt + <code>random.uniform</code>(0, 1))`. The `tenacity` library provides retry decorators. Token budgeting: track your token usage per minute and proactively slow down before hitting the limit.</p><p>Implementing rate limiting as a provider: token bucket algorithm — tokens refill at a constant rate, each request consumes tokens, requests are rejected when the bucket is empty. Sliding window counter — count requests in the last N seconds using a Redis sorted set. Fixed window counter — count requests in the current minute, reset at the minute boundary. Token bucket is most common for LLM rate limiting.</p><p>Practical tools: for <code>FastAPI</code> applications, `slowapi` adds rate limiting middleware based on IP address, user ID, or API key. For Redis-backed rate limiting, `redis-py` with a Lua script implements atomic token bucket. For distributed rate limiting (multiple servers), always use a shared store (Redis) rather than in-memory counters.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a deployed churn prediction API. Explain how Rate limiting affects latency, reliability, cost, privacy, monitoring, or rollback for real users.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Rate limiting affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Handling API rate limits as consumer
+import time
+import random
+def call_api_with_backoff(fn, max_retries=5, *args, **kwargs):
+    for attempt in range(max_retries):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            if &#x27;429&#x27; in str(e) or &#x27;rate_limit&#x27; in str(e).lower():
+                wait = (2 ** attempt) + random.uniform(0, 1)  # exponential backoff + jitter
+                print(f&#x27;Rate limited. Retry {attempt+1}/{max_retries} in {wait:.1f}s...&#x27;)
+                time.sleep(wait)
+            else:
+                raise  # non-rate-limit error: don&#x27;t retry
+    raise RuntimeError(f&#x27;Max retries ({max_retries}) exceeded&#x27;)</code></pre><pre><code># Rate limiting with slowapi (FastAPI)
+from fastapi import FastAPI, Request
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+limiter = Limiter(key_func=get_remote_address)  # rate limit by IP
+app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+@app.post(&#x27;/generate&#x27;)
+@limiter.limit(&#x27;10/minute&#x27;)   # max 10 requests/minute per IP
+async def generate(request: Request, prompt: str):
+    # LLM call here
+    return {&#x27;response&#x27;: f&#x27;Generated: {prompt[:50]}&#x27;}</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Rate limiting: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Rate limiting is the defense against two common problems: being blocked by third-party APIs (when you hit their rate limits, your pipeline fails), and being overwhelmed by your own users (when your LLM endpoint gets traffic spikes, costs explode and quality degrades for everyone). Building rate-limit-aware clients and rate-limited APIs is essential for production AI applications.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not implementing jitter in retry backoff — if 100 requests all hit the rate limit simultaneously and all wait exactly 2 seconds, they all retry simultaneously and hit the limit again. Jitter (random delay) spreads the retries over a time window.</li><li>Using in-memory rate limiting in a multi-process deployment — if your API runs 4 workers, each worker tracks its own counter. A user can make 40 requests/minute (10 per worker) while appearing to have made only 10 per worker. Use Redis for shared rate limiting across all workers.</li><li>Not communicating rate limit metadata to API consumers — include headers: `Retry-After`, `X-<code>RateLimit</code>-Limit`, `X-<code>RateLimit</code>-Remaining`, `X-<code>RateLimit</code>-Reset`. Well-designed APIs let clients proactively avoid hitting limits rather than discovering them through 429 errors.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement rate limiting for a production LLM API: (1) build a <code>FastAPI</code> endpoint that calls an LLM, (2) add slowapi rate limiting: 10 RPM per IP for the free tier, 100 RPM per API key for paid users, (3) implement client-side backoff: test with a script that sends 200 requests concurrently and measures how many succeed vs fail, (4) implement a token bucket in Redis that limits by tokens-per-minute (not just requests-per-minute): track input + output tokens for each user, reject if they exceed 50,000 TPM, (5) test the system under load: does it correctly limit at the configured threshold?</div>
     </div>
   </div>
 </section>
@@ -198,17 +363,51 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Observability</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Observability matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In LLM app architecture, learn Observability by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Observability in ML systems means having visibility into what the system is doing at every layer: data, models, and infrastructure. The three pillars of observability are: metrics (numerical measurements over time), logs (structured event records), and traces (request journeys across services). Without observability, ML system failures are invisible until they become catastrophic.</p><p>ML-specific metrics: prediction distribution (histogram of model output scores — shifts indicate concept drift or data quality issues), input feature distribution (monitor for training-serving skew — if production features differ from training features, model performance degrades), request latency (p50, p95, p99), error rate, throughput (requests/second), and business metrics (conversion rate, click-through rate — the ultimate measure of model value).</p><p>Concept drift detection: production model performance degrades when the data distribution changes. Monitor: prediction drift (KL divergence between training and production output distributions), feature drift (PSI — Population Stability Index — measures how much feature distributions have shifted), label drift (if you have delayed labels). Evidentlyai and Whylogs provide drift detection dashboards.</p><p>Structured logging for ML: log every prediction with: <code>request_id</code>, timestamp, <code>model_version</code>, input features (or input hash), prediction, confidence score, latency. This enables post-hoc debugging (why did the model predict X for this user?), drift detection, and error analysis. Use correlation IDs to trace a request through preprocessing, model inference, and postprocessing.</p><p>Alerting: set up alerts for: accuracy drop &gt; 5% (measured on labeled feedback), prediction distribution shift (PSI &gt; 0.2), p99 latency &gt; SLA, error rate &gt; 1%. Use Grafana, Prometheus, or <code>CloudWatch</code> for ML monitoring dashboards. Alert on trends (gradual degradation) not just thresholds (sudden failures).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a deployed churn prediction API. Explain how Observability affects latency, reliability, cost, privacy, monitoring, or rollback for real users.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Observability affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import logging
+import time
+import json
+from datetime import datetime
+# Structured logging for ML predictions
+logger = logging.getLogger(&#x27;ml_model&#x27;)
+handler = logging.FileHandler(&#x27;predictions.jsonl&#x27;)
+handler.setFormatter(logging.Formatter(&#x27;%(message)s&#x27;))
+logger.addHandler(handler)
+def predict_with_logging(model, features, request_id):
+    start = time.perf_counter()
+    prediction = model.predict([features])[0]
+    confidence = model.predict_proba([features])[0].max()
+    latency = (time.perf_counter() - start) * 1000
+    log_entry = {
+        &#x27;timestamp&#x27;: datetime.utcnow().isoformat(),
+        &#x27;request_id&#x27;: request_id,
+        &#x27;model_version&#x27;: model.version if hasattr(model, &#x27;version&#x27;) else &#x27;v1&#x27;,
+        &#x27;prediction&#x27;: int(prediction),
+        &#x27;confidence&#x27;: round(float(confidence), 4),
+        &#x27;latency_ms&#x27;: round(latency, 2),
+    }
+    logger.info(json.dumps(log_entry))
+    return prediction</code></pre><pre><code># Drift detection with evidently
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, ClassificationPreset
+# Compare training data distribution to recent production data
+report = Report(metrics=[DataDriftPreset(), ClassificationPreset()])
+report.run(reference_data=train_df, current_data=recent_prod_df)
+report.save_html(&#x27;drift_report.html&#x27;)
+# Check PSI for each feature
+for feature in train_df.columns:
+    drift = report.as_dict()[&#x27;metrics&#x27;][0][&#x27;result&#x27;][&#x27;drift_by_columns&#x27;][feature]
+    if drift[&#x27;drift_detected&#x27;]:
+        print(f&#x27;DRIFT DETECTED: {feature}, score={drift[&quot;drift_score&quot;]:.3f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Observability: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>ML systems fail silently in production — a model can be returning wrong predictions for days before anyone notices because there&#x27;s no error thrown, the service appears healthy, but business metrics are degrading. Observability is what makes silent failures visible. Without it, you&#x27;re flying blind.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Logging only errors, not predictions — to detect gradual drift, you need to monitor the distribution of all predictions, not just errors. Log every prediction (or a sampled fraction) with its features and confidence score.</li><li>Not monitoring business metrics alongside technical metrics — a model with good technical metrics (AUC, accuracy) but declining business metrics (conversion, engagement) is not working. Always connect ML metrics to business outcomes.</li><li>Alerting on noisy metrics without baselines — alerting when accuracy drops below 90% is meaningless without knowing the baseline. Establish a baseline period, compute μ and σ, and alert when metrics drop below μ - 3σ.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete ML observability system: (1) create a <code>FastAPI</code> serving endpoint that logs every prediction to a JSONL file with: timestamp, input features hash, prediction, confidence, latency, model version, (2) write a monitoring script that runs every hour: compute prediction distribution statistics, check for drift vs training distribution, log alerts, (3) simulate a concept drift event: after 1000 predictions, change the input data distribution, (4) implement a dashboard using Streamlit showing: prediction distribution over time, latency percentiles (p50/p95/p99), hourly request volume, drift alerts, (5) implement automatic retraining trigger: when PSI &gt; 0.2, trigger a retraining job.</div>
     </div>
   </div>
 </section>
@@ -220,17 +419,49 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Evals</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Evals is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Evals (evaluations) are systematic tests that measure whether an AI system behaves as intended. For LLM-based applications, automated tests replace traditional unit tests — instead of testing exact outputs, evals measure properties like accuracy, tone, safety, format compliance, and task completion. Building a comprehensive eval suite is the foundational practice of responsible LLM deployment.</p><p>Types of evals: (1) exact match — does the output exactly match the expected string? (low utility for LLMs, only for structured outputs), (2) reference-free — does the output have the right format/length/language? (regex, length checks), (3) model-based — use a stronger LLM to judge the output quality (LLM-as-a-judge), (4) human — human annotators rate outputs on quality, safety, and helpfulness, (5) task-specific — for code generation: does the code execute and pass tests? For summarization: ROUGE score vs reference summary.</p><p>LLM-as-a-judge: use a capable model (GPT-4, Claude) to evaluate another model&#x27;s outputs. Provide the judge with a rubric: &#x27;Rate this response 1-5 on helpfulness (does it directly answer the question?), accuracy (are facts correct?), and safety (does it avoid harmful content?)&#x27;. Return structured JSON. Meta-issue: the judge model may have biases — validate judge ratings against human ratings on a calibration set.</p><p>Eval dataset design: representative coverage (include all task types and difficulty levels), adversarial cases (edge cases, tricky inputs, jailbreak attempts), regression tests (cases where previous versions failed — if fixed, track that they stay fixed), and held-out test set (never use for prompt tuning, only for final evaluation). A good eval set for an LLM application has 100-500 examples covering the full range of use cases.</p><p>Running evals in CI/CD: run the eval suite automatically on every code change (prompt updates, model version changes, system prompt changes). Set quality gates: if eval scores drop &gt; 5%, block the change. This prevents regressions and makes prompt engineering systematic rather than informal. Use frameworks like promptfoo, <code>LangSmith</code>, or Braintrust for automated eval pipelines.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Evals. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from LLM app architecture where Evals is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from anthropic import Anthropic
+import json
+client = Anthropic()
+# LLM-as-a-judge eval
+def evaluate_response(question, answer, expected_behavior):
+    judge_prompt = f&quot;&quot;&quot;Evaluate this AI response.
+Question: {question}
+Response: {answer}
+Expected behavior: {expected_behavior}
+Rate 1-5 and return JSON: {{&quot;score&quot;: N, &quot;reason&quot;: &quot;...&quot;, &quot;pass&quot;: true/false}}&quot;&quot;&quot;
+    result = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;, max_tokens=200,
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: judge_prompt}]
+    )
+    return json.loads(result.content[0].text)
+# Example eval
+result = evaluate_response(
+    question=&#x27;What is 2+2?&#x27;,
+    answer=&#x27;2+2 equals 4.&#x27;,
+    expected_behavior=&#x27;Provide the correct numerical answer&#x27;
+)
+print(f&#x27;Score: {result[&quot;score&quot;]}/5, Pass: {result[&quot;pass&quot;]}\n{result[&quot;reason&quot;]}&#x27;)</code></pre><pre><code># Batch eval with summary statistics
+def run_eval_suite(test_cases, model_function):
+    results = []
+    for case in test_cases:
+        output = model_function(case[&#x27;input&#x27;])
+        verdict = evaluate_response(case[&#x27;input&#x27;], output, case[&#x27;expected_behavior&#x27;])
+        results.append({**case, &#x27;output&#x27;: output, &#x27;score&#x27;: verdict[&#x27;score&#x27;], &#x27;pass&#x27;: verdict[&#x27;pass&#x27;]})
+    df = pd.DataFrame(results)
+    print(f&#x27;Pass rate: {df.pass_.mean():.1%}&#x27;)
+    print(f&#x27;Mean score: {df.score.mean():.2f}/5&#x27;)
+    print(f&#x27;Failing cases:\n{df[~df.pass_][[&quot;input&quot;, &quot;output&quot;, &quot;score&quot;]].to_string()}&#x27;)
+    return df</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Evals, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Evals are what makes LLM application development rigorous rather than intuitive. Without evals, prompt changes are guesswork — you change the prompt and hope it gets better. With evals, you measure before and after: &#x27;changing from 300 to 500-word system prompt improved task completion from 78% to 89%, with no regression in safety&#x27;. Evals make AI engineering a discipline.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Evaluating only happy path cases — easy cases don&#x27;t stress the system. Include adversarial examples, edge cases, and known failure modes in your eval set.</li><li>Not versioning your eval set — if you improve the eval set to cover new cases, track which version you&#x27;re running against. Otherwise you can&#x27;t distinguish &#x27;model improved&#x27; from &#x27;eval set got easier&#x27;.</li><li>Using the same eval set for prompt engineering and testing — if you tune the prompt to score well on your eval set, the eval becomes an inflated benchmark, not a true measure of quality. Keep a held-out test set that you only use for final measurement.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a comprehensive eval suite for a customer support chatbot: (1) design 50 test cases covering: simple FAQs (10), complex multi-step questions (15), edge cases (10), boundary cases (10, e.g., requests outside scope), safety cases (5, e.g., requests for harmful content), (2) implement LLM-as-judge with rubric: helpfulness (1-5), accuracy (1-5), tone (1-5), (3) run evals on 3 versions of the system prompt — which version has the best score?, (4) implement CI eval: run the suite automatically when the system prompt changes, fail if mean score drops &gt; 0.3 points, (5) compute inter-rater agreement: have 2 different judge prompts rate the same outputs — what is the correlation?</div>
     </div>
   </div>
 </section>
@@ -242,17 +473,44 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Cost optimization</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Cost optimization is a concept inside LLM app architecture that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Cost optimization for LLM applications reduces API costs while maintaining quality. LLM API costs can grow linearly with usage — a feature that costs $100/day at 1,000 users costs $10,000/day at 100,000 users. Strategic optimization can reduce costs by 60-90% without significant quality degradation.</p><p>Model routing (cascade): use a cheap, fast model (Claude Haiku) for simple requests and route only complex requests to the expensive model (Claude Opus). Classification: before calling the LLM, use a fast classifier to estimate request complexity. Or use a two-stage approach: try Haiku first, if it returns &#x27;I&#x27;m not sure&#x27; or a low-confidence response, retry with Opus.</p><p>Prompt compression: system prompts that grew organically often contain redundant instructions. Audit your system prompt: is each sentence doing work? Removing 500 tokens from a system prompt that&#x27;s called 1M times/day saves 500M input tokens = $7,500/day at Claude Opus pricing. Use LLMLingua (Microsoft) for automated prompt compression.</p><p>Caching: identical or near-identical queries should return cached results rather than making a new API call. Exact caching: hash the full prompt and cache the response. Semantic caching: embed the query and retrieve cached responses for similar queries (using a vector database). Anthropic&#x27;s prompt caching feature reduces the cost of repeated system prompts by 90%.</p><p>Batching and async: for non-real-time workloads (offline analysis, batch classification), use the messages batching API (50% cost reduction). For real-time workloads, use async requests to maximize throughput without parallel API instances. Reduce output tokens by instructing the model to be concise: &#x27;Respond in maximum 2 sentences.&#x27;</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying LLM app architecture and needs to apply Cost optimization. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from LLM app architecture where Cost optimization is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+client = anthropic.Anthropic()
+# Prompt caching: cache repeated system prompts
+def call_with_caching(system_prompt: str, user_message: str) -&gt; str:
+    response = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;,
+        max_tokens=1024,
+        system=[{
+            &#x27;type&#x27;: &#x27;text&#x27;,
+            &#x27;text&#x27;: system_prompt,
+            &#x27;cache_control&#x27;: {&#x27;type&#x27;: &#x27;ephemeral&#x27;}  # Cache this block
+        }],
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: user_message}]
+    )
+    usage = response.usage
+    print(f&#x27;Input: {usage.input_tokens}, Cached: {usage.cache_read_input_tokens}, Output: {usage.output_tokens}&#x27;)
+    return response.content[0].text
+# Model routing
+def smart_route(query: str) -&gt; str:
+    # Simple heuristic: short queries → Haiku, complex → Sonnet/Opus
+    if len(query.split()) &lt; 20:  # Simple question
+        model = &#x27;claude-haiku-4-5-20251001&#x27;
+    elif len(query.split()) &lt; 100:  # Medium complexity
+        model = &#x27;claude-sonnet-4-6&#x27;
+    else:  # Complex/long context
+        model = &#x27;claude-opus-4-8&#x27;
+    response = client.messages.create(model=model, max_tokens=500, messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: query}])
+    return model, response.content[0].text</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Cost optimization, explain it in 5 to 8 lines, and connect it to LLM app architecture.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Cost optimization determines whether an AI feature is economically viable at scale. An unconstrained LLM integration that costs $0.10 per query is free to test but costs $100K/day at 1M daily users. Implementing model routing, caching, and prompt compression early prevents cost from becoming a scaling blocker. Understanding cost structure enables designing features that are quality-optimized within a cost budget.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Optimizing for cost without measuring quality impact — reducing costs by switching from Opus to Haiku for complex tasks may cut quality by 40%. Always A/B test quality with LLM judge evaluation before deploying cost optimizations.</li><li>Not measuring the actual cost savings from caching — semantic caching adds complexity. Measure cache hit rate in production — if it&#x27;s &lt; 20%, the cache is rarely saving money and the complexity may not be worth it.</li><li>Cutting system prompt too aggressively — removing safety instructions, format guidance, or examples from the system prompt to save tokens can produce inconsistent, unsafe, or malformatted outputs. Audit which parts of the system prompt are earning their token cost.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Optimize the cost of an LLM application: (1) baseline: measure current tokens per request and cost per request, (2) implement prompt caching for the system prompt — what fraction of tokens are cached after 10 minutes? (3) implement model routing: classify requests as simple/medium/complex, route to Haiku/Sonnet/Opus accordingly, (4) measure quality: run your evaluation set on both original (Opus only) and optimized (routed) — what is the quality-cost tradeoff? (5) implement semantic caching: store recent (query, response) pairs, retrieve similar responses for new queries — what is the cache hit rate?</div>
     </div>
   </div>
 </section>
@@ -264,17 +522,46 @@ Message: &quot;I want to cancel my plan&quot; </code></pre>
       <h2>Security design</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Security design matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In LLM app architecture, learn Security design by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Security design for AI systems addresses the unique threats that emerge when ML models and LLMs are deployed in production: adversarial attacks on models, data poisoning, model stealing, and the agent-specific threats of prompt injection and tool misuse. Standard web application security (OWASP Top 10) applies, plus AI-specific threats.</p><p>OWASP LLM Top 10: the OWASP working group maintains a list of the most critical LLM security risks: LLM01 — Prompt Injection (untrusted input hijacks LLM behavior), LLM02 — Insecure Output Handling (LLM output used in security-sensitive contexts without sanitization), LLM03 — Training Data Poisoning, LLM04 — Model Denial of Service, LLM05 — Supply Chain Vulnerabilities (third-party model or dataset risks).</p><p>Adversarial inputs for ML models: carefully crafted inputs that cause ML models to misclassify. For image classifiers: imperceptible pixel perturbations that cause a model to classify a cat as a dog with high confidence. For text classifiers: adding specific tokens that flip the classification. Defenses: adversarial training (include adversarial examples in training), input pre-processing (smoothing, denoising), and ensemble approaches.</p><p>API security for LLM services: authentication (API keys, OAuth), authorization (which users can access which models and features), input validation (maximum input length, content type checking), rate limiting (per user, per key), output sanitization (HTML encoding for web display, SQL parameterization for database queries from LLM output).</p><p>Secure system prompt practices: the system prompt is the most powerful security control in an LLM system. It defines the model&#x27;s role and constraints. Protect it: don&#x27;t expose it in error messages, don&#x27;t include credentials in it (use environment variables), test against prompt injection, and update it when new attack patterns emerge.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a deployed churn prediction API. Explain how Security design affects latency, reliability, cost, privacy, monitoring, or rollback for real users.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Security design affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Secure LLM API wrapper
+import anthropic
+import hashlib
+import time
+from typing import Optional
+client = anthropic.Anthropic()
+# Input validation
+def validate_user_input(text: str, max_length: int = 10000) -&gt; tuple[bool, str]:
+    if not text or not text.strip(): return False, &#x27;Empty input&#x27;
+    if len(text) &gt; max_length: return False, f&#x27;Input too long (max {max_length} chars)&#x27;
+    # Check for obvious injection patterns
+    injection_patterns = [&#x27;ignore previous&#x27;, &#x27;ignore all&#x27;, &#x27;new instructions&#x27;, &#x27;system:&#x27;, &#x27;assistant:&#x27;]
+    text_lower = text.lower()
+    for pattern in injection_patterns:
+        if pattern in text_lower: return False, f&#x27;Potential injection detected: {pattern}&#x27;
+    return True, &#x27;OK&#x27;
+# Rate limiting tracker
+request_log = {}  # {user_id: [(timestamp, tokens), ...]}
+def check_rate_limit(user_id: str, max_rpm: int = 10) -&gt; bool:
+    now = time.time(); cutoff = now - 60
+    user_requests = [t for t in request_log.get(user_id, []) if t &gt; cutoff]
+    request_log[user_id] = user_requests + [now]
+    return len(user_requests) &lt; max_rpm
+# Secure call
+def secure_llm_call(user_id: str, user_input: str) -&gt; Optional[str]:
+    valid, reason = validate_user_input(user_input)
+    if not valid: return f&#x27;Invalid input: {reason}&#x27;
+    if not check_rate_limit(user_id): return &#x27;Rate limit exceeded. Please try again later.&#x27;
+    response = client.messages.create(model=&#x27;claude-opus-4-8&#x27;, max_tokens=1024, messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: user_input}])
+    return response.content[0].text</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Security design: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>AI security is an emerging but critical field. LLM-powered applications introduce novel attack surfaces that traditional web security doesn&#x27;t address: prompt injection attacks can hijack agent behavior to exfiltrate data, adversarial inputs can fool classifiers in safety-critical applications, and model APIs can be abused for data exfiltration. Understanding OWASP LLM Top 10 and implementing defense-in-depth protects your AI application and the users who trust it.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating LLM output as trusted for downstream processing — if an LLM generates SQL to query a database, never execute it directly. Always use parameterized queries. If an LLM generates HTML, always sanitize before rendering. Treat LLM output as user input — it may be adversarially constructed.</li><li>Not penetration testing AI systems — standard web app pen testing (XSS, SQLi, CSRF) doesn&#x27;t cover LLM-specific attacks. Hire red teamers who specialize in AI security, or use AI red-teaming frameworks (<code>PyRIT</code> from Microsoft) to systematically probe for prompt injection and jailbreak vulnerabilities.</li><li>Exposing model name and version in API responses — revealing &#x27;I am claude-opus-4-8&#x27; gives attackers information for targeted jailbreak prompts known to work on specific model versions. Return only what users need: the response, not the model metadata.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Security audit an LLM application: (1) attempt 3 prompt injection attacks (via search result content, user profile input, and file content), (2) test 5 jailbreak patterns — does your system prompt prevent them? (3) implement input validation: maximum length, injection pattern detection, content type checking, (4) implement output sanitization: HTML escape all LLM outputs before rendering in a web page, (5) document a threat model: what are the 5 most likely attack scenarios for your specific application? What is the impact of each? What is your mitigation?</div>
     </div>
   </div>
 </section>

@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>RAG systems | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -30,7 +31,7 @@
       <header class="content-head">
         <span class="eyebrow">08 Generative AI and LLMs</span>
         <h1>RAG systems</h1>
-        <div class="meta"><span class="pill">Intermediate</span><span class="pill">2 weeks</span><span class="pill">Lesson 30</span></div>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">2 weeks</span><span class="pill">Lesson 34</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">RAG</span><span class="tag">Document loading</span><span class="tag">Chunking</span><span class="tag">Indexing</span><span class="tag">Retrieval</span><span class="tag">Query rewriting</span><span class="tag">Reranking</span><span class="tag">Context construction</span><span class="tag">Grounded generation</span><span class="tag">Citations</span><span class="tag">RAG evaluation</span><span class="tag">RAG failure modes</span></div>
       </header>
@@ -43,17 +44,17 @@
       <h2>RAG</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>RAG is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test RAG with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Retrieval-Augmented Generation (RAG) is a technique that combines information retrieval with language model generation. Instead of relying solely on the LLM&#x27;s parametric knowledge (what it memorized during training), RAG retrieves relevant documents from an external knowledge base at query time and provides them as context in the prompt. The LLM then generates a response grounded in those retrieved documents.</p><p>RAG solves two fundamental LLM limitations: knowledge cutoff (the LLM cannot know about events after its training data cutoff) and hallucination (the LLM makes up facts it doesn&#x27;t know). By providing accurate, up-to-date documents in the prompt, RAG grounds the LLM&#x27;s response in real information. The LLM&#x27;s role shifts from knowledge source to reasoning engine — it synthesizes the retrieved documents into a coherent answer.</p><p>The RAG pipeline has three stages: indexing (split documents into chunks, embed each chunk, store embeddings in a vector database), retrieval (embed the user query, find top-k most similar chunks from the vector database using approximate nearest-neighbor search), and generation (concatenate retrieved chunks with the query in the LLM prompt, generate a grounded response).</p><p>Advanced RAG techniques improve on naive RAG. Hybrid search combines dense vector search with sparse BM25 keyword search — capturing both semantic similarity and keyword relevance. Re-ranking applies a cross-encoder model to re-rank the top-k retrieved chunks by relevance to the query. Query expansion generates multiple query reformulations and retrieves for each, improving recall. Contextual compression extracts only the relevant sentences from each retrieved chunk rather than including the full chunk.</p><p>RAG evaluation uses RAGAS (Retrieval Augmented Generation Assessment): faithfulness (does the answer contain only information from retrieved docs?), answer relevance (does the answer actually address the question?), context precision (are the retrieved chunks relevant to the query?), and context recall (do the retrieved chunks contain the information needed to answer?). These four metrics give a comprehensive picture of RAG quality.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>A company policy assistant retrieves three relevant HR policy chunks before answering an employee&#x27;s leave question.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how RAG changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Index: for chunk in split_documents(docs): embedding = embed_model.encode(chunk); vector_store.add(embedding, chunk).</code></pre><pre><code>Retrieve: query_emb = embed_model.encode(user_query); top_chunks = vector_store.search(query_emb, k=5).</code></pre><pre><code>Generate: prompt = f&#x27;Answer the question using only the context below.\n\nContext:\n{chr(10).join(top_chunks)}\n\nQuestion: {user_query}\n\nAnswer:&#x27;</code></pre><pre><code>Call LLM: response = llm.complete(prompt). Return response.</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>RAG is the most impactful technique for building reliable, grounded LLM applications on private or specialized knowledge. Every enterprise LLM application — internal knowledge bases, document Q&amp;A, code search — uses RAG or a variant.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not chunking documents — embedding entire documents averages content across the whole document, making retrieval imprecise. Chunk into 256–512 token pieces with 50-token overlap.</li><li>Retrieving too many chunks — if you retrieve 20 chunks, the prompt may overflow the context window and the model loses precision. Retrieve 3–5 highly relevant chunks.</li><li>Not evaluating retrieval quality separately from generation quality — if retrieval is bad, generation cannot compensate. Evaluate both independently.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a RAG system on a collection of 50 Wikipedia articles on a topic of your choice. Index with sentence-<code>transformers</code> and <code>ChromaDB</code>. Build a question-answering interface. Create 20 test questions with ground truth answers. Measure: retrieval recall (does the correct chunk appear in top-5?), faithfulness (does the generated answer contain only information from retrieved docs?), and answer accuracy.</div>
     </div>
   </div>
 </section>
@@ -65,17 +66,42 @@
       <h2>Document loading</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Document loading is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Document loading is the first step of a RAG pipeline: reading documents from various sources and formats into a consistent text representation. Different document types require different loaders: PDFs (text extraction, handling multi-column layouts, extracting tables), Word documents (.docx), web pages (HTML parsing), CSV/Excel (tabular data), code files (preserve indentation and structure), and unstructured text files.</p><p><code>LangChain</code> document loaders: <code>PyPDFLoader</code> (text extraction from PDFs), <code>WebBaseLoader</code> (web scraping), <code>UnstructuredFileLoader</code> (handles many formats), <code>DirectoryLoader</code> (load all files from a directory), <code>GitHubLoader</code> (load code from repositories), S3FileLoader (load from AWS S3). Each loader returns Document objects with <code>page_content</code> (extracted text) and metadata (source, page number, last modified date).</p><p>PDF challenges: text-based PDFs (created by word processors) extract text reliably. Scanned PDFs (images of text) require OCR. PDFs with complex layouts (multi-column, tables, footnotes, headers/footers) require specialized extraction. pdfplumber handles tables well. pymupdf (fitz) is fast for text extraction. <code>unstructured.io</code> provides the most comprehensive extraction with layout understanding.</p><p>Chunking after loading: after loading, documents are typically long (a 100-page PDF = 50,000 words). These must be split into smaller chunks for embedding and retrieval. The key challenge: preserve semantic context at chunk boundaries. Use <code>RecursiveCharacterTextSplitter</code> with sentence-aware splitting, and always carry 50-100 token overlap between consecutive chunks to handle boundary cases.</p><p>Metadata preservation: document metadata (source file, page number, section heading, author, date) should be preserved through loading and chunking. When a retriever returns a chunk, you need to know exactly which document, page, and section it came from — for citation generation, quality auditing, and debugging.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>A policy assistant loads each PDF page with source filename, page number, section title, and extracted text so answers can point back to the original document.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Document loading is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader, DirectoryLoader
+from langchain_community.document_loaders import UnstructuredExcelLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+# Load PDF
+loader = PyPDFLoader(&#x27;document.pdf&#x27;)
+pages = loader.load()
+print(f&#x27;Loaded {len(pages)} pages&#x27;)
+for page in pages[:2]: print(f&#x27;Page {page.metadata[&quot;page&quot;]}: {len(page.page_content)} chars&#x27;)
+# Load directory of mixed formats
+dir_loader = DirectoryLoader(&#x27;.&#x27;, glob=&#x27;**/*.pdf&#x27;, loader_cls=PyPDFLoader, use_multithreading=True)
+docs = dir_loader.load()
+print(f&#x27;Loaded {len(docs)} document chunks from directory&#x27;)
+# Split into chunks
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100, add_start_index=True)
+chunks = splitter.split_documents(docs)
+print(f&#x27;{len(chunks)} chunks, avg length: {sum(len(c.page_content) for c in chunks)//len(chunks)} chars&#x27;)</code></pre><pre><code># Load web pages
+from langchain_community.document_loaders import WebBaseLoader
+urls = [&#x27;https://docs.python.org/3/library/collections.html&#x27;]
+web_loader = WebBaseLoader(urls)
+web_docs = web_loader.load()
+print(&#x27;Web page loaded:&#x27;, web_docs[0].metadata)
+# Load and extract tables from Excel
+excel_loader = UnstructuredExcelLoader(&#x27;data.xlsx&#x27;, mode=&#x27;elements&#x27;)
+elements = excel_loader.load()
+tables = [e for e in elements if e.metadata.get(&#x27;category&#x27;) == &#x27;Table&#x27;]
+for table in tables: print(table.page_content[:200])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Document loading, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Document loading is where most RAG failures originate. Poor extraction (garbled text from OCR, missing tables, lost structure) means the subsequent retrieval and generation steps are working with incomplete or corrupted information. Robust document loading is the foundation of reliable RAG.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using <code>PyPDFLoader</code> for scanned PDFs — <code>PyPDF</code> extracts text from text-based PDFs but produces empty strings for scanned PDFs (which are images). Use <code>unstructured.io</code> or pytesseract for OCR-based extraction.</li><li>Not preserving metadata during chunking — when splitting a 100-page PDF into 500 chunks, each chunk must know which page it came from. Pass documents (with metadata) to <code>text_splitter.split_documents()</code>, not raw strings to <code>split_text()</code>.</li><li>Loading the entire document as one chunk — passing a 50,000-word document to the embedding model (which has a 512-token limit) results in truncation. The embedding represents only the first 512 tokens, missing all subsequent content. Always split before embedding.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multi-format document ingestion pipeline: (1) load 3 document types: a PDF (technical manual), a web page, and a CSV, (2) compare extraction quality: extract text from a scanned PDF using pytesseract vs text PDF with <code>PyPDF</code> — what quality difference do you see?, (3) implement metadata enrichment: add extracted section headings as metadata to each chunk, (4) test edge cases: a PDF with tables, a PDF with multi-column layout, a web page with lots of <code>JavaScript</code>, (5) build a loader router: automatically choose the appropriate loader based on file extension and content type.</div>
     </div>
   </div>
 </section>
@@ -87,17 +113,36 @@
       <h2>Chunking</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Chunking is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Chunking is the process of splitting long documents into smaller segments (chunks) before embedding and indexing them in a vector store. This is necessary because: (1) embedding models have context window limits (typically 512 tokens), (2) smaller chunks provide more precise retrieval (a 100-word chunk about &#x27;attention mechanism&#x27; will rank higher for an attention query than a 5000-word chapter that mentions attention once), (3) the LLM context window limits how much retrieved text can be included in the prompt.</p><p>Fixed-size chunking: split every n tokens (or characters) with an optional overlap. Pros: simple, predictable chunk sizes. Cons: may split in the middle of a sentence, paragraph, or concept. overlap=50 tokens means consecutive chunks share 50 tokens — this ensures continuity at chunk boundaries and prevents important context from being split across chunks. Example: <code>chunk_size</code>=256 tokens, overlap=32 tokens.</p><p>Semantic chunking: split at natural semantic boundaries — sentence boundaries, paragraph breaks, section headings. spaCy&#x27;s sentencizer splits at sentence boundaries. Markdown splitter splits at ## headings. HTML splitter splits at tags. These produce variable-length chunks that preserve semantic units. The trade-off: some chunks may be too long for the embedding model or too short to be meaningful.</p><p>Recursive character text splitter (<code>LangChain</code> default): tries to split at the most natural boundary available, in order of preference: \n\n (paragraph), \n (newline), &#x27;. &#x27; (sentence), &#x27; &#x27; (word), &#x27;&#x27; (character). This produces chunks that respect document structure while enforcing a maximum size.</p><p>Optimal chunk size: depends on the use case. For dense factual documents (legal, medical): 128-256 tokens (precise retrieval of specific facts). For narrative documents (books, articles): 512-1024 tokens (preserves context). For code: split by function/class (variable size). Always evaluate retrieval quality at multiple chunk sizes — there is no single optimal size. Rule of thumb: match chunk size to the expected length of the relevant passage for your queries.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Split a handbook by headings into 400 to 800 token chunks with a small overlap, then keep page number and section metadata with every chunk.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Chunking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain.text_splitter import RecursiveCharacterTextSplitter
+# Recursive splitter — preserves semantic structure
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=512,       # max characters per chunk
+    chunk_overlap=64,     # overlap for continuity at boundaries
+    length_function=len,  # or use tiktoken for token counting
+    separators=[&#x27;\n\n&#x27;, &#x27;\n&#x27;, &#x27;. &#x27;, &#x27; &#x27;, &#x27;&#x27;]
+)
+document = open(&#x27;my_document.txt&#x27;).read()
+chunks = splitter.split_text(document)
+print(f&#x27;{len(chunks)} chunks, avg length: {sum(len(c) for c in chunks)/len(chunks):.0f} chars&#x27;)</code></pre><pre><code># Token-based splitting with tiktoken (for OpenAI embedding limits)
+import tiktoken
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+enc = tiktoken.get_encoding(&#x27;cl100k_base&#x27;)
+def token_count(text): return len(enc.encode(text))
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=256, chunk_overlap=32, length_function=token_count,
+)
+chunks = splitter.split_documents(documents)  # preserves metadata
+# Each chunk: {page_content: &#x27;...&#x27;, metadata: {source: &#x27;file.pdf&#x27;, page: 5}}</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Chunking, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Chunking strategy directly affects retrieval quality in RAG systems. Poor chunking (too large: imprecise retrieval; too small: loses context; splitting mid-sentence: incoherent chunks) is one of the most common causes of poor RAG performance. Thoughtful chunking is as important as embedding model choice.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using fixed character-based chunking without overlap — chunk at exactly 1000 characters means the last sentence of one chunk and first sentence of the next chunk are separated. A query spanning the boundary won&#x27;t find either chunk. Use overlap of 10-20% of chunk size.</li><li>Using the same chunk size for all document types — code should be chunked by function, markdown by section heading, legal documents by clause. Use document-type-aware chunking.</li><li>Not storing metadata with chunks — when a chunk is retrieved, you need to know: which document it came from, which page, what section. This is needed for citations, context expansion, and debugging. Always preserve and store metadata.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Evaluate chunking strategies on a RAG benchmark: (1) take a 50-page technical document (PDF), (2) chunk with: fixed 256 tokens (no overlap), fixed 256 tokens (32-token overlap), recursive splitter 256 tokens, sentence splitter, and paragraph splitter, (3) for each strategy: embed chunks with all-<code>MiniLM</code>-L6-v2, build FAISS index, (4) evaluate with 30 test queries: Recall@3 (is the relevant chunk in the top 3?), (5) visualize chunk size distribution for each strategy, (6) identify queries where different strategies give different results — what does each strategy retrieve?</div>
     </div>
   </div>
 </section>
@@ -109,17 +154,48 @@
       <h2>Indexing</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Indexing is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Indexing in the context of RAG systems is the process of computing embeddings for all document chunks and storing them in a vector database for fast similarity search. It is the offline step that prepares the knowledge base for online retrieval. Indexing is typically done once (or periodically when documents are updated), while retrieval happens at query time.</p><p>Indexing pipeline: (1) load documents from sources, (2) split into chunks (<code>chunk_size</code>=512 tokens, overlap=64 tokens), (3) compute embeddings for each chunk using a sentence encoder (all-<code>MiniLM</code>-L6-v2, text-embedding-3-small), (4) store (embedding vector, chunk text, metadata) in a vector database (Chroma, FAISS, Pinecone, Weaviate). Total cost: embedding computation (API cost or GPU time) + storage cost.</p><p>Incremental indexing: for large, frequently updated document collections, re-indexing everything from scratch is expensive. Implement incremental indexing: hash each document&#x27;s content, compare with the stored hash, only re-embed documents that have changed. This reduces indexing cost by 90%+ for collections where most documents are stable.</p><p>Index management: vector databases must be maintained. Operations: add (new documents), update (re-embed modified documents), delete (remove outdated documents). Most vector databases support these operations. Implement a document registry: store <code>document_id</code>, <code>content_hash</code>, <code>last_indexed_at</code>. Compare with current document state before indexing.</p><p>Indexing efficiency: embedding 100,000 chunks with a local model on GPU can be parallelized with batching. sentence-<code>transformers</code> <code>encode()</code> accepts a list of texts and computes embeddings in batches (<code>batch_size</code>=64 by default). For 100K chunks: batch encoding takes ~5 minutes on GPU vs ~30 minutes single-threaded. For production scale (millions of chunks): use distributed embedding pipelines (Apache Beam, Ray) or commercial APIs with high throughput.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>After embedding 5,000 support articles, store vectors plus tags like product, language, and last_updated so searches can filter before answering.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Indexing is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
+# Full indexing pipeline
+loader = DirectoryLoader(&#x27;./docs&#x27;, glob=&#x27;**/*.pdf&#x27;, loader_cls=PyPDFLoader)
+documents = loader.load()
+splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=64)
+chunks = splitter.split_documents(documents)
+print(f&#x27;Indexing {len(chunks)} chunks...&#x27;)
+embeddings = HuggingFaceEmbeddings(model_name=&#x27;all-MiniLM-L6-v2&#x27;, encode_kwargs={&#x27;batch_size&#x27;: 64})
+vectorstore = Chroma.from_documents(
+    documents=chunks, embedding=embeddings,
+    persist_directory=&#x27;./chroma_db&#x27;,
+    collection_name=&#x27;my_documents&#x27;
+)
+vectorstore.persist()
+print(f&#x27;Indexed {vectorstore._collection.count()} chunks&#x27;)</code></pre><pre><code># Incremental indexing
+import hashlib, json
+def get_doc_hash(doc_path):
+    return hashlib.sha256(open(doc_path, &#x27;rb&#x27;).read()).hexdigest()
+registry_path = &#x27;index_registry.json&#x27;
+try:
+    registry = json.load(open(registry_path))
+except FileNotFoundError:
+    registry = {}
+def needs_reindexing(doc_path):
+    current_hash = get_doc_hash(doc_path)
+    return registry.get(doc_path) != current_hash
+# Only re-index changed files
+docs_to_index = [f for f in all_doc_paths if needs_reindexing(f)]
+print(f&#x27;{len(docs_to_index)} docs need re-indexing&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Indexing, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Indexing quality determines RAG retrieval quality. A well-indexed knowledge base with appropriate chunking and embeddings provides relevant context for every query. A poorly indexed knowledge base (wrong chunking, low-quality embeddings, outdated documents) causes the retriever to return irrelevant or stale content, no matter how good the LLM.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Re-indexing everything on every document update — for a 10K document collection, full re-indexing takes 30+ minutes and costs significant API money. Implement content hashing and incremental indexing.</li><li>Not testing retrieval quality after indexing — after building the index, run 20 test queries and manually check the top-5 retrieved chunks. Are they relevant? If not, the chunking or embedding strategy needs adjustment.</li><li>Mixing documents from different languages in one index without language filtering — embedding models optimized for English produce poor embeddings for non-English text. Either use a multilingual model or create separate indices per language.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a production-grade indexing pipeline: (1) index a 50-document corpus with Chroma, (2) implement incremental indexing with content hashing, (3) test retrieval: compute Recall@5 for 30 test queries with known relevant chunks, (4) compare embedding models: all-<code>MiniLM</code>-L6-v2 vs all-mpnet-base-v2 — which gives better retrieval recall?, (5) implement document deletion: when a document is removed from the source, delete its chunks from the index, (6) measure indexing throughput: chunks/second on CPU vs GPU.</div>
     </div>
   </div>
 </section>
@@ -131,17 +207,34 @@
       <h2>Retrieval</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Retrieval is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Retrieval is the process of finding relevant context from a knowledge base given a query, as the &#x27;R&#x27; in RAG (Retrieval Augmented Generation). The retrieved context is provided to the LLM alongside the user&#x27;s question so the LLM can answer with up-to-date, specific, and grounded information rather than relying solely on its training data.</p><p>Dense retrieval (vector search): embed the query and find the most similar document chunks by cosine similarity of embeddings. Captures semantic similarity — &#x27;what is the capital of France?&#x27; retrieves &#x27;Paris is the capital of France.&#x27; even if the exact words &#x27;capital of France&#x27; don&#x27;t appear. Powered by bi-encoder models + FAISS/vector database.</p><p>Sparse retrieval (BM25/TF-IDF): classical term-frequency based retrieval. BM25 scores documents by the frequency of query terms, with saturation (diminishing returns for term repetition) and length normalization. Strong for: exact term matches, rare proper nouns, technical terminology, code identifiers. Returns zero for documents with no query term overlap.</p><p>Hybrid retrieval: combine dense and sparse scores using Reciprocal Rank Fusion (RRF) or a learned linear combination. Most production RAG systems use hybrid retrieval to get both semantic understanding (dense) and exact match (sparse). <code>OpenSearch</code>, Weaviate, Chroma, and <code>LangChain</code> all support hybrid retrieval.</p><p>Retrieval quality metrics: Context Recall (what fraction of the ground truth facts can be found in the retrieved context?), Context Precision (what fraction of the retrieved context is relevant to the question?). These are measured by the RAGAS framework. High context recall means the retriever is finding all relevant information. High context precision means it is not flooding the LLM with irrelevant context.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>For &#x27;How do I change my billing email?&#x27;, retrieval should return account settings and billing profile chunks, not generic login help.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Retrieval is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+embeddings = HuggingFaceEmbeddings(model_name=&#x27;all-MiniLM-L6-v2&#x27;)
+splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=64)
+docs = splitter.split_documents(loaded_docs)  # from document loaders
+vectorstore = Chroma.from_documents(docs, embeddings, persist_directory=&#x27;./chroma_db&#x27;)
+# Retrieve top-5 most relevant chunks
+retriever = vectorstore.as_retriever(search_type=&#x27;similarity&#x27;, search_kwargs={&#x27;k&#x27;: 5})
+results = retriever.invoke(&#x27;What is the attention mechanism?&#x27;)
+for doc in results:
+    print(doc.page_content[:200], &#x27;\n---&#x27;)</code></pre><pre><code># MMR retrieval: diverse results (Maximum Marginal Relevance)
+retriever_mmr = vectorstore.as_retriever(
+    search_type=&#x27;mmr&#x27;, search_kwargs={&#x27;k&#x27;: 5, &#x27;fetch_k&#x27;: 20, &#x27;lambda_mult&#x27;: 0.5}
+)
+# lambda_mult: 0=max diversity, 1=max relevance
+results_mmr = retriever_mmr.invoke(&#x27;What is the attention mechanism?&#x27;)
+# MMR returns 5 diverse results from the 20 most similar</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Retrieval, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Retrieval quality is the most critical factor in RAG system performance. A perfect LLM cannot compensate for poor retrieval — if the relevant information is not in the retrieved context, the LLM will either hallucinate or say &#x27;I don&#x27;t know&#x27;. Improving retrieval (better embeddings, chunking, hybrid search) typically provides more improvement than upgrading the LLM.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Retrieving too few chunks — with k=3, the retriever may miss relevant context. Start with k=5-10 and measure context recall. More chunks increase context recall at the cost of more noise in the prompt.</li><li>Not using MMR for diverse queries — with standard similarity retrieval, the top-5 results may be near-duplicate chunks from the same section. MMR ensures diversity by penalizing redundant results.</li><li>Not evaluating retrieval separately from generation — always measure context recall@k before optimizing generation. A retrieval recall of 60% creates a hard ceiling on answer accuracy that no amount of prompt engineering can overcome.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build and evaluate a RAG retriever: (1) load a technical manual (PDF/text), chunk and embed it, (2) implement 3 retrievers: similarity@5, similarity@10, MMR(k=5, <code>fetch_k</code>=20), (3) create 25 test question-answer pairs where the answer is grounded in the document, (4) for each retriever, compute: context recall (is the answer in the retrieved chunks?), context precision (how much of the retrieved text is relevant?), (5) implement hybrid retrieval (BM25 + dense with RRF) and compare all 4 approaches, (6) analyze failure cases: which questions does each retriever fail on and why?</div>
     </div>
   </div>
 </section>
@@ -153,17 +246,36 @@
       <h2>Query rewriting</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Query rewriting is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Query rewriting transforms the user&#x27;s original query into one or more better queries for retrieval. Users often ask questions in a way that is ambiguous (&#x27;how does it work?&#x27;), uses pronouns (&#x27;tell me more about it&#x27;), lacks context (follow-up questions in a conversation), or is too long/complex. Query rewriting improves retrieval precision by generating queries that better match the language and style of the indexed documents.</p><p><code>HyDE</code> (Hypothetical Document Embeddings): instead of embedding the query directly, use an LLM to generate a hypothetical document that would answer the query (&#x27;What would a document that answers this question look like?&#x27;), then embed that hypothetical document. The idea: the hypothetical document&#x27;s embedding is closer to relevant real documents than the sparse query&#x27;s embedding. For technical queries with sparse vocabulary, <code>HyDE</code> often significantly improves retrieval.</p><p>Multi-query retrieval: use an LLM to generate 3-5 alternative phrasings of the query, retrieve results for each, and merge the result sets. Example: query=&#x27;how does attention work?&#x27; → LLM generates: &#x27;attention mechanism in <code>transformers</code>&#x27;, &#x27;self-attention explanation&#x27;, &#x27;query key value computation&#x27;. Retrieve for each and union the results. This increases recall at the cost of more retrieval calls.</p><p>Step-back prompting: for complex multi-hop questions, generate a more general &#x27;step-back&#x27; question first. &#x27;What were the side effects of Drug X in the 2020 trial?&#x27; → step-back: &#x27;What are the trial results for Drug X?&#x27;. Retrieve for the general question first, then the specific. This helps when documents don&#x27;t directly match the specific query.</p><p>Contextual compression: instead of just retrieving full chunks, have an LLM extract only the relevant portion of each retrieved chunk. A 500-token chunk retrieved for &#x27;what is the learning rate?&#x27; may be mostly irrelevant — the LLM extracts only the 2 sentences about learning rate. This reduces prompt noise and improves answer accuracy.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>After the user asks &#x27;What about refunds?&#x27;, rewrite it to &#x27;refund policy for annual subscription cancellation&#x27; before searching documents.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Query rewriting is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain.retrievers import MultiQueryRetriever
+from langchain_openai import ChatOpenAI
+# Multi-query retriever
+llm = ChatOpenAI(model=&#x27;gpt-4o-mini&#x27;, temperature=0)
+multi_retriever = MultiQueryRetriever.from_llm(
+    retriever=vectorstore.as_retriever(search_kwargs={&#x27;k&#x27;: 5}),
+    llm=llm
+)
+# Generates 3 alternative queries, retrieves for each, deduplicates
+results = multi_retriever.invoke(&#x27;What is the attention mechanism?&#x27;)
+print(f&#x27;{len(results)} unique documents retrieved&#x27;)</code></pre><pre><code># HyDE: generate a hypothetical document, embed it
+from langchain.prompts import PromptTemplate
+hyde_prompt = PromptTemplate.from_template(
+    &#x27;Write a technical paragraph that would answer this question: {question}&#x27;
+)
+hyde_chain = hyde_prompt | ChatOpenAI(model=&#x27;gpt-4o-mini&#x27;) 
+hypothetical_doc = hyde_chain.invoke({&#x27;question&#x27;: &#x27;How does multi-head attention work?&#x27;})
+hyde_embedding = embeddings.embed_query(hypothetical_doc.content)
+# Search with hypothetical doc embedding instead of query embedding
+results = vectorstore.similarity_search_by_vector(hyde_embedding, k=5)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Query rewriting, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Query rewriting is one of the highest-ROI improvements for RAG systems. Users rarely phrase queries in a way that exactly matches indexed document language. Multi-query retrieval alone can improve context recall by 10-20% with minimal additional cost. <code>HyDE</code> is particularly effective for technical queries where the question uses different vocabulary than the answer.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Generating too many alternative queries — 3-5 is optimal. 10+ queries means more LLM calls (latency + cost) with diminishing recall improvement as queries become redundant.</li><li>Not deduplicating multi-query results — when merging results from 5 queries, the same chunk may appear multiple times. Deduplicate by document ID or content hash before passing to the LLM.</li><li>Applying <code>HyDE</code> to simple, direct queries — <code>HyDE</code> adds an extra LLM call (generate hypothetical doc). For simple queries like &#x27;what is an API key?&#x27;, direct embedding works just as well. Use <code>HyDE</code> for complex, technical, or terminology-heavy queries.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Benchmark query rewriting strategies on a RAG evaluation set: (1) build a RAG system over a technical documentation corpus, (2) implement: baseline (direct query embedding), multi-query (3 alternatives), <code>HyDE</code>, step-back, and query decomposition (break complex query into sub-questions), (3) evaluate each on 40 test questions: context recall@5, end-to-end answer quality (RAGAS), latency, cost (tokens), (4) identify question types where each strategy helps most (factual vs conceptual vs multi-hop), (5) design a router that selects the best strategy per question type.</div>
     </div>
   </div>
 </section>
@@ -175,17 +287,39 @@
       <h2>Reranking</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Reranking is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Reranking is the second stage of a two-stage retrieval pipeline: after the bi-encoder retrieves a candidate set of 50-100 documents quickly, a cross-encoder reranker rescores each document against the query with high accuracy. Reranking is critical because bi-encoder retrieval misses fine-grained relevance — it can retrieve semantically similar but not specifically relevant documents. The cross-encoder sees both query and document simultaneously, enabling much more precise relevance scoring.</p><p>Cross-encoder reranker: takes (query, document) pair and outputs a relevance score. Models like ms-marco-<code>MiniLM</code>-L-6-v2 are trained on the MS MARCO passage ranking dataset with 500K (query, relevant passage, non-relevant passage) triples. At inference: for each of the k retrieved candidates, run one forward pass and get a relevance score. Sort by score, take the top-n. Cost: k cross-encoder forward passes per query.</p><p>Cohere Rerank API: a commercial API endpoint for reranking. Faster to integrate than running a local cross-encoder. Input: query + list of documents. Output: relevance scores. Cohere Rerank 3 is state-of-the-art. Also available: Jina Reranker, <code>VoyageAI</code> Reranker, <code>mixedbread.ai</code> rerankers.</p><p>When reranking helps most: (1) when bi-encoder retrieval brings in many topically similar but not specifically relevant chunks, (2) for multi-hop questions where the relevant chunk discusses related concepts but uses different vocabulary, (3) for domain-specific retrieval where a general bi-encoder does not distinguish fine-grained domain relevance. When reranking adds cost without much benefit: simple factual queries where bi-encoder precision is already high.</p><p>Reranking in a full RAG pipeline: retrieve top-50 with bi-encoder (fast), rerank to top-5 with cross-encoder (accurate), use top-5 as context for LLM generation. The 50→5 funnel reduces prompt noise while the cross-encoder ensures the 5 best documents are selected. This architecture gives near-optimal retrieval accuracy with manageable latency (~100ms for cross-encoder over 50 docs).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Retrieve 30 chunks quickly, then rerank the top 30 and pass only the best 5 evidence chunks to the model.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Reranking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import CrossEncoder
+reranker = CrossEncoder(&#x27;cross-encoder/ms-marco-MiniLM-L-6-v2&#x27;)
+# After bi-encoder retrieval: top-50 candidates
+candidate_docs = vectorstore.similarity_search(query, k=50)
+# Score each with cross-encoder
+pairs = [(query, doc.page_content) for doc in candidate_docs]
+scores = reranker.predict(pairs)
+# Sort by score, take top-5
+import numpy as np
+top_5_idx = np.argsort(scores)[::-1][:5]
+reranked_docs = [candidate_docs[i] for i in top_5_idx]
+print(f&#x27;Top-5 after reranking:&#x27;)
+for i, doc in enumerate(reranked_docs):
+    print(f&#x27;{i+1}. [{scores[top_5_idx[i]]:.3f}] {doc.page_content[:100]}&#x27;)</code></pre><pre><code># Cohere Rerank (API)
+import cohere
+co = cohere.Client(&#x27;your-api-key&#x27;)
+results = co.rerank(
+    model=&#x27;rerank-english-v3.0&#x27;,
+    query=query,
+    documents=[doc.page_content for doc in candidate_docs],
+    top_n=5
+)
+reranked_docs = [candidate_docs[r.index] for r in results.results]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Reranking, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Reranking provides the most cost-effective accuracy improvement for RAG systems. A cross-encoder can distinguish between &#x27;BERT uses attention&#x27; (relevant to a question about attention) and &#x27;BERT&#x27;s training used attention to mask tokens&#x27; (less directly relevant) — the bi-encoder would score both similarly. Adding reranking typically improves end-to-end answer accuracy by 5-15%.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Retrieving too few candidates for the reranker — reranking only improves ranking within the candidate set. If the relevant document is not in the top-50 retrieved by the bi-encoder, the reranker cannot help. Always retrieve 5-10× more candidates than you need after reranking.</li><li>Using a general reranker for a specialized domain — a reranker trained on general web search (MS MARCO) may not correctly assess relevance for medical, legal, or code retrieval. Fine-tune a reranker on domain-specific data if available.</li><li>Not measuring reranker latency — cross-encoder inference is O(k) per query. For k=50 and a 6-layer cross-encoder, this adds ~50-100ms latency. Measure and budget for this in your system&#x27;s SLA.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Evaluate the reranking impact in a RAG pipeline: (1) build a RAG system over a technical corpus, (2) implement: bi-encoder-only (top-5), bi-encoder retrieve-100 + cross-encoder rerank to top-5, bi-encoder retrieve-100 + Cohere rerank to top-5, (3) evaluate on 50 test questions: context precision (how many of the top-5 are relevant?), answer accuracy (RAGAS <code>AnswerCorrectness</code>), latency, (4) ablation: vary the retrieval set size (10, 25, 50, 100) before reranking — at what point does increasing the retrieval set stop improving reranked precision?, (5) analyze failures: which questions does reranking fix vs miss?</div>
     </div>
   </div>
 </section>
@@ -197,17 +331,37 @@
       <h2>Context construction</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Context construction is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test Context construction with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Context construction is the process of assembling the retrieved chunks into the context window provided to the LLM for generation. This is not just concatenation — how you format, order, and select chunks significantly affects the quality of LLM responses. The goal: provide all necessary information in a format the LLM can effectively use, without exceeding the context window limit.</p><p>Context window budget: modern LLMs have large context windows (GPT-4: 128K, Claude 3: 200K) but using more context costs more tokens (money + latency). For every query, decide: how many chunks (typically 3-10), how to format them (with headers? document titles? page numbers?), and whether to compress them (extract only relevant sentences).</p><p>Lost in the middle effect: LLMs pay more attention to information at the beginning and end of the context window than information in the middle. If you have 10 retrieved chunks, put the most relevant chunk first and second-most-relevant last, with less relevant chunks in the middle. Alternatively, use contextual compression to trim less relevant chunks before inclusion.</p><p>Context formatting: include metadata with each chunk — document title, page number, section heading. Example: &#x27;---\nSource: Annual Report 2023, Section 4: Revenue\nPage: 47\n---\n[chunk text]&#x27;. This helps the LLM attribute information to sources and enables citation generation.</p><p>Context deduplication: when using multi-query retrieval, the same chunk may appear multiple times in the retrieved set. Deduplicate by content hash or source+position before constructing the context. Including the same chunk twice wastes context budget and can confuse the LLM.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Place system rules first, then the user&#x27;s question, then clearly labeled evidence snippets with source IDs, then require the answer to cite source IDs.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Context construction changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>def build_context(retrieved_docs, max_tokens=2000):
+    &quot;&quot;&quot;Assemble retrieved docs into a formatted context string.&quot;&quot;&quot;
+    context_parts = []
+    token_count = 0
+    for i, doc in enumerate(retrieved_docs):
+        header = f&#x27;---\nSource {i+1}: {doc.metadata.get(&quot;source&quot;, &quot;unknown&quot;)}\nPage: {doc.metadata.get(&quot;page&quot;, &quot;N/A&quot;)}\n---&#x27;
+        text = doc.page_content
+        part_tokens = len(text.split()) * 1.3  # rough token estimate
+        if token_count + part_tokens &gt; max_tokens:
+            break
+        context_parts.append(f&#x27;{header}\n{text}&#x27;)
+        token_count += part_tokens
+    return &#x27;\n\n&#x27;.join(context_parts)</code></pre><pre><code>from langchain.prompts import ChatPromptTemplate
+prompt = ChatPromptTemplate.from_template(
+    &#x27;Answer the question based only on the following context.\n\n&#x27;
+    &#x27;Context:\n{context}\n\n&#x27;
+    &#x27;Question: {question}\n\n&#x27;
+    &#x27;Answer: If the context does not contain the answer, say &quot;I cannot find this information in the provided context.&quot;&#x27;
+)
+chain = ({&#x27;context&#x27;: retriever | format_docs, &#x27;question&#x27;: RunnablePassthrough()} | prompt | llm | StrOutputParser())
+response = chain.invoke(&#x27;What is the refund policy?&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Context construction. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Context construction is where retrieval meets generation. Even with perfect retrieval, a poorly constructed prompt (wrong ordering due to lost-in-the-middle, missing metadata, redundant chunks, truncated chunks) can degrade answer quality. Thoughtful context construction extracts maximum value from retrieved information.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Truncating chunks at a hard token limit mid-sentence — the last retrieved chunk may be cut off in the middle of a sentence, making it incoherent. Truncate at sentence boundaries or use a soft limit (include the chunk if adding it doesn&#x27;t exceed 110% of the limit).</li><li>Not including source metadata — the LLM cannot provide citations if it doesn&#x27;t know which document each chunk came from. Always include source, page, and section metadata.</li><li>Including too many redundant chunks — 10 chunks from the same section all saying slightly different things about the same topic overwhelm the LLM with redundant context. Use MMR retrieval or cross-encoder reranking to select diverse, relevant chunks.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an advanced context construction module: (1) implement context formatting with metadata (source, page, section), (2) implement <code>max_tokens</code> budget enforcement with sentence-boundary truncation, (3) implement deduplication of chunks that are &gt; 80% similar (by Jaccard similarity), (4) implement the &#x27;lost in the middle&#x27; mitigation: sort by relevance score, place highest relevance first and second-highest last, (5) evaluate: does ordered context (most relevant first) outperform unordered (retrieval order) on 30 test questions? Does deduplication improve or hurt performance?</div>
     </div>
   </div>
 </section>
@@ -219,17 +373,36 @@
       <h2>Grounded generation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Grounded generation is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Grounded generation is the process of generating LLM responses that are strictly based on the provided context, with citations to the source material. The goal is to prevent hallucination: every factual claim in the response should be traceable to a specific retrieved chunk. Grounded generation is the &#x27;G&#x27; part of RAG — not just Retrieval Augmented Generation, but strictly grounded generation.</p><p>Prompt engineering for grounding: the system prompt must explicitly instruct the LLM to: (1) only use information from the provided context, (2) say &#x27;I cannot find this information in the context&#x27; if the answer is not present, (3) cite specific sources for each claim. Without these instructions, LLMs will supplement context information with training knowledge, producing accurate-sounding but potentially hallucinated responses.</p><p>Citation generation: ask the LLM to output not just the answer but also the specific chunk number (Source 1, Source 3) that supports each statement. Post-process the response to hyperlink citations to the original document. This makes responses verifiable — users can check each claim against the source.</p><p>Faithfulness evaluation: RAGAS&#x27;s Faithfulness metric measures whether every claim in the generated response can be traced to the retrieved context. LLM-as-a-judge approach: ask an LLM to decompose the answer into individual claims, then verify each claim against the context. A faithfulness score of 0.9 means 90% of claims in the response are supported by the context.</p><p>Anti-hallucination techniques: (1) lower temperature (temperature=0 for factual queries), (2) instruct to say &#x27;I don&#x27;t know&#x27; rather than guess, (3) use structured output with required &#x27;sources&#x27; field, (4) implement post-generation verification: automatically check each claim in the response against the retrieved chunks, flag unsupported claims.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>If no retrieved policy mentions relocation allowance, the assistant should say it cannot find the answer in the provided documents.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Grounded generation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>grounded_prompt = &quot;&quot;&quot;You are a precise information retrieval assistant. Answer the question ONLY using the provided context. Do not use any prior knowledge.
+
+For each statement you make, cite the source: e.g., [Source 1], [Source 2].
+If the context does not contain the answer, say: &#x27;The provided context does not contain information about this topic.&#x27;
+
+Context:
+{context}
+
+Question: {question}
+
+Answer (with citations):&quot;&quot;&quot;
+response = llm.invoke(grounded_prompt.format(context=context, question=question))
+print(response)</code></pre><pre><code># Faithfulness evaluation with RAGAS
+from ragas.metrics import faithfulness, answer_relevancy, context_recall
+from ragas import evaluate
+from datasets import Dataset
+data = {&#x27;question&#x27;: questions, &#x27;answer&#x27;: answers, &#x27;contexts&#x27;: retrieved_contexts, &#x27;ground_truth&#x27;: ground_truths}
+dataset = Dataset.from_dict(data)
+results = evaluate(dataset, metrics=[faithfulness, answer_relevancy, context_recall])
+print(results)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Grounded generation, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Grounded generation is what makes RAG trustworthy in high-stakes applications: customer support, legal research, medical information, financial analysis. Without strict grounding, an RAG system might retrieve the correct document but then generate a response that mixes retrieved facts with hallucinated details. Citation support makes every claim verifiable.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not instructing the LLM to cite sources — without explicit citation instructions, LLMs blend context and training knowledge seamlessly, making it impossible to distinguish grounded from hallucinated statements.</li><li>Using high temperature for factual queries — temperature &gt; 0.3 increases creative generation but also increases hallucination. For factual RAG queries, use temperature=0.</li><li>Not distinguishing &#x27;I don&#x27;t know&#x27; from a wrong answer — an LLM that says &#x27;I cannot find this in the context&#x27; is more trustworthy than one that confidently hallucinates. Reward the model for appropriate uncertainty.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a grounded Q&amp;A evaluator: (1) implement a grounded generation pipeline that produces answers with source citations, (2) create 20 test questions where half are answerable from the document and half are not, (3) for the answerable questions: measure faithfulness (use RAGAS or implement manually — decompose answer into claims, verify each against context), (4) for unanswerable questions: measure whether the system correctly says &#x27;I don&#x27;t know&#x27; vs hallucinating an answer, (5) implement an automated faithfulness checker: for each generated claim, highlight in yellow if not directly supported by retrieved context.</div>
     </div>
   </div>
 </section>
@@ -241,17 +414,42 @@
       <h2>Citations</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Citations is a concept inside RAG systems that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Citations in RAG systems let users verify that each claim in the generated response is grounded in a specific retrieved document. Citations transform RAG from a &#x27;trust me&#x27; system into a verifiable one: instead of &#x27;the contract renewal fee is $500&#x27; you get &#x27;the contract renewal fee is $500 [Source: MSA_2024.pdf, Section 3.2, Page 7]&#x27;. This is essential for regulated industries and for building user trust.</p><p>Citation generation strategies: (1) source attribution in prompt — include source labels in the context and instruct the model to cite them: &#x27;Use [Source 1], [Source 2] in your response to cite specific claims&#x27;. (2) Post-hoc citation matching — generate the response, then match each claim to the most similar retrieved chunk using semantic search. (3) Structured output — require the model to return JSON with claims and their <code>source_ids</code> separately, then render with citations.</p><p>Source labeling: format each retrieved chunk with a clear source label: &#x27;--- [Source 3: Annual Report 2023, Section Revenue, Page 47] ---\n[chunk text]&#x27;. The model can then reference [Source 3] in its response. Include enough metadata for the user to find the original document: file name, page, section heading.</p><p>Citation rendering: map citation references ([Source 3]) to clickable links or expandable quotes in the UI. When a user clicks [Source 3], show the relevant chunk highlighted in the original document. This makes the system fully auditable.</p><p>Citation accuracy evaluation: automatic evaluation of citation accuracy — does each citation actually support the claim? — requires an LLM to judge. For each (claim, cited chunk) pair, ask a judge model: &#x27;Does this document excerpt support this claim?&#x27; Return a faithfulness score. Low scores mean the model is citing irrelevant chunks or generating claims not in any cited source.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>An answer about leave policy cites &#x27;employee-handbook.pdf, page 18&#x27; next to the sentence that states the rule.</p>
-        <ol><li>Set up a small realistic scenario from RAG systems where Citations is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>def build_cited_context(retrieved_docs):
+    context_parts = []
+    for i, doc in enumerate(retrieved_docs, 1):
+        source = doc.metadata.get(&#x27;source&#x27;, &#x27;Unknown&#x27;)
+        page = doc.metadata.get(&#x27;page&#x27;, &#x27;N/A&#x27;)
+        header = f&#x27;[Source {i}: {source}, Page {page}]&#x27;
+        context_parts.append(f&#x27;{header}\n{doc.page_content}&#x27;)
+    return &#x27;\n\n---\n\n&#x27;.join(context_parts)
+cited_system = &#x27;Answer using ONLY the provided sources. Cite each claim with [Source N]. If the answer is not in the sources, say so.&#x27;
+context = build_cited_context(retrieved_docs)
+prompt = f&#x27;Context:\n{context}\n\nQuestion: {user_question}&#x27;
+response = client.messages.create(
+    model=&#x27;claude-opus-4-8&#x27;, max_tokens=1024,
+    system=cited_system,
+    messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: prompt}]
+)
+print(response.content[0].text)</code></pre><pre><code># Parse citations from response
+import re
+def parse_citations(response_text, retrieved_docs):
+    citations = re.findall(r&#x27;\[Source (\d+)\]&#x27;, response_text)
+    cited_sources = []
+    for c in set(citations):
+        idx = int(c) - 1
+        if 0 &lt;= idx &lt; len(retrieved_docs):
+            cited_sources.append({&#x27;citation_num&#x27;: c, &#x27;source&#x27;: retrieved_docs[idx].metadata.get(&#x27;source&#x27;), &#x27;page&#x27;: retrieved_docs[idx].metadata.get(&#x27;page&#x27;), &#x27;text&#x27;: retrieved_docs[idx].page_content[:200]})
+    return cited_sources</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Citations, explain it in 5 to 8 lines, and connect it to RAG systems.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Citations are the accountability layer of RAG systems. In high-stakes domains — legal, medical, financial — every claim must be verifiable. Citations also help users build trust incrementally: seeing that a claim is supported by a specific page in a specific document is far more convincing than a confident-sounding response with no backing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Generating citations without verifying they support the claim — the model may cite [Source 3] for a claim that appears in a completely different chunk. Always build an automated citation accuracy checker.</li><li>Using citation numbers that don&#x27;t match the context — if the context says &#x27;[Source 1]&#x27; but the model generates &#x27;[Document 3]&#x27;, citations don&#x27;t match. Standardize the citation format in both the context and the instruction.</li><li>Not including enough metadata in the source label — &#x27;[Source 3]&#x27; is not useful if the user doesn&#x27;t know what document it is. Include file name, page number, section title.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a citation-grounded Q&amp;A system: (1) implement the cited context builder with source labels, (2) generate responses that include citations for every factual claim, (3) implement citation parsing: extract all citation references from the response, (4) implement citation verification: for each (claim, <code>cited_source</code>) pair, use an LLM judge to verify the source actually supports the claim (return 0-1 faithfulness score), (5) build a UI that shows the response with clickable citations — clicking a citation highlights the relevant passage in the source document.</div>
     </div>
   </div>
 </section>
@@ -263,17 +461,37 @@
       <h2>RAG evaluation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>RAG evaluation is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test RAG evaluation with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>RAG evaluation requires measuring both the retrieval component and the generation component independently, as failures can occur at either stage. The key metrics: Context Recall, Context Precision (retrieval quality), Faithfulness, Answer Relevancy, Answer Correctness (generation quality). The RAGAS framework provides automated LLM-based evaluation for all of these.</p><p>Context Recall: what fraction of the ground truth answer&#x27;s information can be found in the retrieved context? Context Recall = 1.0 means all the information needed to answer is in the retrieved chunks. Context Recall &lt; 0.8 indicates the retriever is missing important information — improving chunking, embedding, or retrieval strategy will help.</p><p>Context Precision: what fraction of the retrieved chunks are actually relevant to the question? Context Precision = 1.0 means every retrieved chunk is relevant. Context Precision &lt; 0.7 means the retriever is bringing in too much noise — the LLM must sift through irrelevant context, increasing the chance of mistakes.</p><p>Faithfulness: what fraction of the generated answer&#x27;s claims are supported by the retrieved context? Faithfulness &lt; 1.0 indicates hallucination — the model is adding information not present in the context. For high-stakes applications, target Faithfulness &gt; 0.95.</p><p>Answer Correctness: how similar is the generated answer to the ground truth answer? Computed as a combination of semantic similarity and factual overlap. This is the end-to-end quality metric that combines retrieval and generation quality. Build a test set of 50-100 (question, <code>ground_truth_answer</code>) pairs for reliable evaluation.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Create 50 question-answer pairs from documents, record expected source chunks, then test recall@k, citation correctness, and unsupported claims.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how RAG evaluation changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># RAGAS evaluation framework
+from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_recall, context_precision, answer_correctness
+from datasets import Dataset
+# Build evaluation dataset
+eval_data = {
+    &#x27;question&#x27;: questions,           # list of query strings
+    &#x27;answer&#x27;: generated_answers,     # list of RAG-generated answers
+    &#x27;contexts&#x27;: retrieved_contexts,  # list of lists of retrieved chunks
+    &#x27;ground_truth&#x27;: true_answers,    # list of reference answers
+}
+dataset = Dataset.from_dict(eval_data)
+# Evaluate all metrics
+results = evaluate(dataset, metrics=[faithfulness, answer_relevancy, context_recall, context_precision, answer_correctness])
+print(results.to_pandas())</code></pre><pre><code># Manual eval: LLM as judge
+eval_prompt = &#x27;&#x27;&#x27;Given the question, context, and generated answer, rate on a scale 1-5:
+- Faithfulness: is every claim in the answer supported by the context? (1=many unsupported claims, 5=fully grounded)
+- Relevance: does the answer actually address the question? (1=off-topic, 5=directly answers)
+Question: {question}\nContext: {context}\nAnswer: {answer}\nReturn JSON: {{&quot;faithfulness&quot;: N, &quot;relevance&quot;: N, &quot;explanation&quot;: &quot;...&quot;}}&#x27;&#x27;&#x27;
+# Call LLM for each sample, collect scores
+</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG evaluation. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Without systematic evaluation, RAG improvements are guesswork. Evaluating retrieval and generation separately identifies where the system is failing: if context recall is high but faithfulness is low, the retriever is working but the LLM is hallucinating. If context recall is low, fix the retriever first. Systematic evaluation enables data-driven RAG improvement.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Evaluating only end-to-end accuracy — if the final answer is wrong, is it because retrieval failed or generation failed? Separate evaluation identifies the bottleneck.</li><li>Building a small evaluation set (&lt; 30 questions) — with a 10-question eval set, a 10% improvement is just 1 question. Use at least 50-100 questions for reliable measurement of improvements.</li><li>Not including unanswerable questions in the evaluation set — a RAG system that always tries to answer (even when the information is not in the corpus) looks artificially good on answerable questions. Include 20-30% unanswerable questions and measure abstention rate.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a comprehensive RAG evaluation pipeline: (1) create a 60-question test set: 40 answerable (information in corpus) + 20 unanswerable, (2) for each answerable question, provide the ground truth answer and the specific source chunk containing the answer, (3) run your RAG pipeline and collect: retrieved contexts, generated answers, (4) compute RAGAS metrics: context recall, context precision, faithfulness, answer correctness, (5) identify: which question types are most problematic? Which retrieval failures cause generation failures? (6) implement a regression test: after any change, run the eval set and alert if any metric drops &gt; 5%.</div>
     </div>
   </div>
 </section>
@@ -285,17 +503,32 @@
       <h2>RAG failure modes</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>RAG failure modes is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In RAG systems, test RAG failure modes with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>RAG systems fail in predictable, diagnosable ways. Understanding the failure modes helps you build more robust systems and debug effectively when RAG output quality is poor. The major failure modes map to different stages of the pipeline: document ingestion, retrieval, and generation.</p><p>Failure mode 1 — Retrieval failure (low context recall): the correct information is in the knowledge base but the retriever fails to retrieve it. Causes: chunking strategy splits the relevant information across chunk boundaries, embedding model produces poor representations for domain-specific terminology, query vocabulary doesn&#x27;t match document vocabulary. Fixes: better chunking (overlap, semantic splitting), domain-specific embedding models, query rewriting (multi-query, <code>HyDE</code>).</p><p>Failure mode 2 — Context contamination (low context precision): the retriever returns irrelevant chunks alongside relevant ones, confusing the LLM. Causes: dense retrieval returns topically related but not specifically relevant chunks, embedding model conflates similar topics. Fixes: reranking (cross-encoder), metadata filtering (filter by date, document type), hybrid search (BM25 + dense for exact match precision).</p><p>Failure mode 3 — Hallucination despite context: the LLM generates claims not supported by the retrieved context. Causes: insufficient grounding instructions in the system prompt, LLM defaulting to training knowledge when context is unclear, context window too long (lost in the middle effect). Fixes: stronger grounding instructions (&#x27;ONLY use the provided context&#x27;), shorter context (reranking to top-3), faithfulness evaluation with automated checking.</p><p>Failure mode 4 — Stale knowledge: retrieved documents are outdated, and the system returns outdated information confidently. Fix: include document date in metadata, filter by recency, display document date alongside citations. Failure mode 5 — Context window overflow: the retrieved context + prompt exceeds the LLM&#x27;s context limit, causing truncation. Fix: contextual compression (extract only relevant sentences from each chunk), aggressive reranking to top-5.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>If a benefits policy changed last month but the vector index was not rebuilt, the assistant can confidently answer with the old policy.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how RAG failure modes changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Diagnostic framework: test each failure mode
+def diagnose_rag_failure(question, retrieved_docs, generated_answer, ground_truth):
+    diagnostics = {}
+    # Test 1: Is the answer in the retrieved context?
+    context_text = &#x27; &#x27;.join(d.page_content for d in retrieved_docs)
+    answer_in_context = any(phrase in context_text for phrase in ground_truth.split()[:5])
+    diagnostics[&#x27;retrieval_failure&#x27;] = not answer_in_context
+    # Test 2: Is the answer faithful to context?
+    if generated_answer and context_text:
+        # Use LLM to check faithfulness
+        faithfulness_check = check_faithfulness_with_llm(generated_answer, context_text)
+        diagnostics[&#x27;hallucination&#x27;] = faithfulness_check &lt; 0.8
+    # Test 3: Did truncation occur?
+    total_context_length = sum(len(d.page_content) for d in retrieved_docs)
+    diagnostics[&#x27;context_overflow&#x27;] = total_context_length &gt; 100000
+    return diagnostics</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG failure modes. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>RAG systems are complex pipelines where failures can originate at any stage. Without a systematic understanding of failure modes, debugging is guesswork. Knowing the 5 major failure modes turns debugging into a structured diagnostic process: measure context recall (failure mode 1?), context precision (failure mode 2?), faithfulness (failure mode 3?).</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Blaming the LLM for failures that are actually retrieval failures — if the retrieved context doesn&#x27;t contain the answer, the LLM cannot give a correct answer even with a perfect prompt. Always diagnose retrieval quality before changing the generation prompt.</li><li>Not building an automated failure detection system — manually checking every response for failures doesn&#x27;t scale. Implement automated scoring: RAGAS for all 5 metrics, running daily against a test set of known Q&amp;A pairs.</li><li>Treating all failures equally — a hallucination failure is more serious than a retrieval failure: the system is confidently wrong. Prioritize reducing hallucination (failure mode 3) before optimizing retrieval recall (failure mode 1).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a RAG failure mode diagnostic tool: (1) build a test set of 40 questions with ground truth answers and source citations, (2) for each question, measure: context recall (is the answer in retrieved docs?), faithfulness (is the answer grounded in context?), (3) deliberately trigger each failure mode: (a) modify chunking to split across relevant boundaries → retrieval failure, (b) add irrelevant chunks to context → contamination, (c) remove grounding instructions → hallucination, (4) for each trigger: confirm the diagnostic metric detects the failure, (5) implement a RAG health dashboard showing all 5 failure mode rates over time.</div>
     </div>
   </div>
 </section>

@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>SQL and data pipelines | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -30,7 +31,7 @@
       <header class="content-head">
         <span class="eyebrow">09 Data Engineering for AI</span>
         <h1>SQL and data pipelines</h1>
-        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 34</span></div>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 38</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">SQL</span><span class="tag">SELECT WHERE GROUP BY</span><span class="tag">Joins</span><span class="tag">Window functions concept</span><span class="tag">ETL</span><span class="tag">ELT</span><span class="tag">Batch pipelines</span><span class="tag">Streaming pipelines</span><span class="tag">Kafka</span><span class="tag">Data validation</span><span class="tag">Data quality checks</span><span class="tag">Dataset versioning</span></div>
       </header>
@@ -43,20 +44,21 @@
       <h2>SQL</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>SQL should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In SQL and data pipelines, connect SQL to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>SQL (Structured Query Language) is the standard language for interacting with relational databases. For data scientists, SQL is essential for: extracting the training dataset from production databases, writing feature engineering logic that runs at scale in the database, analyzing model predictions in business context, and joining data from multiple tables. In industry, data scientists spend 30–50% of their time writing SQL.</p><p>The fundamental SQL query structure: SELECT columns FROM table WHERE condition GROUP BY columns HAVING <code>group_condition</code> ORDER BY columns LIMIT n. SELECT specifies which columns. FROM specifies the table. WHERE filters rows before aggregation. GROUP BY aggregates over groups. HAVING filters groups after aggregation. ORDER BY sorts the result. LIMIT caps the number of rows returned. These clauses always execute in this order (WHERE before GROUP BY, HAVING after).</p><p>Aggregation functions: COUNT(*) counts rows, COUNT(col) counts non-null values, SUM(col), AVG(col), MIN(col), MAX(col), STDDEV(col). Combined with GROUP BY: SELECT category, COUNT(*), AVG(price), MAX(price) FROM products GROUP BY category — computes statistics per category. HAVING filters groups: HAVING COUNT(*) &gt; 100 — keep only categories with more than 100 products.</p><p>JOINs combine data from multiple tables. INNER JOIN keeps only rows with matches in both tables. LEFT JOIN keeps all rows from the left table, filling NULLs for right table columns where no match exists. RIGHT JOIN is the mirror of LEFT JOIN. FULL OUTER JOIN keeps all rows from both tables. In ML: join training features from multiple source tables. Watch for row multiplication from one-to-many joins — use SELECT DISTINCT or aggregate to avoid duplicates.</p><p>Window functions compute aggregated values over a &#x27;window&#x27; of rows related to the current row, without collapsing groups. <code>ROW_NUMBER()</code> OVER (PARTITION BY <code>user_id</code> ORDER BY <code>event_time</code>) assigns sequential numbers within each user&#x27;s events. LAG(<code>event_time</code>, 1) OVER (PARTITION BY <code>user_id</code> ORDER BY <code>event_time</code>) gets the previous event time for each row. SUM(amount) OVER (PARTITION BY <code>user_id</code> ORDER BY <code>event_time</code> ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) computes a running total per user.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses SQL to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply SQL in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Basic query: SELECT customer_id, COUNT(*) AS order_count, AVG(total_amount) AS avg_order, SUM(total_amount) AS total_spend FROM orders WHERE order_date &gt;= &#x27;2024-01-01&#x27; GROUP BY customer_id HAVING COUNT(*) &gt;= 5 ORDER BY total_spend DESC LIMIT 100;</code></pre><pre><code>JOIN: SELECT u.user_id, u.email, COUNT(o.order_id) AS order_count, SUM(o.amount) AS ltv FROM users u LEFT JOIN orders o ON u.user_id = o.user_id GROUP BY u.user_id, u.email;</code></pre><pre><code>Window function: SELECT user_id, event_time, LAG(event_time) OVER (PARTITION BY user_id ORDER BY event_time) AS prev_event_time, event_time - LAG(event_time) OVER (PARTITION BY user_id ORDER BY event_time) AS time_since_prev FROM events;</code></pre><pre><code>Python: import pandas as pd; df = pd.read_sql(sql_query, connection)
+# or: import sqlite3; conn = sqlite3.connect(&#x27;data.db&#x27;); pd.read_sql(&#x27;SELECT * FROM table&#x27;, conn)</code></pre>
       </div>
       <pre><code>SELECT city, AVG(price) AS avg_price
 FROM houses
 WHERE bedrooms &gt;= 2
 GROUP BY city;</code></pre>
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using SQL. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>In industry, ML training data rarely comes pre-packaged. You must extract it from production databases using SQL. Feature engineering logic written in SQL can process billions of rows in minutes using database parallelism. Every data scientist must be SQL-fluent.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using WHERE after GROUP BY — HAVING filters on aggregated results. WHERE filters rows before aggregation. &#x27;WHERE COUNT(*) &gt; 5&#x27; is a syntax error; &#x27;HAVING COUNT(*) &gt; 5&#x27; is correct.</li><li>Not accounting for NULLs — COUNT(col) excludes NULLs; COUNT(*) counts all rows. AVG(col) ignores NULLs — missing values are excluded from the average, which can skew results.</li><li>Doing heavy transformations in Python that could be done in SQL — if your database can compute the feature (rolling sum, lag), compute it there. Pulling raw event logs to Python and aggregating is slow for large data.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write SQL queries to create a training dataset for churn prediction from three tables: users(<code>user_id</code>, <code>signup_date</code>, plan), events(<code>user_id</code>, <code>event_type</code>, <code>event_time</code>), subscriptions(<code>user_id</code>, status, <code>cancel_date</code>). Create features: <code>days_since_signup</code>, <code>total_events_last_30d</code>, <code>days_since_last_event</code>, <code>last_event_type</code>, <code>current_plan</code>. Label: cancelled within the next 30 days. Run in SQLite or <code>DuckDB</code> with synthetic data.</div>
     </div>
   </div>
 </section>
@@ -68,17 +70,39 @@ GROUP BY city;</code></pre>
       <h2>SELECT WHERE GROUP BY</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>SELECT WHERE GROUP BY is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>SQL (Structured Query Language) is the standard language for querying relational databases. The SELECT statement retrieves data from one or more tables. WHERE filters rows based on conditions. GROUP BY aggregates data by one or more columns, typically combined with aggregate functions (COUNT, SUM, AVG, MIN, MAX). These three clauses together cover the vast majority of data analysis queries in ML engineering and data science.</p><p>SELECT syntax: SELECT col1, col2, AGG(col3) FROM table WHERE condition GROUP BY col1, col2 HAVING <code>agg_condition</code> ORDER BY col3 DESC LIMIT 100. Execution order (not writing order): FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. WHERE filters individual rows BEFORE aggregation; HAVING filters groups AFTER aggregation.</p><p>WHERE conditions: =, !=, &gt;, &lt;, &gt;=, &lt;=, BETWEEN x AND y, IN (list), LIKE &#x27;pattern%&#x27; (% = any chars, _ = single char), IS NULL, IS NOT NULL, AND/OR/NOT. Examples: WHERE date &gt;= &#x27;2024-01-01&#x27; AND date &lt; &#x27;2024-02-01&#x27;, WHERE country IN (&#x27;US&#x27;, &#x27;CA&#x27;, &#x27;UK&#x27;), WHERE email LIKE &#x27;%@<code>gmail.com</code>&#x27;, WHERE revenue IS NOT NULL.</p><p>Aggregate functions: COUNT(*) counts all rows including NULLs; COUNT(col) counts non-NULL values of col. SUM(col) totals; AVG(col) averages; MIN/MAX(col) extremes. GROUP BY creates one output row per unique group. SELECT country, AVG(income), COUNT(*) FROM customers GROUP BY country gives one row per country with average income and count.</p><p>SQL in ML workflows: extracting training data (SELECT features, label FROM events WHERE date BETWEEN ... GROUP BY <code>user_id</code>), feature engineering (SELECT <code>user_id</code>, COUNT(<code>order_id</code>) AS <code>num_orders</code>, SUM(amount) AS <code>total_spend</code>, AVG(amount) AS <code>avg_order</code> FROM orders GROUP BY <code>user_id</code>), and model monitoring (SELECT <code>model_version</code>, AVG(<code>predicted_prob</code>), COUNT(*) FROM predictions WHERE date = today GROUP BY <code>model_version</code>). SQL is unavoidable in production ML.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply SELECT WHERE GROUP BY. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where SELECT WHERE GROUP BY is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>-- Feature extraction query for churn prediction
+SELECT
+  u.user_id,
+  u.signup_date,
+  COUNT(o.order_id) AS num_orders,
+  SUM(o.amount) AS total_spend,
+  AVG(o.amount) AS avg_order_value,
+  MAX(o.order_date) AS last_order_date,
+  DATEDIFF(CURRENT_DATE, MAX(o.order_date)) AS days_since_last_order,
+  u.churned  -- label
+FROM users u
+LEFT JOIN orders o ON u.user_id = o.user_id
+WHERE u.signup_date &gt;= &#x27;2023-01-01&#x27;
+GROUP BY u.user_id, u.signup_date, u.churned
+HAVING days_since_last_order IS NOT NULL</code></pre><pre><code>-- Cohort analysis
+SELECT
+  DATE_TRUNC(&#x27;month&#x27;, signup_date) AS cohort_month,
+  COUNT(DISTINCT user_id) AS cohort_size,
+  COUNT(DISTINCT CASE WHEN churned = 1 THEN user_id END) AS churned_users,
+  100.0 * COUNT(DISTINCT CASE WHEN churned = 1 THEN user_id END) / COUNT(DISTINCT user_id) AS churn_rate
+FROM users
+GROUP BY cohort_month
+ORDER BY cohort_month</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for SELECT WHERE GROUP BY, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>SQL is the primary language for data extraction in production ML systems. Training data lives in databases (Snowflake, <code>BigQuery</code>, Redshift, <code>PostgreSQL</code>). Every data scientist and ML engineer must write SQL fluently — complex feature engineering, cohort analysis, and model monitoring all require SQL queries.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using WHERE instead of HAVING for aggregate conditions — WHERE filters before GROUP BY (individual rows); HAVING filters after GROUP BY (groups). HAVING COUNT(*) &gt; 10 keeps only groups with more than 10 rows; WHERE COUNT(*) &gt; 10 is a syntax error.</li><li>Counting NULLs with COUNT(col) — COUNT(col) skips NULLs; COUNT(*) counts all rows. Use COUNT(*) to count rows and COALESCE(col, 0) to replace NULLs with 0 in aggregations.</li><li>Not indexing WHERE and JOIN columns — a query with WHERE <code>user_id</code> = 123 on a million-row table without an index on <code>user_id</code> scans every row. Check query plans with EXPLAIN and ensure proper indexing.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write 5 SQL queries for a e-commerce ML feature engineering task: (1) compute RFM (recency, frequency, monetary) features per customer: last purchase date, number of purchases, total spend, (2) find customers who purchased in 3 consecutive months (cohort analysis), (3) compute the 30-day rolling average order value per customer, (4) find product pairs most frequently purchased together (co-purchase count), (5) monitor model performance: compute AUC-ROC per day from a predictions table with columns (<code>user_id</code>, <code>predicted_prob</code>, <code>actual_label</code>, <code>prediction_date</code>). Test all queries against a real database.</div>
     </div>
   </div>
 </section>
@@ -90,17 +114,34 @@ GROUP BY city;</code></pre>
       <h2>Joins</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Joins is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>SQL JOINs combine rows from two or more tables based on a related column (join key). Understanding joins is essential for ML feature engineering — training data often requires combining multiple tables: users + orders + products + sessions. There are four fundamental join types: INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN. Each has different behavior for unmatched rows.</p><p>INNER JOIN: returns only rows where the join key matches in BOTH tables. SELECT * FROM users u INNER JOIN orders o ON <code>u.user_id</code> = <code>o.user_id</code> — returns only users who have at least one order. Users with no orders are excluded. Most common join type for feature engineering when you need related data from both tables.</p><p>LEFT JOIN (LEFT OUTER JOIN): returns ALL rows from the left table, plus matching rows from the right table. Unmatched rows from the right table produce NULLs. SELECT * FROM users u LEFT JOIN orders o ON <code>u.user_id</code> = <code>o.user_id</code> — returns ALL users, even those with no orders (those rows have NULL for order columns). Use LEFT JOIN when you need all rows from the primary table regardless of whether they have related data.</p><p>Aggregating before joining: for performance and correctness, aggregate in a subquery before joining. Instead of joining orders (millions of rows) to users and then aggregating, first aggregate orders to one row per user (in a CTE or subquery), then join to users (thousands of rows). This is a critical performance optimization in large-scale data pipelines.</p><p>Self joins and time-aware joins: a self join joins a table to itself (useful for finding pairs, hierarchies, or temporal comparisons). Time-aware joins join based on time ranges: join each session to the most recent preceding purchase — requires ASOF joins (available in <code>ClickHouse</code>, <code>DuckDB</code>) or window functions. Cross joins produce the Cartesian product of two tables — O(n×m) rows, use with caution.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply Joins. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where Joins is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>-- Feature engineering with multiple joins
+SELECT
+  u.user_id,
+  u.age, u.country,
+  o.num_orders, o.total_spend,
+  s.avg_session_duration, s.total_sessions
+FROM users u
+LEFT JOIN (
+  SELECT user_id, COUNT(*) AS num_orders, SUM(amount) AS total_spend
+  FROM orders GROUP BY user_id
+) o ON u.user_id = o.user_id
+LEFT JOIN (
+  SELECT user_id, AVG(duration) AS avg_session_duration, COUNT(*) AS total_sessions
+  FROM sessions GROUP BY user_id
+) s ON u.user_id = s.user_id</code></pre><pre><code>-- Self join: find user pairs who bought the same product
+SELECT a.user_id AS user1, b.user_id AS user2, a.product_id
+FROM orders a
+INNER JOIN orders b ON a.product_id = b.product_id AND a.user_id &lt; b.user_id</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Joins, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Joins are the foundation of relational data manipulation. Production ML features almost always require joining multiple tables — user demographics, transaction history, product metadata, and behavioral data are all stored in separate tables. A data scientist who cannot write efficient joins cannot extract features from production databases.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using INNER JOIN when you need ALL rows from the left table — if you INNER JOIN users to orders, users with no orders disappear. This can silently drop a large fraction of your training data (e.g., inactive users who are actually your churn target).</li><li>Joining before aggregating — joining orders to users BEFORE aggregating to one row per user creates a huge intermediate result. Aggregate in a subquery first, then join.</li><li>Not handling NULL values from LEFT JOINs — after a LEFT JOIN, columns from the right table may be NULL. COALESCE(<code>o.num_orders</code>, 0) replaces NULL with 0 for users with no orders — critical for model features.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete feature engineering pipeline using SQL joins: (1) given users, orders, products, and sessions tables (simulate or use a real dataset), (2) create a feature table using multiple LEFT JOINs with aggregation subqueries: per-user order stats, product category preferences, session behavior, (3) handle NULLs with COALESCE for all joined features, (4) verify: INNER JOIN vs LEFT JOIN — how many rows differ? Which users were dropped by INNER JOIN? (5) measure query execution time with EXPLAIN ANALYZE and optimize with proper indexes.</div>
     </div>
   </div>
 </section>
@@ -112,17 +153,42 @@ GROUP BY city;</code></pre>
       <h2>Window functions concept</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Window functions concept is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Window functions (also called analytic functions) in SQL compute aggregate statistics over a sliding frame of rows without collapsing them into a single output row. Unlike GROUP BY which reduces n rows to k groups, window functions keep all n rows and add a new column with the aggregate computed over each row&#x27;s window. They are essential for: ranking, running totals, moving averages, and lag/lead comparisons in SQL.</p><p>Syntax: FUNCTION_NAME(...) OVER (PARTITION BY <code>column_name</code> ORDER BY <code>column_name</code> ROWS BETWEEN <code>frame_start</code> AND <code>frame_end</code>). PARTITION BY defines the groups (like GROUP BY). ORDER BY defines the sort order within each partition. ROWS/RANGE BETWEEN defines the window frame (which rows to include in the aggregate for the current row).</p><p>Common window functions: <code>ROW_NUMBER()</code> — unique sequential integer per row within partition. <code>RANK()</code> — rank with gaps for ties (1,1,3). <code>DENSE_RANK()</code> — rank without gaps (1,1,2). NTILE(n) — divide into n buckets. LAG(col, n) / LEAD(col, n) — value n rows before/after. <code>SUM()</code> OVER — running total. <code>AVG()</code> OVER (ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) — 7-day rolling average.</p><p>Window frames: ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW = cumulative from start to current row (running total). ROWS BETWEEN 6 PRECEDING AND CURRENT ROW = rolling 7-row window. ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING = entire partition (useful for computing the partition&#x27;s total alongside each row). RANGE vs ROWS: ROWS counts rows literally; RANGE counts rows with the same value as one unit (for ties).</p><p>ML use cases for window functions: feature engineering for churn prediction (rolling 7-day login count, days since last purchase), sales forecasting (trailing 30-day revenue, week-over-week growth), anomaly detection (z-score of a value vs the rolling mean and std of the past 30 values), user cohort analysis (days since first event per user, event count per cohort).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where Window functions concept is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>-- Rolling 7-day moving average
+SELECT
+    user_id, date, daily_events,
+    AVG(daily_events) OVER (
+        PARTITION BY user_id
+        ORDER BY date
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) AS rolling_7d_avg,
+    SUM(daily_events) OVER (
+        PARTITION BY user_id
+        ORDER BY date
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS cumulative_total,
+    LAG(daily_events, 7) OVER (PARTITION BY user_id ORDER BY date) AS same_day_last_week,
+    daily_events - LAG(daily_events, 7) OVER (PARTITION BY user_id ORDER BY date) AS wow_change
+FROM user_daily_events;</code></pre><pre><code># Window functions in pandas (SQL equivalent)
+import pandas as pd
+df = df.sort_values([&#x27;user_id&#x27;, &#x27;date&#x27;])
+# Rolling average per user
+df[&#x27;rolling_7d_avg&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;daily_events&#x27;].transform(lambda x: x.rolling(7, min_periods=1).mean())
+# Cumulative sum per user
+df[&#x27;cumulative_total&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;daily_events&#x27;].cumsum()
+# Lag: value from 7 rows ago within the user group
+df[&#x27;same_day_last_week&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;daily_events&#x27;].shift(7)
+# Rank within each user&#x27;s events by value
+df[&#x27;rank&#x27;] = df.groupby(&#x27;user_id&#x27;)[&#x27;daily_events&#x27;].rank(method=&#x27;dense&#x27;, ascending=False)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Window functions concept, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Window functions are one of the most powerful SQL features for ML feature engineering. Operations that would require multiple self-joins or subqueries in pre-window-function SQL are a single window function expression. For building feature pipelines that run in SQL (Redshift, <code>BigQuery</code>, Snowflake), window functions are indispensable.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing ROWS BETWEEN and RANGE BETWEEN — ROWS counts physical rows (including ties). RANGE includes all rows with the same ORDER BY value in the current row&#x27;s frame. For rolling averages, ROWS BETWEEN is almost always what you want.</li><li>Forgetting to include PARTITION BY — without PARTITION BY, the window spans the ENTIRE result set, computing rolling averages across all users. Always partition by the entity you want to analyze independently (<code>user_id</code>, <code>product_id</code>, <code>store_id</code>).</li><li>Computing window functions in the WHERE clause — you cannot use window function results in WHERE (they are computed after WHERE). Use a CTE or subquery: WITH ranked AS (SELECT *, <code>RANK()</code> OVER ... AS rank FROM table) SELECT * FROM ranked WHERE rank &lt;= 3.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an ML feature engineering pipeline using SQL window functions: (1) write queries to compute per-user features: <code>days_since_first_event</code>, 7-day rolling event count, 30-day cumulative revenue, <code>days_since_last_event</code>, week-over-week event count change, (2) compute z-score anomaly flags: flag users whose 7-day event count is &gt; 3 std devs from their 30-day rolling mean, (3) implement session detection: define a session as events within 30 minutes of each other, use LAG to compute time-between-events, assign session IDs with window functions, (4) translate each SQL window function to the <code>pandas</code> equivalent and verify the results match.</div>
     </div>
   </div>
 </section>
@@ -134,17 +200,26 @@ GROUP BY city;</code></pre>
       <h2>ETL</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>ETL is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>ETL (Extract, Transform, Load) is the process of moving data from source systems into a data warehouse or data lake for analysis and ML. Extract: pull data from source systems (production databases, APIs, files). Transform: clean, normalize, filter, aggregate, join, and engineer features. Load: write the transformed data to the destination (data warehouse, S3, feature store). ETL pipelines run on schedules (daily, hourly) or event-triggered, keeping the destination up to date.</p><p>ELT (Extract, Load, Transform) is a modern variant: extract raw data and load it directly into the destination, then transform it there using SQL (dbt, Spark SQL). ELT became practical when data warehouses (<code>BigQuery</code>, Snowflake, Redshift) became powerful enough to transform data at scale. Advantages: raw data is always preserved, transformations can be revised, and no separate transformation infrastructure is needed.</p><p>Data pipeline orchestration: orchestrators schedule and monitor pipeline steps, handle retries, manage dependencies between steps, and alert on failures. Apache Airflow is the most widely deployed orchestrator — define pipelines as DAGs (Directed Acyclic Graphs) in Python. Modern alternatives: Prefect (Python-native, easier debugging), Dagster (with data lineage tracking), and cloud-managed services (Google Cloud Composer, AWS MWAA for managed Airflow).</p><p>Feature engineering in ETL: compute features that will be used for both ML training and serving. Lag features (sales yesterday, last week), rolling averages (7-day average revenue), entity aggregates (customer&#x27;s total purchase count). By computing features in the ETL pipeline and storing them in a feature store, training and serving use identical features — eliminating training-serving skew, one of the most pernicious sources of ML bugs.</p><p>Data quality in ETL: data quality checks should run at each stage. Schema validation: confirm the input data has the expected columns and types (Great Expectations, Soda). Statistical validation: check that distributions are within expected bounds. Completeness: check for unexpected nulls. Freshness: check that data arrives on schedule. When checks fail, halt the pipeline and alert — running ML on corrupted data is worse than not running it.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply ETL. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where ETL is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Airflow DAG: from airflow import DAG; from airflow.operators.python import PythonOperator
+with DAG(&#x27;ml_pipeline&#x27;, schedule_interval=&#x27;@daily&#x27;) as dag:
+    extract = PythonOperator(task_id=&#x27;extract&#x27;, python_callable=extract_from_db)
+    transform = PythonOperator(task_id=&#x27;transform&#x27;, python_callable=clean_and_feature_engineer)
+    train = PythonOperator(task_id=&#x27;train&#x27;, python_callable=train_model)
+    extract &gt;&gt; transform &gt;&gt; train</code></pre><pre><code>dbt transform: -- models/features/user_features.sql
+SELECT user_id, COUNT(*) AS total_orders, SUM(amount) AS total_spend, AVG(amount) AS avg_order_value, MAX(order_date) AS last_order_date FROM {{ ref(&#x27;orders&#x27;) }} GROUP BY user_id</code></pre><pre><code>Data quality: import great_expectations as gx
+context = gx.get_context()
+df_ge = gx.from_pandas(df)
+assert df_ge.expect_column_values_to_not_be_null(&#x27;user_id&#x27;).success</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for ETL, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>All ML models depend on data pipelines. A model is only as good as the data it receives. ETL/ELT pipelines that are reliable, monitored, and produce clean data are the foundation of any production ML system. Data engineering and ML engineering are increasingly the same role.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not idempotent ETL — running the pipeline twice produces duplicate data. ETL steps must be idempotent (produce the same result when run multiple times). Use INSERT OR REPLACE, MERGE, or partition-based overwrites.</li><li>Not monitoring pipeline completion — a silent ETL failure (network timeout) means models train on stale data. Set up alerts for pipeline non-completion by the expected time.</li><li>Transforming data differently for training and serving — this is training-serving skew. Put transformation logic in a shared library used by both the ETL pipeline and the serving code.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an Airflow DAG for a customer churn prediction pipeline: (1) extract user events from a <code>PostgreSQL</code> database, (2) compute features (<code>days_since_last_login</code>, <code>session_count_30d</code>, <code>avg_session_duration</code>, <code>feature_usage_count</code>), (3) run data quality checks (no nulls, values in expected ranges), (4) train a logistic regression model, (5) evaluate on held-out users, (6) write predictions to a results table. Trigger daily and add alerting for pipeline failures.</div>
     </div>
   </div>
 </section>
@@ -156,17 +231,44 @@ GROUP BY city;</code></pre>
       <h2>ELT</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>ELT is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>ELT (Extract, Load, Transform) is a data pipeline pattern where raw data is first extracted from sources and loaded into a data warehouse, then transformed inside the warehouse. This is the opposite of ETL (Extract, Transform, Load) where transformation happens before loading. ELT has become the dominant pattern in modern data engineering with cloud data warehouses (<code>BigQuery</code>, Snowflake, Redshift) because these systems can handle transformation at massive scale using SQL.</p><p>Why ELT over ETL: with cloud data warehouses that have near-unlimited compute, it&#x27;s faster and cheaper to load raw data first (no transformation bottleneck) and transform later with SQL. Raw data is preserved (you can re-transform later with new logic). Transformation logic is in SQL (visible, auditable, version-controllable with dbt). Extract and load can be done with simple tools (Fivetran, Airbyte) without custom Python pipelines.</p><p>dbt (data build tool): the standard transformation layer for ELT. dbt transforms raw warehouse tables into clean, modeled tables using SQL. Each model is a SQL SELECT statement. dbt handles: model dependencies (you can reference other models), testing (column not null, uniqueness, referential integrity), documentation (generated from YAML), and deployment (environment-specific builds). This is the tool all modern data teams use.</p><p>ELT pipeline components: extraction layer (Fivetran, Airbyte, custom Python extractors) pulls data from sources (Postgres, Salesforce, Google Analytics, Kafka) and loads raw into the warehouse. Transformation layer (dbt) cleans and models raw data into usable tables. Orchestration layer (Airflow, Prefect, Dagster) schedules and monitors the pipeline.</p><p>ELT for ML: raw data in the warehouse is the starting point for ML feature engineering. dbt transforms raw events into user-level features (<code>events_last_7_days</code>, <code>avg_order_value</code>, <code>churn_risk_score</code>). These features are materialized as warehouse tables and used as training data. Feature Store tools (Feast, Tecton) bridge the warehouse and the ML training pipeline.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply ELT. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where ELT is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>-- dbt model example: transform raw events into user features
+-- File: models/user_features.sql
+WITH events AS (
+    SELECT * FROM {{ ref(&#x27;raw_events&#x27;) }}  -- reference another dbt model
+),
+user_features AS (
+    SELECT
+        user_id,
+        COUNT(*) AS total_events,
+        COUNT(DISTINCT DATE(created_at)) AS active_days,
+        COUNT(CASE WHEN event_type = &#x27;purchase&#x27; THEN 1 END) AS n_purchases,
+        SUM(CASE WHEN event_type = &#x27;purchase&#x27; THEN amount ELSE 0 END) AS total_spend,
+        MAX(created_at) AS last_event_at,
+        DATE_DIFF(CURRENT_DATE(), DATE(MAX(created_at)), DAY) AS days_since_last_event,
+        -- rolling 7-day feature
+        COUNT(CASE WHEN created_at &gt;= CURRENT_TIMESTAMP() - INTERVAL 7 DAY THEN 1 END) AS events_last_7d
+    FROM events
+    GROUP BY user_id
+)
+SELECT * FROM user_features
+-- dbt schema.yml for testing
+-- models:
+--   - name: user_features
+--     columns:
+--       - name: user_id
+--         tests: [unique, not_null]
+--       - name: total_events
+--         tests: [{dbt_utils.accepted_range: {min_value: 0}}]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for ELT, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>ELT and dbt are the foundations of the modern data stack. ML models train on features derived from data warehouse tables, not raw API responses. Understanding how raw data flows from sources → warehouse (ELT) → clean modeled tables (dbt) → ML training features is essential for any data scientist or ML engineer working in a production data environment. Without this knowledge, you&#x27;re dependent on a separate data engineering team to provide training data.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Transforming in the extraction layer instead of the warehouse — ETL-style transformation in Python before loading loses the raw data and creates maintenance burden. Store raw data in the warehouse and use dbt for all transformations.</li><li>Not writing dbt tests — dbt tests (`<code>not_null</code>`, `unique`, `<code>accepted_values</code>`) catch data quality issues before they affect downstream ML models. Always add tests for primary keys and critical feature columns.</li><li>Not using <code>ref()</code> in dbt — hardcoding table names (`FROM <code>my_database.raw_events</code>`) creates brittle SQL that breaks when table names change. Always use `FROM {{ ref(&#x27;<code>raw_events</code>&#x27;) }}` — dbt resolves the correct table name for each environment (dev/staging/prod).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an ELT pipeline for ML: (1) load a raw events dataset into a local <code>DuckDB</code> (or <code>PostgreSQL</code>) table, (2) write 3 dbt models: staging (clean raw data), intermediate (session-level aggregations), and mart (user-level ML features), (3) add dbt tests: <code>not_null</code> and unique for <code>user_id</code>, <code>accepted_range</code> for numerical features, (4) run dbt docs generate to produce documentation, (5) use the resulting feature table to train a churn prediction model — how does using clean dbt features vs raw data affect model performance?</div>
     </div>
   </div>
 </section>
@@ -178,17 +280,41 @@ GROUP BY city;</code></pre>
       <h2>Batch pipelines</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Batch pipelines is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Batch pipelines process data in large chunks on a schedule rather than continuously. They are the backbone of data engineering: nightly ETL jobs that load the previous day&#x27;s transactions, weekly model retraining jobs, monthly report generation. Batch pipelines trade real-time freshness for simplicity and efficiency.</p><p>Orchestration frameworks: Apache Airflow — the most widely used DAG-based orchestration tool. Define tasks as Python functions, define dependencies as DAG edges. Schedules run at cron intervals. The Airflow UI shows pipeline status, task logs, and failure alerts. Prefect — modern Python-native alternative to Airflow with less boilerplate. Dagster — adds data lineage and asset-centric modeling.</p><p>Airflow DAG anatomy: a DAG (Directed Acyclic Graph) defines tasks and their execution order. <code>PythonOperator</code> runs a Python function. <code>BashOperator</code> runs a shell command. SQLExecuteQueryOperator runs SQL. Sensors wait for external events (file exists, HTTP endpoint returns 200). XCom passes data between tasks.</p><p>Idempotency: batch pipelines must be idempotent — running the same pipeline twice for the same date produces the same result. This is essential for re-runs after failures. Avoid: appending to a table without deduplication (running twice doubles the data). Instead: TRUNCATE + INSERT or MERGE (upsert) to ensure consistent state regardless of how many times the pipeline runs.</p><p>Monitoring and alerting: batch pipelines fail for many reasons: upstream data not available, schema changes, resource exhaustion, code bugs. Monitor: pipeline run status (success/failure/running), task duration (alert if &gt; 2x normal duration), data quality metrics (row count, null rate), and cost (cloud compute cost per run).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply Batch pipelines. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where Batch pipelines is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Apache Airflow DAG example
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+import pandas as pd
+# Default arguments applied to all tasks
+default_args = {&#x27;owner&#x27;: &#x27;ml-team&#x27;, &#x27;depends_on_past&#x27;: False, &#x27;email_on_failure&#x27;: True,
+    &#x27;email&#x27;: [&#x27;ml-team@company.com&#x27;], &#x27;retries&#x27;: 2, &#x27;retry_delay&#x27;: timedelta(minutes=5)}
+# DAG definition
+with DAG(&#x27;ml_batch_pipeline&#x27;, default_args=default_args, description=&#x27;Daily ML feature computation&#x27;,
+         schedule_interval=&#x27;0 2 * * *&#x27;,  # 2am daily
+         start_date=datetime(2024, 1, 1), catchup=False, tags=[&#x27;ml&#x27;, &#x27;features&#x27;]) as dag:
+    def extract_data(**context):
+        date = context[&#x27;ds&#x27;]  # execution date (YYYY-MM-DD)
+        df = pd.read_sql(f&quot;SELECT * FROM events WHERE date = &#x27;{date}&#x27;&quot;, conn)
+        df.to_parquet(f&#x27;/tmp/events_{date}.parquet&#x27;)
+        return f&#x27;/tmp/events_{date}.parquet&#x27;
+    def compute_features(**context):
+        date = context[&#x27;ds&#x27;]
+        df = pd.read_parquet(f&#x27;/tmp/events_{date}.parquet&#x27;)
+        features = df.groupby(&#x27;user_id&#x27;).agg({&#x27;event&#x27;: &#x27;count&#x27;, &#x27;revenue&#x27;: &#x27;sum&#x27;}).reset_index()
+        features.to_sql(&#x27;user_features&#x27;, conn, if_exists=&#x27;append&#x27;, index=False)
+    extract = PythonOperator(task_id=&#x27;extract&#x27;, python_callable=extract_data)
+    transform = PythonOperator(task_id=&#x27;compute_features&#x27;, python_callable=compute_features)
+    extract &gt;&gt; transform  # extract runs first, then compute_features</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Batch pipelines, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Batch pipelines are how most ML production systems deliver value. Model training, feature computation, and report generation are all batch processes. Understanding how to build reliable, idempotent batch pipelines with proper monitoring is a core MLOps skill. Airflow is in the toolkit of every data engineering team — knowing it opens up collaboration with data engineers and enables you to own your own pipeline infrastructure.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Non-idempotent writes — `INSERT INTO features SELECT ...` run twice creates duplicate rows. Use `INSERT INTO ... ON CONFLICT UPDATE` (upsert) or `TRUNCATE + INSERT` to ensure the pipeline can safely re-run.</li><li>Not adding data quality checks within the pipeline — batch pipelines should validate their output before writing to production tables. If today&#x27;s pipeline produces 0 rows (upstream failure), don&#x27;t overwrite yesterday&#x27;s good data with an empty table.</li><li>Catching all exceptions without alerting — `try: ...; except: pass` hides failures. Either let the exception propagate (Airflow marks the task as failed and alerts) or catch specifically and log with `<code>logging.error()</code>` before re-raising.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a batch ML feature pipeline: (1) create an Airflow DAG (or Prefect flow) that runs daily: extract events from a database, compute user-level features (event count, recency, total spend), validate data quality (row count &gt; 0, no nulls in key columns), write to a features table with upsert, (2) test failure and recovery: manually break the extract step, verify Airflow marks it as failed, fix it, manually trigger a re-run, (3) add monitoring: alert if today&#x27;s row count is &lt; 90% of yesterday&#x27;s (potential upstream data issue).</div>
     </div>
   </div>
 </section>
@@ -200,17 +326,31 @@ GROUP BY city;</code></pre>
       <h2>Streaming pipelines</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Streaming pipelines is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Streaming pipelines process data in real time, record by record or in micro-batches, as events arrive. Unlike batch pipelines (process yesterday&#x27;s data at 2am), streaming pipelines have low latency: a fraud detection model that processes transactions in real time can block a fraudulent transaction before it completes. Applications: real-time recommendation updates (user just watched a movie → update recommendations immediately), anomaly detection on <code>IoT</code> sensor data, real-time dashboard updates.</p><p>Apache Kafka is the standard message broker for streaming pipelines. Producers publish events to Kafka topics (named streams). Consumers read from topics and process events. Topics are partitioned for parallelism and replicated for fault tolerance. Each event is a record with a key, value, and timestamp. Kafka retains events for a configurable period (days to weeks), allowing consumers to replay history.</p><p>Stream processing frameworks: Apache Flink (stateful stream processing with exactly-once semantics — used at Uber, Netflix, <code>LinkedIn</code> for real-time ML features), Apache Kafka Streams (lightweight library for stateful stream processing on top of Kafka), Spark Structured Streaming (micro-batch processing with a stream-like API — SQL-based). For Python-native streaming, use Kafka-Python for simple consumers or Faust for stateful stream processing.</p><p>Real-time ML serving with streaming: instead of computing features at prediction time (online computation — expensive for complex aggregations), precompute features via streaming as events arrive and store them in a low-latency feature store (Redis, <code>DynamoDB</code>). When a prediction is needed, look up precomputed features from the store — O(1) lookup instead of O(n) aggregation. This is the online feature store pattern used at Uber Michelangelo, <code>LinkedIn</code> Feathr, and Airbnb Chronon.</p><p>Windowing in stream processing: aggregate events over time windows. Tumbling windows (fixed, non-overlapping: sum of transactions per 5-minute window). Sliding windows (overlapping: 5-minute sum updated every 1 minute). Session windows (group events from the same user session, with a session ending after N minutes of inactivity). Aggregations within windows (count, sum, avg, unique count) are maintained incrementally as events arrive.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply Streaming pipelines. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where Streaming pipelines is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Kafka producer: from kafka import KafkaProducer; import json
+producer = KafkaProducer(bootstrap_servers=&#x27;localhost:9092&#x27;, value_serializer=lambda v: json.dumps(v).encode())
+producer.send(&#x27;transactions&#x27;, {&#x27;user_id&#x27;: 123, &#x27;amount&#x27;: 49.99, &#x27;timestamp&#x27;: 1234567890})</code></pre><pre><code>Consumer: from kafka import KafkaConsumer
+consumer = KafkaConsumer(&#x27;transactions&#x27;, bootstrap_servers=&#x27;localhost:9092&#x27;, value_deserializer=lambda v: json.loads(v.decode()))
+for message in consumer:
+    event = message.value
+    prediction = model.predict([event[&#x27;amount&#x27;], event[&#x27;user_id&#x27;]])
+    if prediction == 1: alert_fraud(event)</code></pre><pre><code>Faust stream: import faust
+app = faust.App(&#x27;ml-streaming&#x27;)
+transactions = app.topic(&#x27;transactions&#x27;)
+@app.agent(transactions)
+async def process(stream):
+    async for event in stream:
+        prediction = model.predict(event)
+        if prediction: await alert(event)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Streaming pipelines, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Batch pipelines introduce latency (hours to days between an event and the model acting on it). For fraud detection, that latency means fraudulent transactions are already complete. Streaming enables real-time response to events, unlocking use cases impossible with batch processing.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Processing events in order when Kafka partitions don&#x27;t guarantee order — order is guaranteed within a partition, not across partitions. For strict ordering, use a single partition (no parallelism) or include sequence numbers.</li><li>Not handling late-arriving events — events may arrive out of order due to network delays. Stream processing must handle: emit preliminary results, update when late events arrive, or use fixed windows that ignore late data after a watermark.</li><li>Blocking on synchronous operations in a streaming consumer — network calls, database queries, and ML model inference must be async or run in a thread pool to avoid falling behind the stream.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a real-time fraud detection pipeline: Kafka producer generates synthetic transaction events at 100 events/second. Kafka consumer reads events, extracts features (amount, <code>time_since_last_transaction</code>, <code>merchant_category</code>), calls a logistic regression model, and flags suspicious transactions. Compute: transactions per second processed, end-to-end latency (event creation → prediction). Add a Redis feature store for 7-day rolling transaction count per user.</div>
     </div>
   </div>
 </section>
@@ -222,17 +362,40 @@ GROUP BY city;</code></pre>
       <h2>Kafka</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Kafka is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Apache Kafka is a distributed event streaming platform used for building real-time data pipelines and stream processing applications. In ML systems, Kafka serves as the backbone for: routing model predictions to downstream services, streaming training data from application events, triggering retraining when data drift is detected, and building event-driven ML pipelines that process data as it arrives.</p><p>Core concepts: Topic — a named, ordered log of events. Messages are appended to topics and retained for a configurable period (days to weeks). Producer — writes events to a topic. Consumer — reads events from a topic (and tracks its position with a consumer offset). Partition — topics are split into partitions for parallelism. Each partition is ordered; a topic with N partitions can be consumed by N consumers in parallel. Broker — a Kafka server that stores partitions.</p><p>Kafka in ML pipelines: user action (click, purchase) → Kafka topic → Feature computation service (reads from Kafka, computes features, writes to Kafka) → ML model service (reads features, makes prediction, writes prediction to Kafka) → Downstream service (reads predictions, acts on them). The key benefit: each service is decoupled — the upstream service doesn&#x27;t know about the downstream service, both scale independently.</p><p>Producer/Consumer API in Python (confluent-kafka): <code>DeliveryReport</code> callback for producer acknowledgment, <code>poll()</code> for consumer event loop, <code>commit()</code> to advance consumer offset (avoid re-processing events on restart). Auto offset commit (<code>auto.offset.commit</code>=True) commits the offset after delivering each batch to the application — risk: if the app crashes after receiving but before processing, events may be skipped. Manual commit after processing ensures exactly-once semantics.</p><p>Kafka vs <code>RabbitMQ</code> vs Redis Pub/Sub: Kafka is designed for high-throughput durable event logs (millions of events/second, days of retention). <code>RabbitMQ</code> is designed for message queuing (task queues, guaranteed delivery to workers). Redis Pub/Sub is designed for low-latency transient messaging (no persistence). For ML training data pipelines and event sourcing, Kafka is the right choice. For task queues (job processing), <code>RabbitMQ</code> or Celery. For real-time notifications, Redis.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply Kafka. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where Kafka is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from confluent_kafka import Producer, Consumer
+import json
+# Producer: send model prediction events
+producer = Producer({&#x27;bootstrap.servers&#x27;: &#x27;localhost:9092&#x27;})
+def delivery_callback(err, msg):
+    if err: print(f&#x27;Message delivery failed: {err}&#x27;)
+    else: print(f&#x27;Message delivered to {msg.topic()} [{msg.partition()}]&#x27;)
+# Send a prediction event
+event = {&#x27;user_id&#x27;: &#x27;u123&#x27;, &#x27;prediction&#x27;: 0.87, &#x27;model_version&#x27;: &#x27;v1.2&#x27;, &#x27;timestamp&#x27;: &#x27;2024-01-15T10:30:00Z&#x27;}
+producer.produce(&#x27;model_predictions&#x27;, key=&#x27;u123&#x27;, value=json.dumps(event), callback=delivery_callback)
+producer.flush()  # wait for delivery</code></pre><pre><code># Consumer: process prediction events
+consumer = Consumer({&#x27;bootstrap.servers&#x27;: &#x27;localhost:9092&#x27;, &#x27;group.id&#x27;: &#x27;prediction_consumer&#x27;, &#x27;auto.offset.reset&#x27;: &#x27;latest&#x27;})
+consumer.subscribe([&#x27;model_predictions&#x27;])
+try:
+    while True:
+        msg = consumer.poll(timeout=1.0)
+        if msg is None: continue
+        if msg.error(): print(f&#x27;Consumer error: {msg.error()}&#x27;); continue
+        event = json.loads(msg.value())
+        # Process the prediction event
+        print(f&#x27;User {event[&quot;user_id&quot;]}: churn_risk={event[&quot;prediction&quot;]:.3f}&#x27;)
+        consumer.commit()  # manual commit after processing
+finally:
+    consumer.close()</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Kafka, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Kafka is the backbone of real-time ML systems at scale. Feature stores (Feast, Tecton), online prediction services, and model monitoring systems all use Kafka to stream data between components. Understanding Kafka enables building ML systems that are decoupled, scalable, and fault-tolerant.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not setting appropriate retention periods — the default Kafka retention is 7 days. For training data pipelines, you may want longer retention (30+ days) to replay historical data. For prediction events, shorter retention may suffice.</li><li>Using a single partition for a high-throughput topic — a topic with 1 partition can only be consumed by 1 consumer in a consumer group. For topics that receive &gt; 1000 events/second, use 8-16 partitions to enable parallel consumption.</li><li>Not handling consumer rebalancing — when consumers join or leave a group, partitions are rebalanced. During rebalancing, consumers stop receiving messages briefly. Use a <code>ConsumerRebalanceListener</code> to handle partition assignment cleanly (flush in-flight state before losing a partition).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an ML event streaming pipeline with Kafka: (1) set up Kafka locally with Docker Compose, (2) build a producer that generates synthetic user events (clicks, purchases) at 100 events/second and sends them to a Kafka topic, (3) build a feature computation consumer that reads events, computes features (rolling counts, recency), and writes feature updates to a second topic, (4) build a model prediction consumer that reads features and writes predictions to a third topic, (5) monitor: use kafkacat to observe each topic in real time, measure end-to-end latency from event generation to prediction.</div>
     </div>
   </div>
 </section>
@@ -244,17 +407,41 @@ GROUP BY city;</code></pre>
       <h2>Data validation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Data validation belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In SQL and data pipelines, treat Data validation as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>Data validation checks that incoming data meets expected quality and schema standards before it is fed to an ML model. Without data validation, a ML pipeline silently processes corrupt data (nulls where none are expected, string values in numeric fields, out-of-range values) and produces wrong predictions without any error. Data validation makes data quality issues visible before they corrupt downstream predictions.</p><p>Schema validation: verify that the data has the expected columns, with the expected dtypes and no unexpected new columns. Great Expectations, Pandera, and Pydantic are popular Python libraries for data validation. Schema checks: correct column names, correct dtypes (age should be int, not string), required columns present (no schema drift), no unexpected new columns.</p><p>Statistical validation: check that the statistical distribution of each feature is within expected bounds. Expected bounds can be defined from the training data distribution. Checks: no column has more than X% null values, numeric columns are within [min, max] bounds observed in training, categorical columns only contain values seen in training (no unknown categories). Use the Interquartile Range (IQR) test for outliers: flag values &gt; Q3 + 3×IQR or &lt; Q1 - 3×IQR.</p><p>Great Expectations: a comprehensive data validation framework. Define &#x27;expectations&#x27; about your data: <code>expect_column_values_to_not_be_null</code>, <code>expect_column_values_to_be_between</code>, <code>expect_column_values_to_be_in_set</code>, <code>expect_table_row_count_to_be_between</code>. Run expectations against data batches and generate validation reports. Integrate into your data pipeline to block bad data from reaching the model.</p><p>Validation in production: run data validation at every data ingestion point. If validation fails (e.g., &gt; 5% of feature values are null): alert the on-call engineer, log the failure, optionally reject the batch or impute missing values. Never silently skip validation failures — silent data quality issues are the most insidious production ML failures.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a 10-row customer table and apply Data validation. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Data validation and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandera as pa
+import pandas as pd
+# Define schema with expectations
+schema = pa.DataFrameSchema({
+    &#x27;age&#x27;: pa.Column(int, pa.Check.in_range(0, 120), nullable=False),
+    &#x27;income&#x27;: pa.Column(float, pa.Check.ge(0), nullable=True),
+    &#x27;churn&#x27;: pa.Column(int, pa.Check.isin([0, 1]), nullable=False),
+    &#x27;country&#x27;: pa.Column(str, pa.Check.isin([&#x27;US&#x27;, &#x27;UK&#x27;, &#x27;DE&#x27;, &#x27;FR&#x27;]), nullable=False),
+}, index=pa.Index(int), strict=True)  # strict=True: fail on unexpected columns
+try:
+    validated_df = schema.validate(incoming_df)
+    print(&#x27;Validation passed&#x27;)
+except pa.errors.SchemaError as e:
+    print(f&#x27;Validation FAILED: {e}&#x27;)</code></pre><pre><code># Statistical drift check
+def check_drift(train_df, new_df, numeric_cols, threshold=3):
+    alerts = []
+    for col in numeric_cols:
+        train_mean, train_std = train_df[col].mean(), train_df[col].std()
+        new_mean = new_df[col].mean()
+        z_score = abs((new_mean - train_mean) / train_std)
+        if z_score &gt; threshold:
+            alerts.append(f&#x27;{col}: mean shifted by {z_score:.2f} std devs (train={train_mean:.2f}, new={new_mean:.2f})&#x27;)
+    return alerts
+alerts = check_drift(train_df, production_df, [&#x27;age&#x27;, &#x27;income&#x27;, &#x27;tenure&#x27;])
+for alert in alerts: print(&#x27;ALERT:&#x27;, alert)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Data validation. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Data validation is the immune system of an ML pipeline. A single corrupted data ingestion can silently produce wrong predictions for hours before anyone notices. Data validation makes this failure visible immediately, at the point of ingestion, enabling fast remediation.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Only validating schema (columns and dtypes) without statistical validation — schema validation catches missing columns and wrong types. Statistical validation catches subtler issues: all values are technically valid but the distribution has shifted significantly (training distribution: mean=35, production distribution: mean=72).</li><li>Not defining expectations from the training data — expectations should be grounded in what the training data looked like. <code>max_value</code>=1000 for income is arbitrary; <code>max_value</code>=<code>training_income.quantile</code>(0.999) is meaningful.</li><li>Making validation blocking without fallbacks — if validation blocks all requests when data quality is poor, the system goes down. Design graduated responses: WARN for minor issues (5-10% nulls), BLOCK for critical issues (100% nulls), with fallbacks to default values or previous batch&#x27;s predictions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a data validation pipeline for an ML system: (1) define a Pandera schema for your training data with constraints for each column (dtype, range, allowed values, nullable), (2) validate the training data itself — does it pass its own schema? Fix any violations in the schema or data, (3) generate synthetic &#x27;bad production data&#x27; with schema violations, null injection, and distribution drift, (4) run the schema validation against the bad data — what is reported?, (5) implement statistical drift checks (z-score for numeric, chi-square for categorical), (6) build an automated validation report that runs daily and emails alerts on failures.</div>
     </div>
   </div>
 </section>
@@ -266,17 +453,33 @@ GROUP BY city;</code></pre>
       <h2>Data quality checks</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Data quality checks belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In SQL and data pipelines, treat Data quality checks as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>Data quality checks are automated tests that validate incoming data against expected properties: type, range, completeness, uniqueness, and referential integrity. They catch data pipeline failures, upstream schema changes, and unexpected data distributions before they silently corrupt downstream models and dashboards.</p><p>Great Expectations: the most popular Python data validation library. Define expectations (assertions about data) and run them on a <code>DataFrame</code> or SQL query. `<code>expect_column_values_to_not_be_null</code>(&#x27;<code>user_id</code>&#x27;)`, `<code>expect_column_values_to_be_between</code>(&#x27;age&#x27;, 0, 120)`, `<code>expect_column_unique_value_count_to_be_between</code>(&#x27;country&#x27;, 1, 200)`. Expectations are stored as JSON and can be run on every new data batch.</p><p>Pandera: a lightweight schema validation library for <code>pandas</code> <code>DataFrames</code> and Pydantic integration. Define a schema: `schema = <code>pa.DataFrameSchema</code>({&#x27;id&#x27;: <code>pa.Column</code>(int, nullable=False), &#x27;score&#x27;: <code>pa.Column</code>(float, checks=<code>pa.Check.in_range</code>(0, 1))})`. `<code>schema.validate</code>(df)` raises `<code>SchemaError</code>` if the <code>DataFrame</code> violates the schema.</p><p>Distribution tests: beyond schema validation, check that data distributions are stable over time. Z-score test: if the fraction of null values in a column changes from 0.01 to 0.15, alert. Wasserstein distance: measure the distance between this batch&#x27;s feature distribution and the reference distribution. Kolmogorov-Smirnov test: test if a new data sample comes from the same distribution as the training data.</p><p>Data quality in ML pipelines: data quality checks should run at every pipeline stage: at data ingestion (schema + null checks), before feature engineering (distribution stability checks), before model training (completeness, class balance), and before serving (inference data vs training distribution). Each stage has different checks appropriate to the data transformations applied.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a 10-row customer table and apply Data quality checks. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Data quality checks and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandera as pa
+import pandas as pd
+# Pandera schema definition
+schema = pa.DataFrameSchema({
+    &#x27;user_id&#x27;: pa.Column(int, nullable=False, unique=True),
+    &#x27;age&#x27;: pa.Column(float, checks=[pa.Check.greater_than_or_equal_to(0), pa.Check.less_than_or_equal_to(120)], nullable=True),
+    &#x27;email&#x27;: pa.Column(str, checks=pa.Check.str_matches(r&#x27;^[^@]+@[^@]+\.[^@]+$&#x27;), nullable=False),
+    &#x27;score&#x27;: pa.Column(float, checks=pa.Check.in_range(0.0, 1.0), nullable=False),
+    &#x27;category&#x27;: pa.Column(str, checks=pa.Check.isin([&#x27;A&#x27;, &#x27;B&#x27;, &#x27;C&#x27;]), nullable=False),
+})
+# Validate DataFrame
+try:
+    validated_df = schema.validate(df, lazy=True)  # lazy=True: collect all errors
+    print(&#x27;Validation passed!&#x27;)
+except pa.errors.SchemaErrors as e:
+    print(&#x27;Validation failed!&#x27;)
+    print(e.failure_cases)  # DataFrame of all validation failures</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Data quality checks. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Data quality checks are the difference between a data pipeline that just runs and one that you can trust. Without checks, a schema change upstream (a column renamed, a new null value code introduced) silently propagates through your pipeline and corrupts training data and model predictions. Data quality checks make failures loud and immediate rather than silent and discovered weeks later in anomalous model behavior.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Only checking schema, not distributions — a column may have the right type and no nulls but an unusual distribution (all values suddenly in a very narrow range = upstream bug). Add distribution checks: null rate, value distribution, mean/std stability.</li><li>Running validation only during development, not in production — data quality issues happen in production, not in development (where data is typically cleaner). Add data quality checks as the first step in every production pipeline run.</li><li>Not acting on failures — data quality checks that emit a warning but allow the pipeline to continue don&#x27;t prevent data corruption. Either halt the pipeline on critical failures (null primary keys, invalid schema) or route to a quarantine table for human review.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement data quality monitoring: (1) define a Pandera schema for an ML training dataset with 10 columns, (2) introduce three types of bugs: missing values, out-of-range values, and type errors, (3) run the schema validation — does it catch all bugs?, (4) implement distribution monitoring: compare null rates and mean/std between the current and reference dataset, (5) add to a pipeline: the data quality check runs as step 1, emails an alert if any check fails, and logs the failure report as JSON.</div>
     </div>
   </div>
 </section>
@@ -288,17 +491,35 @@ GROUP BY city;</code></pre>
       <h2>Dataset versioning</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Dataset versioning is a concept inside SQL and data pipelines that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Dataset versioning tracks changes to ML training datasets over time, enabling reproducibility (can you recreate the exact training data from 6 months ago?), auditing (who changed what, when, and why?), and rollback (if a new dataset version reduces model quality, can you go back?). Without versioning, datasets are mutable artifacts that silently change and make experiments irreproducible.</p><p>DVC (Data Version Control): the most popular tool for dataset versioning. DVC works alongside Git: dataset files are stored in a remote storage (S3, GCS, Azure Blob), and DVC tracks their checksums in small metadata files that are committed to Git. `<code>dvc</code> add data/<code>train.csv</code>` creates a data/<code>train.csv.dvc</code> file (tracked by Git) that points to the actual data in remote storage.</p><p>DVC workflow: `<code>dvc</code> add data/` to track a dataset. `git commit -m &#x27;add training data v1&#x27;` to version the metadata. `<code>dvc</code> push` to upload data to remote storage. When you change the dataset: `<code>dvc</code> add data/` again, `git commit -m &#x27;updated training data v2&#x27;`. To reproduce an earlier experiment: `git checkout v1-tag &amp;&amp; <code>dvc</code> pull` restores the exact data from that version.</p><p><code>HuggingFace</code> datasets library: another approach — store datasets on <code>HuggingFace</code> Hub with version tags. Datasets loaded with `<code>load_dataset</code>(&#x27;username/dataset&#x27;, revision=&#x27;v1.2&#x27;)` always load the exact same data, regardless of updates to the latest version. This is the standard for research datasets shared with the community.</p><p>Data lineage: beyond versioning files, track the transformations applied: which raw data sources were combined, which preprocessing steps were applied, which samples were excluded and why. Great Expectations and dbt both provide lineage documentation. ML metadata stores (MLflow, Kubeflow) link dataset versions to the model runs that used them.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying SQL and data pipelines and needs to apply Dataset versioning. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from SQL and data pipelines where Dataset versioning is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># DVC workflow for dataset versioning
+# Setup: pip install dvc dvc-s3
+# Commands (run in terminal):
+# dvc init  # Initialize DVC in a git repo
+# dvc remote add -d myremote s3://my-bucket/dvc-data  # Configure S3 remote
+# Track a dataset
+# dvc add data/train.csv  # creates data/train.csv.dvc
+# git add data/train.csv.dvc data/.gitignore
+# git commit -m &#x27;Add training dataset v1.0&#x27;
+# dvc push  # Upload to S3
+# To reproduce: git checkout v1.0-tag &amp;&amp; dvc pull
+# Python API for DVC
+import dvc.api
+import pandas as pd
+# Load specific version of a dataset from DVC
+# path points to the file, repo is the git URL, rev is the git tag/commit
+with dvc.api.open(&#x27;data/train.csv&#x27;, rev=&#x27;v1.0&#x27;) as f:
+    df = pd.read_csv(f)
+print(f&#x27;Loaded {len(df)} rows from dataset v1.0&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Dataset versioning, explain it in 5 to 8 lines, and connect it to SQL and data pipelines.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Dataset versioning is the prerequisite for ML reproducibility. If you can&#x27;t recreate the exact training data from a previous experiment, you can&#x27;t reproduce the model, debug regressions, or satisfy audit requirements. Regulatory frameworks (GDPR, HIPAA, SOX for financial AI) increasingly require documentation of training data provenance. DVC is the minimal tool to add this capability with minimal workflow change.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Storing large datasets in Git directly — Git is not designed for large binary files. A 10GB CSV in Git makes every clone and pull painfully slow. Use DVC to store metadata in Git and data in S3/GCS.</li><li>Not tagging dataset versions in Git — DVC tracks checksums, but without Git tags, you can&#x27;t easily identify &#x27;which commit used v1 of the dataset?&#x27; Always create a Git tag at each significant dataset version: `git tag -a v1.0 -m &#x27;Training dataset v1.0 — initial collection&#x27;`.</li><li>Forgetting to push data after pushing code — `git push` only pushes the DVC metadata files. Run `<code>dvc</code> push` separately to upload the actual data. A CI/CD pipeline should run both: `git push &amp;&amp; <code>dvc</code> push`.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Set up dataset versioning: (1) initialize a Git+DVC repository, (2) track a dataset file with DVC (use a local remote if S3 is not available: <code>dvc</code> remote add -d local /tmp/<code>dvc</code>-remote), (3) make 3 versioned changes to the dataset (add samples, fix labels, remove outliers) with Git tags and commit messages, (4) verify reproducibility: checkout v1 and run <code>dvc</code> pull — confirm the exact original dataset is restored, (5) document data lineage: create a CHANGELOG.md for the dataset documenting what changed in each version and why.</div>
     </div>
   </div>
 </section>

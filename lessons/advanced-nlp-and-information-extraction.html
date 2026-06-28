@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Advanced NLP and information extraction | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Coreference resolution</a>
+<a href="#s2">Dependency parsing</a>
+<a href="#s3">Relation extraction</a>
+<a href="#s4">Event detection</a>
+<a href="#s5">Text clustering</a>
+<a href="#s6">Topic modeling</a>
+<a href="#s7">LDA</a>
+<a href="#s8">Language identification</a>
+<a href="#s9">Text augmentation</a>
+<a href="#s10">Multilingual NLP</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">07 NLP</span>
+        <h1>Advanced NLP and information extraction</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 30</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Coreference resolution</span><span class="tag">Dependency parsing</span><span class="tag">Relation extraction</span><span class="tag">Event detection</span><span class="tag">Text clustering</span><span class="tag">Topic modeling</span><span class="tag">LDA</span><span class="tag">Language identification</span><span class="tag">Text augmentation</span><span class="tag">Multilingual NLP</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s1" data-progress-check>
+    <div>
+      <h2>Coreference resolution</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Coreference resolution identifies all expressions in a text that refer to the same entity. &#x27;Sarah said she would help John. He thanked her.&#x27; — coreference resolution links &#x27;she&#x27; → &#x27;Sarah&#x27;, &#x27;He&#x27; → &#x27;John&#x27;, &#x27;her&#x27; → &#x27;Sarah&#x27;. This enables understanding multi-sentence text and is a prerequisite for relation extraction and knowledge graph construction.</p><p>Mention detection: the first step is identifying all mentions — noun phrases, pronouns, and named entities that potentially refer to an entity. &#x27;The company&#x27;, &#x27;Apple&#x27;, &#x27;the tech giant&#x27;, and &#x27;it&#x27; may all refer to the same entity. Neural mention detection uses a span representation model (encode all possible spans and classify which are mentions).</p><p>Coreference models: span-based neural models (e2e-coref, <code>SpanBERT</code>) represent each candidate span with its BERT contextual embedding + span length embedding, then compute compatibility scores between pairs of spans. The span with the highest compatibility score to a previous mention is its antecedent.</p><p>spaCy and neuralcoref: spaCy has a built-in coreference component in spaCy v3.5+ (experimental). neuralcoref is the popular third-party library for spaCy v2. `import <code>spacy</code>; nlp = <code>spacy</code>.load(&#x27;<code>en_coreref_web_trf</code>&#x27;); doc = nlp(text); doc._.<code>coref_clusters</code>` returns a list of clusters, each containing all coreferent mentions.</p><p>Applications: information extraction (extracting all statements about &#x27;Apple&#x27; across a long document, even when referred to as &#x27;the company&#x27; or &#x27;it&#x27;), question answering (resolving &#x27;What did he say?&#x27; requires knowing who &#x27;he&#x27; refers to), summarization (a good summary must replace pronouns with their antecedents for clarity).</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># FastCoref - efficient coreference resolution
+# pip install fastcoref spacy
+import spacy
+from fastcoref import FCoref
+nlp = spacy.load(&#x27;en_core_web_sm&#x27;)
+coref_model = FCoref(device=&#x27;cpu&#x27;)
+text = &#x27;Sarah noticed that John was struggling. She decided to help him with the project. They worked together for hours.&#x27;
+preds = coref_model.predict(texts=[text])
+# Get cluster representations
+for cluster in preds[0].get_clusters(as_strings=True):
+    print(f&#x27;Cluster: {cluster}&#x27;)
+# For each mention, find its antecedent
+for cluster in preds[0].get_clusters():
+    spans = [(start, end, text[start:end]) for start, end in cluster]
+    print(&#x27;Coreferent mentions:&#x27;, [(s, e, t) for s, e, t in spans])</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Coreference resolution is necessary for understanding any multi-sentence text. An NLP model that can&#x27;t resolve pronouns misses most of the semantic content of a document. For information extraction from long documents (medical records, legal contracts, news articles), coreference resolution determines whether &#x27;it&#x27; in sentence 50 refers to the same entity as &#x27;the company&#x27; in sentence 3.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Applying coreference to single sentences — coreference is a multi-sentence phenomenon. Running it on individual sentences from a longer document misses cross-sentence pronoun resolution. Always run on full paragraphs or documents.</li><li>Conflating coreference with NER — NER identifies entity types (&#x27;Apple&#x27; is ORG). Coreference links mentions (&#x27;Apple&#x27;, &#x27;the company&#x27;, &#x27;it&#x27;) that all refer to the same entity across the document. They are complementary: use NER to identify what type an entity is, coreference to track where it&#x27;s mentioned.</li><li>Expecting high accuracy for complex pronoun resolution — &#x27;they&#x27; in &#x27;The managers told the workers that they would get a raise&#x27; is ambiguous (managers or workers?). Modern models still struggle with these semantically complex cases. Always validate output quality on your specific domain.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Apply coreference resolution to document analysis: (1) take a 500-word news article, (2) run <code>FastCoref</code> or spaCy coreference, (3) for each coreferent cluster, identify: what entity does this cluster refer to? How many mentions does it have?, (4) implement coreference-enhanced entity tracking: for all mentions of &#x27;Apple&#x27; and all pronouns/mentions in the same cluster, extract every sentence about Apple from the article, (5) compare entity tracking with vs without coreference — how many relevant sentences does coreference resolution surface that NER alone would miss?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s2" data-progress-check>
+    <div>
+      <h2>Dependency parsing</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Dependency parsing analyzes the grammatical structure of a sentence by identifying relationships between words. Each word (except the root) has exactly one head (governor) and the relationship is labeled (subject, object, modifier, etc.). The result is a dependency tree. &#x27;The quick brown fox jumps&#x27; → &#x27;jumps&#x27; is the root, &#x27;fox&#x27; is its nsubj (nominal subject), &#x27;The&#x27;, &#x27;quick&#x27;, &#x27;brown&#x27; are modifiers of &#x27;fox&#x27;.</p><p>Dependency labels: nsubj (nominal subject), dobj/obj (direct object), amod (adjectival modifier), prep (preposition), nmod (noun modifier), compound (compound noun), conj (conjunction). The Universal Dependencies (UD) project standardizes these labels across 100+ languages, enabling multilingual parsing.</p><p>spaCy dependency parsing: `doc = nlp(&#x27;Apple acquired Shazam for $400 million&#x27;); doc[2].dep_` gives &#x27;ROOT&#x27; (acquired). `doc[0].dep_` gives &#x27;nsubj&#x27;. `doc[2].head` is the head of each token. Iterating over `<code>token.children</code>` gives all tokens that depend on it.</p><p>Applications: information extraction — extract subject-verb-object triples (&#x27;Apple acquired Shazam&#x27;). Question answering — identify what the question is asking about. Semantic role labeling — who did what to whom. Text simplification — identify main clauses vs subordinate clauses.</p><p>Constituency vs dependency parsing: constituency parsing (NLTK, <code>CoreNLP</code>) produces a hierarchical phrase structure tree (NP, VP, PP, etc.). Dependency parsing (spaCy, stanza) produces a flat tree of word-to-word relationships. Dependency parsing is faster, requires less annotation, and works better for free-word-order languages. For English NLP tasks, dependency parsing is preferred.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import spacy
+from spacy import displacy
+nlp = spacy.load(&#x27;en_core_web_sm&#x27;)
+doc = nlp(&#x27;Apple acquired Shazam for $400 million in 2018.&#x27;)
+# Print dependency tree
+for token in doc:
+    print(f&#x27;{token.text:12s} | dep: {token.dep_:10s} | head: {token.head.text:12s} | pos: {token.pos_}&#x27;)
+# Extract subject-verb-object triples
+def extract_svo(doc):
+    triples = []
+    for token in doc:
+        if token.dep_ == &#x27;ROOT&#x27; and token.pos_ == &#x27;VERB&#x27;:
+            subj = [t.text for t in token.children if t.dep_ in (&#x27;nsubj&#x27;, &#x27;nsubjpass&#x27;)]
+            obj = [t.text for t in token.children if t.dep_ in (&#x27;dobj&#x27;, &#x27;obj&#x27;, &#x27;pobj&#x27;)]
+            if subj and obj:
+                triples.append((subj[0], token.text, obj[0]))
+    return triples
+triples = extract_svo(doc)
+for s, v, o in triples:
+    print(f&#x27;{s} → {v} → {o}&#x27;)  # Apple → acquired → Shazam
+# Visualize (in Jupyter)
+# displacy.render(doc, style=&#x27;dep&#x27;, jupyter=True)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Dependency parsing enables structured information extraction from free text without manual pattern writing. Extracting &#x27;who acquired what&#x27; from thousands of news articles requires a systematic way to find the subject and object of acquisition verbs — dependency parsing provides this systematically. This is the foundation of knowledge graph construction and open information extraction.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Assuming the ROOT is always the main verb — in questions (&#x27;What did Apple acquire?&#x27;), the auxiliary verb may be ROOT. In some complex sentences, a noun phrase is ROOT. Always check the POS tag of the ROOT, not just its dependency label.</li><li>Not handling passives — in passive constructions (&#x27;Shazam was acquired by Apple&#x27;), the subject of &#x27;acquired&#x27; is &#x27;Shazam&#x27; (the patient, not the agent). Use nsubjpass (passive subject) to detect passives and swap the semantic roles accordingly.</li><li>Using spaCy&#x27;s small model (<code>en_core_web_sm</code>) for accuracy-critical applications — <code>en_core_web_sm</code> is fast but less accurate than <code>en_core_web_trf</code> (transformer-based). For production information extraction, use the transformer model.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a relation extraction pipeline: (1) parse 1000 business news sentences with spaCy, (2) extract all (subject, verb, object) triples, (3) filter for acquisition/merger verbs (acquired, merged, bought, purchased), (4) for each triple, also extract the prepositional phrase children (price, date, location), (5) build a mini knowledge graph: entities as nodes, acquisitions as directed edges with price and date attributes, (6) visualize the knowledge graph with networkx.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s3" data-progress-check>
+    <div>
+      <h2>Relation extraction</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Relation extraction identifies semantic relationships between entities in text. &#x27;Apple, headquartered in Cupertino, was founded by Steve Jobs.&#x27; Relations: (Apple, headquarters, Cupertino), (Apple, foundedBy, <code>Steve_Jobs</code>). Relation extraction converts unstructured text into structured triples that populate knowledge graphs.</p><p>Approaches: rule-based (fast, high precision, low recall — patterns like &#x27;X, headquartered in Y&#x27;), supervised classification (train a classifier: is there a relation between entity pair X, Y? What type?), and generative (use an LLM to generate all relations from a passage in JSON format — highest quality, highest cost).</p><p>REBEL: a generative relation extraction model (BARTbased) that extracts (subject, relation, object) triples from any text. Fine-tuned on <code>WebNLG</code> and NYT datasets. `model = <code>AutoModelForSeq2SeqLM</code>.<code>from_pretrained</code>(&#x27;Babelscape/rebel-large&#x27;)`. Input: text. Output: &#x27;&lt;triplet&gt; Apple &lt;subj&gt; Cupertino &lt;rel&gt; headquarters&#x27;.</p><p><code>OpenIE</code> vs closed-domain RE: Open Information Extraction (<code>OpenIE</code>) extracts relations without a predefined ontology — any (subject, relation, object) where the relation is expressed explicitly. Closed-domain RE uses a predefined set of relation types (headquarters, foundedBy, employedBy) and trains a classifier for each type. For knowledge graph population: use closed-domain RE. For free-form extraction: use <code>OpenIE</code> or LLMs.</p><p>LLM-based relation extraction: with few-shot prompting, an LLM can extract relations for any predefined ontology without training data. Prompt: &#x27;Extract all (entity1, relation, entity2) triples from the text. Relation types: headquarters, foundedBy, productOf, employedAt.&#x27; Output as JSON array. This approach achieves high accuracy with minimal setup but at LLM API cost.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># LLM-based relation extraction
+import anthropic
+import json
+client = anthropic.Anthropic()
+def extract_relations(text: str, relation_types: list) -&gt; list:
+    prompt = f&quot;&quot;&quot;Extract all entity relationships from the text.
+Relation types allowed: {&#x27;, &#x27;.join(relation_types)}
+Output format: JSON array of {{&quot;subject&quot;: str, &quot;relation&quot;: str, &quot;object&quot;: str}}
+Text: {text}
+&quot;&quot;&quot;
+    response = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;, max_tokens=500,
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: prompt}]
+    )
+    text_response = response.content[0].text
+    # Parse JSON from response
+    import re
+    json_match = re.search(r&#x27;\[.*?\]&#x27;, text_response, re.DOTALL)
+    if json_match:
+        return json.loads(json_match.group())
+    return []
+relations = extract_relations(
+    &#x27;Google, founded by Larry Page and Sergey Brin, is headquartered in Mountain View. The company acquired YouTube in 2006.&#x27;,
+    [&#x27;foundedBy&#x27;, &#x27;headquarters&#x27;, &#x27;acquired&#x27;]
+)
+for rel in relations:
+    print(f&#x27;{rel[&quot;subject&quot;]} → [{rel[&quot;relation&quot;]}] → {rel[&quot;object&quot;]}&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Relation extraction powers knowledge graphs that make information queryable. Instead of searching text, you can query a structured database: &#x27;which companies acquired companies worth &gt; $1B?&#x27;. This is used for financial analysis (acquisition networks), medical research (drug-disease interactions), and enterprise search. LLM-based relation extraction makes it accessible without a labeled training dataset.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating relation extraction as pure NLP without domain knowledge — the relation &#x27;X acquired Y&#x27; requires knowing whether X and Y are both companies. Always combine NER (entity type) with relation extraction (relationship type) for accurate extraction.</li><li>Not handling negated relations — &#x27;Apple did not acquire Beats Music&#x27; contains &#x27;Apple&#x27;, &#x27;acquire&#x27;, &#x27;Beats Music&#x27; — a rule-based extractor might incorrectly extract (Apple, acquired, Beats Music). Always check for negation markers before asserting a relation.</li><li>Over-relying on syntactic patterns for complex sentences — &#x27;Apple&#x27;s 2014 acquisition of Beats Music by its senior team&#x27; is complex. Simple subject-verb-object extraction fails. Use a generative approach (REBEL or LLM) for complex sentences.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a knowledge graph from news: (1) collect 200 news articles about company mergers and acquisitions, (2) extract (subject, relation, object) triples using LLM-based extraction with relation types: acquired, investedIn, partnersWith, foundedBy, employedAt, (3) validate: manually check 20 extracted triples for accuracy, (4) deduplicate: some triples may appear multiple times across articles, (5) build a networkx graph from the triples, visualize it, find: which company has the most acquisitions? Which companies are connected to each other through multiple relationships?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s4" data-progress-check>
+    <div>
+      <h2>Event detection</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Event detection identifies occurrences of specific events in text: &#x27;Apple announced Q3 earnings&#x27; (EARNINGS_RELEASE), &#x27;CEO resigned effective Friday&#x27; (LEADERSHIP_CHANGE), &#x27;the earthquake struck the region&#x27; (NATURAL_DISASTER). Event detection is a classification task: given a sentence, which events are present, and what are their triggers (the word that indicates the event)?</p><p>ACE event types: the ACE (Automatic Content Extraction) benchmark defines event types like CONFLICT (Attack, Demonstrate), MOVEMENT (Transport), TRANSACTION (Transfer-Money), PERSONNEL (Elect, Start-Position, End-Position). Fine-tuning BERT on ACE produces state-of-the-art event detection.</p><p>Trigger identification: the trigger is the word that signals the event. In &#x27;Apple announced earnings&#x27;, &#x27;announced&#x27; is the trigger for a COMMUNICATION event. In &#x27;Steve Jobs died in 2011&#x27;, &#x27;died&#x27; is the trigger for a LIFE:DIE event. Event detection models identify both the trigger and its event type.</p><p>Argument extraction: beyond detecting that an event occurred, extract who/what/where/when. &#x27;Microsoft acquired Activision Blizzard for $69B in 2023.&#x27; Event: TRANSACTION:Transfer-Money. Trigger: &#x27;acquired&#x27;. Buyer: &#x27;Microsoft&#x27; (BUYER role), Target: &#x27;Activision Blizzard&#x27; (ARTIFACT role), Price: &#x27;$69B&#x27; (PRICE role), Date: &#x27;2023&#x27; (TIME role). Argument extraction is the hardest part of event extraction.</p><p>LLM-based event extraction: LLMs can extract events in a structured format with few-shot prompting, without training on labeled ACE data. Prompt: &#x27;Identify all events in the text. For each event, provide: <code>event_type</code>, trigger, and all arguments with their roles.&#x27; Output as JSON. This approach is flexible (works for any event ontology) but more expensive than fine-tuned models.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># LLM-based event extraction
+import anthropic
+import json
+client = anthropic.Anthropic()
+def extract_events(text: str) -&gt; list:
+    prompt = f&quot;&quot;&quot;Extract all events from this text.
+For each event provide: event_type, trigger_word, and a dictionary of arguments (role: entity_or_value).
+Focus on: business events (acquisition, earnings, leadership change, product launch, bankruptcy).
+Output as JSON array.
+Text: {text}&quot;&quot;&quot;
+    response = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;, max_tokens=800,
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: prompt}]
+    )
+    import re
+    json_match = re.search(r&#x27;\[.*?\]&#x27;, response.content[0].text, re.DOTALL)
+    if json_match: return json.loads(json_match.group())
+    return []
+events = extract_events(&#x27;Microsoft acquired Activision Blizzard for $69 billion. Following the announcement, CEO Phil Spencer said the deal would close in 2023.&#x27;)
+for event in events:
+    print(f&#x27;Event: {event.get(&quot;event_type&quot;)} | Trigger: {event.get(&quot;trigger_word&quot;)}&#x27;)
+    print(f&#x27;Arguments: {event.get(&quot;arguments&quot;, {})}&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Event detection is how intelligent systems monitor what happens in the world from text streams. Financial firms use event detection to track earnings releases, M&amp;A activity, and leadership changes for trading signals. News aggregators use it to categorize articles by event type. Crisis response systems detect disaster events from social media to coordinate aid. Automating event detection from text streams provides real-time situational awareness at scale.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Conflating event detection with topic classification — topic classification says &#x27;this article is about business&#x27;. Event detection says &#x27;this article contains an ACQUISITION event triggered by acquired with arguments Microsoft (buyer), Activision (target), $69B (price)&#x27;. Event detection is more structured and specific.</li><li>Ignoring implicit events — some events are implied, not explicitly stated. &#x27;After the crash, three people were hospitalized&#x27; implies a CONFLICT:Attack or TRANSPORTATION:Crash event even though &#x27;crash&#x27; is the only trigger. Implicit event detection is harder and requires commonsense reasoning.</li><li>Not evaluating argument extraction separately from trigger detection — a model can correctly detect &#x27;there is an acquisition event&#x27; but incorrectly extract the buyer and target. Report trigger F1 and argument F1 separately.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an event monitoring system: (1) collect 200 financial news articles, (2) define 5 event types: ACQUISITION, EARNINGS, LEADERSHIP_CHANGE, PRODUCT_LAUNCH, BANKRUPTCY, (3) use LLM extraction to identify events and their arguments in each article, (4) build a timeline: events sorted by date — what happened when?, (5) for ACQUISITION events: build a graph of acquirer → target relationships, (6) evaluate accuracy: manually label 30 articles and compare to LLM extraction — what is the precision and recall?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s5" data-progress-check>
+    <div>
+      <h2>Text clustering</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Text clustering groups documents by topic, theme, or style without labeled training data. It enables: discovering major themes in a large corpus (1M customer reviews → 15 topic clusters), grouping similar support tickets for routing, and finding duplicate or near-duplicate content. The core approach: embed documents → cluster embeddings.</p><p>Embedding for clustering: the embedding model determines how similar documents look to the clustering algorithm. A TF-IDF vector will cluster documents sharing exact keywords. A sentence embedding (all-<code>MiniLM</code>-L6-v2) will cluster documents sharing semantic meaning (even if they use different words). For topic-based clustering, sentence embeddings are superior.</p><p>K-means for text: the simplest approach. Embed all documents, run K-means on embeddings. Works well for well-separated clusters. Limitation: must specify K in advance, assumes spherical clusters. For exploratory analysis where K is unknown, use HDBSCAN or BERTopic.</p><p>BERTopic: the state-of-the-art approach for topic modeling with transformer embeddings. Pipeline: BERT embeddings → UMAP dimensionality reduction (20D) → HDBSCAN clustering → c-TF-IDF to extract representative keywords per cluster. BERTopic automatically determines the number of topics (unlike K-means), handles noise (HDBSCAN marks outliers), and provides interpretable topic labels.</p><p>Evaluating text clusters: topic coherence (are the words in each topic semantically related?), topic diversity (are topics distinct from each other?), human evaluation (do domain experts agree that the clusters make sense?). For quantitative metrics: silhouette score on embeddings, perplexity (for LDA), and NPMI (Normalized Pointwise Mutual Information) for topic word coherence.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import SentenceTransformer
+from sklearn.cluster import KMeans
+import numpy as np
+import pandas as pd
+# Embed documents
+model = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)
+documents = [...]  # list of text strings
+embeddings = model.encode(documents, batch_size=64, show_progress_bar=True)
+# K-means clustering
+k = 10
+kmeans = KMeans(n_clusters=k, random_state=42, n_init=10).fit(embeddings)
+labels = kmeans.labels_
+# Extract representative documents per cluster
+df = pd.DataFrame({&#x27;text&#x27;: documents, &#x27;cluster&#x27;: labels, &#x27;embedding&#x27;: list(embeddings)})
+for cluster_id in range(k):
+    cluster_docs = df[df[&#x27;cluster&#x27;] == cluster_id]
+    print(f&#x27;\nCluster {cluster_id} ({len(cluster_docs)} docs):&#x27;)
+    print(cluster_docs[&#x27;text&#x27;].iloc[:3].tolist())</code></pre><pre><code># BERTopic
+from bertopic import BERTopic
+topic_model = BERTopic(
+    embedding_model=&#x27;all-MiniLM-L6-v2&#x27;,
+    min_topic_size=15,    # minimum documents per topic
+    nr_topics=&#x27;auto&#x27;,     # automatic topic number
+    verbose=True
+)
+topics, probs = topic_model.fit_transform(documents)
+# Topic info
+print(topic_model.get_topic_info().head(15))
+# Most common words per topic
+for topic_id in range(min(5, len(topic_model.get_topics()))):
+    words = [word for word, _ in topic_model.get_topic(topic_id)[:8]]
+    print(f&#x27;Topic {topic_id}: {&quot; | &quot;.join(words)}&#x27;)
+# Visualize topics (requires plotly)
+topic_model.visualize_topics()  # interactive scatter of topics</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Text clustering is one of the most valuable unsupervised NLP techniques for business. When you have 500,000 customer support tickets and want to understand what customers are struggling with, you can&#x27;t read them all. Text clustering with BERTopic gives you the 20 major themes in 5 minutes. This drives product decisions, documentation priorities, and support team organization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Clustering raw text without embeddings — TF-IDF + K-means works but misses semantic groupings. &#x27;Cannot login&#x27; and &#x27;password reset failure&#x27; would be in different clusters with TF-IDF but the same cluster with sentence embeddings. Always use semantic embeddings for meaningful topic clustering.</li><li>Not reducing dimensionality before clustering — clustering in 384-dimensional embedding space is slow and suffers from the curse of dimensionality. UMAP to 10-50 dimensions before K-means or HDBSCAN dramatically improves cluster quality and speed.</li><li>Forcing a fixed K without validation — K=20 might produce 15 meaningful clusters and 5 garbage clusters that capture noise. Use silhouette score or HDBSCAN (which automatically determines K) to avoid forcing the data into artificial K clusters.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Cluster customer support tickets: (1) get 1,000 support ticket texts (generate synthetic or use a real dataset), (2) embed with all-<code>MiniLM</code>-L6-v2, (3) reduce to 2D with UMAP for visualization — plot all documents colored by no cluster (just to see the structure), (4) apply BERTopic — how many topics does it find? Are they interpretable?, (5) for each topic, extract the most representative documents and the top-8 keywords — assign a human-readable label to each topic, (6) build a simple routing rule: incoming support tickets are assigned to the most similar cluster — measure classification accuracy on a labeled holdout set.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s6" data-progress-check>
+    <div>
+      <h2>Topic modeling</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Topic modeling is an unsupervised NLP technique that discovers latent themes (topics) in a collection of documents. Each document is represented as a mixture of topics, and each topic is a distribution over words. Given 10,000 news articles, topic modeling might discover 20 topics: one about sports (football, player, team, goal), one about politics (election, vote, senate), one about technology (AI, software, startup). This is useful for organizing and understanding large text corpora without labels.</p><p>LDA (Latent Dirichlet Allocation) is the classic topic model. It assumes: (1) each topic is a distribution over words (topic &#x27;sports&#x27; has high probability for &#x27;football&#x27;, &#x27;player&#x27;, etc.), (2) each document is a distribution over topics (a sports article is 80% sports topic, 10% business topic, 10% other), (3) each word in a document is generated by first sampling a topic from the document&#x27;s topic distribution, then sampling a word from that topic&#x27;s word distribution. The model is fit using variational inference or Gibbs sampling.</p><p>Choosing the number of topics K is the main challenge in LDA. Too few topics: distinct themes are merged. Too many topics: topics become redundant or nonsensical. Evaluation metrics: coherence score (how often do the top words in a topic co-occur in the corpus? Higher = more interpretable topics — typically <code>c_v</code> or <code>u_mass</code> coherence). Perplexity (how well the model fits held-out documents — lower = better, but doesn&#x27;t correlate well with interpretability). In practice, try K = 5, 10, 20, 50 and manually inspect the top words per topic.</p><p>Modern alternatives to LDA: BERTopic uses BERT embeddings + UMAP + HDBSCAN clustering to discover topics in embedding space, then extracts representative keywords using TF-IDF within each cluster. BERTopic produces more coherent, semantically meaningful topics than LDA, handles hierarchical topics, and works well on short texts (tweets, reviews) where LDA struggles. NMF (Non-negative Matrix Factorization) is another alternative — faster than LDA, good for short texts.</p><p>Applications: document organization and search (tag articles by topic for navigation), customer feedback analysis (discover what customers complain about without predefined categories), content recommendation (recommend articles from the same topic), trend analysis (how has the prevalence of each topic changed over time). In business intelligence, topic modeling on customer reviews and support tickets surfaces actionable themes without manual labeling.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>pip install gensim
+from gensim import corpora, models
+texts = [[&#x27;machine&#x27;, &#x27;learning&#x27;, &#x27;data&#x27;], [&#x27;election&#x27;, &#x27;vote&#x27;, &#x27;candidate&#x27;], ...]
+dictionary = corpora.Dictionary(texts)
+corpus = [dictionary.doc2bow(text) for text in texts]
+lda = models.LdaModel(corpus, num_topics=10, id2word=dictionary, passes=10, random_state=42)</code></pre><pre><code>Inspect topics: for idx, topic in lda.print_topics(-1):
+    print(f&#x27;Topic {idx}: {topic}&#x27;)</code></pre><pre><code>Coherence: from gensim.models import CoherenceModel
+cm = CoherenceModel(model=lda, texts=texts, dictionary=dictionary, coherence=&#x27;c_v&#x27;)
+print(f&#x27;Coherence: {cm.get_coherence():.4f}&#x27;)</code></pre><pre><code>BERTopic: from bertopic import BERTopic
+topic_model = BERTopic(language=&#x27;english&#x27;, calculate_probabilities=True)
+topics, probs = topic_model.fit_transform(docs)
+topic_model.get_topic_info()</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Topic modeling is a powerful unsupervised technique for making sense of large text corpora. When you receive a million customer reviews, topic modeling reveals what customers care about without requiring any labels. It is the first analysis step for text dataset exploration.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not preprocessing text before LDA — LDA is a bag-of-words model; remove stopwords, punctuation, and low-frequency words. Lemmatize words so &#x27;running&#x27; and &#x27;runs&#x27; map to the same token.</li><li>Choosing K without checking coherence — always plot coherence vs K and choose K where coherence is high and stable.</li><li>Interpreting topics by their top-1 word only — look at the top 10–15 words to understand the theme. The first word alone is often uninformative.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Apply topic modeling to a corpus of 10,000 BBC News articles. Preprocess: lowercase, remove stopwords, lemmatize. Try LDA with K=5, 10, 20, 50. Plot coherence score vs K. Choose the best K. For each topic, list the top 10 words and assign a human-readable label. Then try BERTopic. Compare: which produces more interpretable topics? Compute the dominant topic for each article and visualize the topic distribution over time (which topics were most prevalent in which months?).</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s7" data-progress-check>
+    <div>
+      <h2>LDA</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>LDA (Latent Dirichlet Allocation) is the classical probabilistic topic model. Each document is modeled as a mixture of topics, and each topic is a distribution over words. LDA assumes a generative process: (1) choose topic proportions θ for the document, (2) for each word, choose a topic z from θ, (3) choose the word from the topic distribution φ_z. The model learns θ (document-topic) and φ (topic-word) by inverting this process on observed documents.</p><p>LDA vs neural topic models (BERTopic): LDA uses bag-of-words and ignores word order/semantics. &#x27;Machine learning&#x27; and &#x27;learning machine&#x27; have the same LDA representation. BERTopic uses contextual embeddings and captures semantic meaning. In practice: BERTopic typically produces more coherent and interpretable topics. LDA is still used for: interpretability requirements, when compute is limited, when you have very clean domain-specific text, and when you need a probabilistic document-topic distribution.</p><p>Key hyperparameters: <code>n_topics</code> (number of topics — requires the same K selection as K-means), alpha (controls topic diversity per document: low alpha = each document focuses on few topics, high alpha = topics spread evenly), beta (controls word diversity per topic: low beta = each topic focuses on few words, high beta = words spread evenly). Typical values: alpha = 50/<code>n_topics</code>, beta = 0.01.</p><p>Coherence score: measures how semantically similar the top words in each topic are. Higher is better. Computed as the average NPMI (Normalized Pointwise Mutual Information) between word pairs in each topic. Use gensim&#x27;s <code>CoherenceModel</code> with metric=&#x27;<code>c_v</code>&#x27; for the standard coherence measure. Tune <code>n_topics</code> by maximizing coherence score.</p><p>pyLDAvis: the standard LDA visualization tool. Creates an interactive 2D map of topics (by inter-topic distance) plus word frequency charts for each topic. Topics that appear as distinct bubbles in the visualization are well-separated. Topics that overlap share vocabulary and could be merged.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from gensim import corpora, models
+from gensim.models import CoherenceModel
+from gensim.parsing.preprocessing import remove_stopwords, preprocess_string
+# Preprocessing
+preprocessed_docs = [preprocess_string(doc) for doc in documents]
+# Create dictionary and corpus
+dictionary = corpora.Dictionary(preprocessed_docs)
+dictionary.filter_extremes(no_below=5, no_above=0.5)  # remove rare and common words
+corpus = [dictionary.doc2bow(doc) for doc in preprocessed_docs]
+# Train LDA
+print(&#x27;Training LDA...&#x27;)
+lda_model = models.LdaModel(
+    corpus=corpus, id2word=dictionary,
+    num_topics=10, random_state=42,
+    passes=10, alpha=&#x27;auto&#x27;, eta=&#x27;auto&#x27;
+)
+# Print topics
+for i, topic in lda_model.print_topics(num_topics=10, num_words=8):
+    print(f&#x27;Topic {i}: {topic}&#x27;)
+# Coherence score
+coherence = CoherenceModel(model=lda_model, texts=preprocessed_docs, dictionary=dictionary, coherence=&#x27;c_v&#x27;).get_coherence()
+print(f&#x27;Coherence score: {coherence:.4f}&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>LDA is foundational to understanding how probabilistic topic models work and is still widely used in the NLP field. Even though BERTopic often outperforms LDA in practice, LDA&#x27;s probabilistic interpretation (each document is a mixture of topics with known proportions) is valuable for downstream analysis (how much of document X is about topic Y?). Understanding LDA also helps you understand the limitations of bag-of-words approaches that motivate transformer-based methods.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not tuning <code>n_topics</code> — LDA with <code>n_topics</code>=5 on a diverse corpus will produce 5 overly broad topics. Tune <code>n_topics</code> by training with <code>n_topics</code> in [5, 10, 20, 50] and selecting the value with the highest coherence score.</li><li>Not filtering stopwords and very common words — &#x27;the&#x27;, &#x27;a&#x27;, &#x27;is&#x27; appear in every document. Without removing them, they dominate all topics. Use <code>dictionary.filter_extremes</code>(<code>no_above</code>=0.5) to remove words that appear in more than 50% of documents.</li><li>Using LDA on very short documents (tweets, titles) — LDA needs enough words per document to estimate topic mixtures. For tweets (&lt; 30 words), LDA often fails. Use a tweet-specific variant (Twitter-LDA) or aggregate similar short documents before applying LDA.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare LDA and BERTopic on the same corpus: (1) collect 5,000 news articles from multiple categories, (2) train LDA with <code>n_topics</code>=15 (after tuning), (3) train BERTopic on the same corpus, (4) compare: coherence scores for both, human interpretability of top topics, time to train, (5) visualize LDA with pyLDAvis and BERTopic with <code>topic_model.visualize_topics()</code> — which visualization is more informative?, (6) for 50 documents, compare their LDA topic mixture vs their BERTopic cluster assignment — how often do they agree?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s8" data-progress-check>
+    <div>
+      <h2>Language identification</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Language identification (language detection) determines which natural language a text is written in. It is the first step in any multilingual NLP pipeline: route text to language-specific models, apply language-appropriate preprocessing, or filter by language. Modern language identification uses character n-grams and short-text models that work with as few as 10-20 characters.</p><p>langdetect: port of Google&#x27;s language-detect library. Supports 55 languages. `detect(text)` returns the language code. `<code>detect_langs</code>(text)` returns a list of (language, probability) pairs. Fast and accurate for clean text. Unreliable for: code (Python, SQL), mixed-language text, text with many proper nouns, and very short text.</p><p>lingua: newer library designed for accuracy on short text (10-15 characters) and ambiguous cases. Supports 75 languages. Uses a combination of statistical n-gram models and rule-based heuristics. More accurate than langdetect on edge cases at the cost of slightly more compute. `from lingua import <code>LanguageDetectorBuilder</code>; detector = <code>LanguageDetectorBuilder.from_all_languages()</code>.<code>build()</code>`.</p><p>CLD3 (Compact Language Detector): Google&#x27;s fast language detector. The chromium-based detector used in production for web content. Available as pycld3 Python binding. Very fast and optimized for short web text. Outputs ISO 639-1 language codes with probabilities.</p><p>Handling edge cases: mixed-language text (English with Spanish phrases) — no single language detector handles this well. Custom solution: sliding window over sentences, detect each independently. Code and technical text — all detectors fail on SQL/Python. Solution: detect code language separately (pygments), fallback to english for undetected. Very short text (&lt; 20 chars) — any detector will be unreliable. Set a minimum text length threshold before detection.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Multiple language detection libraries
+# pip install langdetect lingua-language-detector
+from langdetect import detect, detect_langs, DetectorFactory
+DetectorFactory.seed = 42  # for reproducibility
+# langdetect
+texts = [&#x27;This is English text.&#x27;, &#x27;Ceci est du texte francais.&#x27;, &#x27;Das ist deutscher Text.&#x27;, &#x27;Este es texto espanol.&#x27;, &#x27;これは日本語のテキストです。&#x27;]
+for text in texts:
+    try:
+        lang = detect(text)
+        langs = detect_langs(text)
+        print(f&#x27;{text[:30]:30s} → {lang} ({langs[0]})&#x27;)
+    except Exception as e:
+        print(f&#x27;Error: {e}&#x27;)
+# lingua (more accurate on short text)
+from lingua import LanguageDetectorBuilder, Language
+detector = LanguageDetectorBuilder.from_all_languages().build()
+for text in texts:
+    lang = detector.detect_language_of(text)
+    conf = detector.compute_language_confidence(text, lang) if lang else 0
+    print(f&#x27;{text[:30]:30s} → {lang.iso_code_639_1.name if lang else &quot;UNKNOWN&quot;} (conf: {conf:.3f})&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Language identification is a critical preprocessing step for any global NLP system. Sending French text to an English-only model, applying English stopwords to Spanish text, or routing German support tickets to an English-only team are all failures caused by missing or incorrect language detection. Adding language identification is typically one line of code but prevents these silent failures in multilingual pipelines.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not handling detection failures — both langdetect and lingua raise exceptions on empty strings and sometimes on very short text. Always wrap in try-except and fall back to a default language or &#x27;unknown&#x27; flag.</li><li>Using langdetect without fixing the seed — langdetect uses random initialization, so the same text can return different results across runs. Fix with `<code>DetectorFactory</code>.seed = 0` for reproducible results.</li><li>Not validating language distribution in your dataset — after language detection, always check: what fraction of your dataset is in each language? If 5% is in an unexpected language (Tagalog, Arabic), you may need to handle these differently or filter them.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multilingual routing pipeline: (1) collect 500 text samples in 5 languages (English, French, German, Spanish, Italian), (2) detect the language of each with langdetect and lingua, (3) measure accuracy (how often does each detector correctly identify the language?), (4) identify failure cases: which language pairs are most confused? On what types of text does detection fail? (5) implement a routing function: detected language → appropriate sentiment model (or log language and route to English model if unsupported).</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s9" data-progress-check>
+    <div>
+      <h2>Text augmentation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Text augmentation creates additional training examples by applying transformations to existing text. It&#x27;s used when labeled data is scarce (adding augmented examples increases the effective training set) and when robustness is needed (augmented examples with word substitutions train the model to handle synonyms and paraphrases). Text augmentation is more constrained than image augmentation — it must preserve meaning while changing surface form.</p><p>Synonym replacement: replace random non-stopwords with synonyms from <code>WordNet</code>. &#x27;The movie was great&#x27; → &#x27;The film was excellent.&#x27; Implementation: nlpaug or textaugment libraries handle this. Limit to 10-30% of words to preserve meaning. Synonyms from <code>WordNet</code> are sometimes odd (&#x27;movie&#x27; → &#x27;film&#x27; is good; &#x27;movie&#x27; → &#x27;video recording&#x27; is too weird).</p><p>Back-translation: translate to an intermediate language and back. &#x27;The model performs well&#x27; → French: &#x27;Le modèle fonctionne bien&#x27; → English: &#x27;The model works well.&#x27; Produces natural-sounding paraphrases that preserve meaning. High quality but slow (requires translation calls). Use Google Translate, <code>DeepL</code>, or Helsinki-NLP <code>transformers</code> for offline translation.</p><p>EDA (Easy Data Augmentation): four simple operations: (1) SR (Synonym Replacement): replace n words with synonyms. (2) RI (Random Insertion): insert a random synonym of a random word. (3) RS (Random Swap): swap two words. (4) RD (Random Deletion): randomly delete words with probability p. EDA paper showed these simple augmentations improve text classification accuracy by 2-3% on small datasets.</p><p>LLM-based augmentation: generate paraphrases using an LLM. &#x27;Rephrase the following while preserving meaning: [text]&#x27;. LLM paraphrases are the highest quality augmentation — semantically identical but surface-form varied. The trade-off: cost and latency. For 10,000 training examples, generating 3 paraphrases each = 30,000 LLM API calls.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># pip install nlpaug
+import nlpaug.augmenter.word as naw
+import nlpaug.augmenter.sentence as nas
+# Synonym replacement
+aug_syn = naw.SynonymAug(aug_src=&#x27;wordnet&#x27;, aug_max=3)  # replace up to 3 words
+original = &#x27;The quick brown fox jumps over the lazy dog&#x27;
+augmented = [aug_syn.augment(original)[0] for _ in range(3)]
+print(&#x27;Original:&#x27;, original)
+for a in augmented: print(&#x27;Augmented:&#x27;, a)
+# Back-translation (using Helsinki-NLP)
+from transformers import pipeline
+translate_en_to_fr = pipeline(&#x27;translation&#x27;, model=&#x27;Helsinki-NLP/opus-mt-en-fr&#x27;)
+translate_fr_to_en = pipeline(&#x27;translation&#x27;, model=&#x27;Helsinki-NLP/opus-mt-fr-en&#x27;)
+def back_translate(text, src_lang=&#x27;en&#x27;, pivot_lang=&#x27;fr&#x27;):
+    to_pivot = translate_en_to_fr(text)[0][&#x27;translation_text&#x27;]
+    back = translate_fr_to_en(to_pivot)[0][&#x27;translation_text&#x27;]
+    return back
+print(&#x27;Back-translated:&#x27;, back_translate(original))</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Text augmentation is essential when you have few labeled examples (50-500 per class) and need to improve model performance without collecting more labels. Synonym replacement and back-translation are standard augmentation techniques in NLP papers and production systems. For low-resource languages and niche domains, augmentation can provide 5-15% improvement in classification accuracy, which can mean the difference between a usable and unusable model.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Augmenting too aggressively — replacing 50% of words with synonyms often produces text with wrong meaning or grammatically odd phrasing. Limit augmentation to 10-20% of words per sentence. Test augmented examples manually to ensure meaning is preserved.</li><li>Applying augmentation to validation and test sets — augmentation is only for the training set. The validation and test sets must contain original, unmodified text to give an honest estimate of performance on real data.</li><li>Using synonym replacement for domain-specific text — <code>WordNet</code> synonyms are general-purpose. For medical text, &#x27;hypertension&#x27; synonyms are not &#x27;blood pressure disorder&#x27; — the clinical synonym is wrong. Use domain-specific resources or back-translation, which preserves meaning more reliably than synonym substitution.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare augmentation techniques for text classification: (1) take a small training set (200 examples per class), (2) apply: no augmentation (baseline), EDA (4 augmentations per example), back-translation (2 augmentations per example), LLM paraphrase (3 per example, using an LLM), (3) train a logistic regression on TF-IDF features for each augmented dataset, (4) evaluate on the same held-out test set — which augmentation technique provides the greatest accuracy improvement? (5) measure augmentation time and cost — which provides the best quality-cost tradeoff?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="advanced-nlp-and-information-extraction-s10" data-progress-check>
+    <div>
+      <h2>Multilingual NLP</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Multilingual NLP models process text in multiple languages within a single model. Rather than training separate models for each language, multilingual models learn shared representations across languages. The key insight: many linguistic structures (syntax, semantics) are universal across languages, and a model trained on enough multilingual data learns to represent them in a shared space.</p><p>Multilingual BERT (mBERT): trained on Wikipedia text from 104 languages with a shared vocabulary (119,547 <code>WordPiece</code> tokens) and shared model weights. Languages share a single embedding space — similar sentences in different languages map to similar vectors. Fine-tuning on one language often generalizes to related languages (cross-lingual transfer).</p><p>XLM-<code>RoBERTa</code> (XLM-R): the state-of-the-art multilingual model — <code>RoBERTa</code> architecture trained on 2.5TB of web text from 100 languages. Significantly outperforms mBERT, especially for low-resource languages. XLM-R-large (550M parameters) achieves near monolingual performance on many tasks.</p><p>Zero-shot cross-lingual transfer: fine-tune an XLM-R model on an English task (NER, sentiment, QA), then evaluate directly on the same task in French, Chinese, or German without any target-language labeled data. This works remarkably well for structurally similar languages (French, German, Spanish) but degrades for distant languages (Japanese, Arabic).</p><p>Practical considerations: tokenization — multilingual models use a shared <code>SentencePiece</code> vocabulary. Less common languages get fewer vocabulary tokens and are over-segmented (more subword splits per word), which hurts performance. Language identification — langdetect or lingua are fast language detection libraries. Always identify the language and route to the appropriate model (or multilingual model) in production.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import pipeline
+# Multilingual sentiment analysis
+sentiment = pipeline(&#x27;sentiment-analysis&#x27;, model=&#x27;cardiffnlp/twitter-xlm-roberta-base-sentiment&#x27;)
+texts = [
+    &#x27;This is amazing!&#x27;,           # English
+    &#x27;C est magnifique!&#x27;,          # French
+    &#x27;Das ist fantastisch!&#x27;,       # German
+    &#x27;Esto es increible!&#x27;,         # Spanish
+]
+for text in texts:
+    result = sentiment(text)[0]
+    print(f&#x27;{text[:30]:30s} → {result[&quot;label&quot;]} ({result[&quot;score&quot;]:.3f})&#x27;)
+# Cross-lingual NER: fine-tuned on English, tested on Spanish
+ner = pipeline(&#x27;ner&#x27;, model=&#x27;Babelscape/wikineural-multilingual-ner&#x27;, aggregation_strategy=&#x27;simple&#x27;)
+spanish_text = &#x27;Google fue fundado por Larry Page en California.&#x27;
+print(ner(spanish_text))</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Multilingual NLP is essential for global products. A sentiment analyzer that only works in English cannot handle customer reviews from France or Germany. Building separate per-language models is expensive and inconsistent. Multilingual models like XLM-R provide a single model that handles 100 languages, with minimal additional annotation required for each language through cross-lingual transfer.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Expecting equal performance across all 100 languages — XLM-R achieves 80-90% of English performance for high-resource languages (French, German, Spanish) but may only achieve 60-70% for very low-resource languages. Always evaluate on the target language.</li><li>Not accounting for code-switching — multilingual text often mixes languages (&#x27;I love la vida loca!&#x27;). Standard monolingual tokenizers fail here. Use XLM-R which handles this naturally, or detect and segment by language first.</li><li>Ignoring right-to-left languages — Arabic and Hebrew are right-to-left. UI rendering, text direction, and tokenization all behave differently. Test multilingual models explicitly on RTL text.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multilingual text classifier: (1) collect labeled data in 3 languages (English, French, Spanish) — either translate an English dataset or use a multilingual dataset, (2) fine-tune XLM-R-base on English-only labels, (3) evaluate zero-shot on French and Spanish test sets, (4) add French labels to training (50% English, 50% French), re-evaluate on Spanish — does adding French data improve Spanish performance?, (5) compare: XLM-R-base vs mBERT — which achieves better cross-lingual transfer?</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Advanced NLP and information extraction</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="nlp-with-transformers-and-bert.html">Previous</a><a class="btn primary" href="llm-foundations.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

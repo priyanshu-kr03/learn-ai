@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NLP with transformers and BERT | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">BERT architecture</a>
+<a href="#s2">Masked language modeling</a>
+<a href="#s3">Next sentence prediction</a>
+<a href="#s4">Subword tokenization</a>
+<a href="#s5">BPE and WordPiece</a>
+<a href="#s6">Fine-tuning BERT</a>
+<a href="#s7">Sentence-BERT</a>
+<a href="#s8">Cross-encoder vs bi-encoder</a>
+<a href="#s9">Zero-shot NLP classification</a>
+<a href="#s10">NER with transformers</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">07 NLP</span>
+        <h1>NLP with transformers and BERT</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 29</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">BERT architecture</span><span class="tag">Masked language modeling</span><span class="tag">Next sentence prediction</span><span class="tag">Subword tokenization</span><span class="tag">BPE and WordPiece</span><span class="tag">Fine-tuning BERT</span><span class="tag">Sentence-BERT</span><span class="tag">Cross-encoder vs bi-encoder</span><span class="tag">Zero-shot NLP classification</span><span class="tag">NER with transformers</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s1" data-progress-check>
+    <div>
+      <h2>BERT architecture</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>BERT (Bidirectional Encoder Representations from Transformers) is a transformer-based language model that reads text in both directions simultaneously (bidirectional) to understand context. Unlike GPT (which reads left-to-right, autoregressive), BERT processes the entire sequence at once, allowing each token&#x27;s representation to incorporate context from all other tokens in the input. This bidirectionality makes BERT exceptionally good at understanding tasks (classification, NER, QA) but prevents it from generating text.</p><p>BERT&#x27;s input representation: each token is embedded as the sum of three embeddings: (1) token embedding (the meaning of the word), (2) segment embedding (which sentence does this token belong to — A or B, for sentence-pair tasks like NLI), (3) positional embedding (the position of the token in the sequence). Special tokens: [CLS] at the start (its final hidden state is used as the sequence representation for classification tasks) and [SEP] separating sentences.</p><p>BERT is pretrained with two objectives: Masked Language Modeling (MLM) — randomly mask 15% of tokens and predict the masked words (this forces the model to use bidirectional context to fill in blanks) and Next Sentence Prediction (NSP) — given two sentences, predict whether B follows A in the original document. MLM is what gives BERT its powerful contextual representations; NSP was later found to have minimal benefit (<code>RoBERTa</code> drops NSP and improves performance).</p><p>Fine-tuning BERT: add a task-specific head on top of the pretrained BERT encoder. For classification: a linear layer on the [CLS] representation. For token classification (NER): a linear layer on each token&#x27;s representation. For question answering: linear layers on each token to predict start and end positions of the answer span. Fine-tuning updates all BERT weights plus the task head, typically for 3–10 epochs on the downstream task.</p><p>BERT variants: <code>RoBERTa</code> (larger pretraining, no NSP, dynamic masking — significantly better than BERT). <code>DistilBERT</code> (60% of BERT&#x27;s parameters, 40% faster, 97% of BERT&#x27;s performance — uses knowledge distillation). ALBERT (parameter sharing across layers — much smaller, slightly lower performance). <code>DeBERTa</code> (disentangled attention — SOTA on many NLU benchmarks). For most practical tasks, use <code>DeBERTa</code>-base or <code>RoBERTa</code>-base as your starting point.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import BertTokenizer, BertForSequenceClassification
+tokenizer = BertTokenizer.from_pretrained(&#x27;bert-base-uncased&#x27;)
+model = BertForSequenceClassification.from_pretrained(&#x27;bert-base-uncased&#x27;, num_labels=2)</code></pre><pre><code>Tokenize: inputs = tokenizer(&#x27;This movie is great!&#x27;, return_tensors=&#x27;pt&#x27;, truncation=True, padding=&#x27;max_length&#x27;, max_length=128)</code></pre><pre><code>Forward pass: outputs = model(**inputs)
+logits = outputs.logits; probs = logits.softmax(dim=-1)
+pred_class = probs.argmax(dim=-1).item()</code></pre><pre><code>Fine-tune with Trainer:
+from transformers import Trainer, TrainingArguments
+training_args = TrainingArguments(output_dir=&#x27;./results&#x27;, num_train_epochs=3, per_device_train_batch_size=16, evaluation_strategy=&#x27;epoch&#x27;, load_best_model_at_end=True)
+trainer = Trainer(model=model, args=training_args, train_dataset=train_ds, eval_dataset=val_ds, compute_metrics=compute_metrics)
+trainer.train()</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>BERT and its variants are the backbone of modern NLP. They achieve state-of-the-art performance on classification, NER, and question answering with surprisingly little task-specific data. Understanding BERT&#x27;s architecture explains why bidirectional <code>transformers</code> dominate NLU tasks.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not adding special tokens ([CLS], [SEP]) when tokenizing manually — always use the tokenizer&#x27;s <code>encode_plus</code> or __call__ method, which adds special tokens automatically.</li><li>Truncating without padding or padding without a fixed length — use padding=&#x27;<code>max_length</code>&#x27; and truncation=True together for consistent batch shapes.</li><li>Using bert-base-uncased for languages other than English — use multilingual-bert or language-specific models (<code>CamemBERT</code> for French, BERT-base-german-cased for German).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Fine-tune BERT on the IMDB sentiment classification dataset. Use bert-base-uncased. Train for 3 epochs. Plot training and validation loss curves. Evaluate with accuracy, F1, and confusion matrix. Compare with: (1) logistic regression + TF-IDF baseline, (2) <code>DistilBERT</code> (faster, smaller). Report: test accuracy, training time, and GPU memory usage for all three. Show 5 examples where BERT succeeds but TF-IDF fails.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s2" data-progress-check>
+    <div>
+      <h2>Masked language modeling</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Masked language modeling (MLM) is the pre-training objective used by BERT. During training, 15% of input tokens are randomly selected: 80% are replaced with a [MASK] token, 10% are replaced with a random token, and 10% are left unchanged. The model must predict the original tokens for the masked positions. This self-supervised task forces the model to learn deep bidirectional context — to predict &#x27;bank&#x27; in &#x27;I went to the [MASK] to deposit money&#x27;, the model must read BOTH the words before AND after the mask.</p><p>Why bidirectional context matters: GPT predicts the next token from previous tokens (left-to-right only — unidirectional). BERT&#x27;s MLM reads the full sentence bidirectionally, learning richer contextual representations. This makes BERT much better for tasks that require understanding full sentence context: named entity recognition, question answering, sentiment classification. GPT&#x27;s unidirectional training makes it better for generation tasks (each token is generated from the past context).</p><p>The 80/10/10 masking strategy: replacing 100% with [MASK] would cause a mismatch at fine-tuning time (no [MASK] tokens appear in real text). Replacing 10% with random tokens encourages the model to maintain useful representations for unmasked tokens (it cannot just pass through tokens that look like real words). The 10% unchanged keeps the model accurate for normal (unmasked) tokens.</p><p>Masked span prediction: <code>RoBERTa</code>, <code>SpanBERT</code>, and <code>DeBERTa</code> use variants of MLM that mask contiguous spans (multiple consecutive tokens) rather than individual tokens. Span masking is harder — the model must predict several related tokens simultaneously and learns better representations for multi-word entities and phrases. <code>SpanBERT</code> was particularly effective for span-extraction tasks like SQuAD.</p><p>MLM vs other pre-training objectives: Next Sentence Prediction (NSP, also in BERT) predicts whether two sentences appear consecutively in a document. <code>RoBERTa</code> removed NSP and found it unhelpful. T5 uses a span masking variant called &#x27;salient span masking&#x27;. XLNet uses permutation language modeling (predict tokens in a random order given all other positions). All these are self-supervised learning objectives that create labels from the data itself — no human annotation needed.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import BertTokenizer, BertForMaskedLM
+import torch
+tokenizer = BertTokenizer.from_pretrained(&#x27;bert-base-uncased&#x27;)
+model = BertForMaskedLM.from_pretrained(&#x27;bert-base-uncased&#x27;)
+text = &#x27;The capital of France is [MASK].&#x27;
+inputs = tokenizer(text, return_tensors=&#x27;pt&#x27;)
+mask_token_index = (inputs.input_ids == tokenizer.mask_token_id).nonzero(as_tuple=True)[1]
+logits = model(**inputs).logits
+predicted_token_id = logits[0, mask_token_index].argmax()
+print(&#x27;Predicted:&#x27;, tokenizer.decode(predicted_token_id))</code></pre><pre><code># Visualize which tokens are masked during pre-training
+from transformers import DataCollatorForLanguageModeling
+collator = DataCollatorForLanguageModeling(tokenizer, mlm=True, mlm_probability=0.15)
+example = {&#x27;input_ids&#x27;: tokenizer(&#x27;hello world&#x27;, return_tensors=&#x27;pt&#x27;).input_ids[0]}
+masked = collator([example])
+print(&#x27;Original:&#x27;, tokenizer.decode(example[&#x27;input_ids&#x27;]))
+print(&#x27;Masked input:&#x27;, tokenizer.decode(masked[&#x27;input_ids&#x27;][0]))</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Understanding MLM is essential for understanding BERT and all BERT-family models (<code>RoBERTa</code>, <code>DeBERTa</code>, ALBERT, <code>DistilBERT</code>). These models form the backbone of modern NLP — used for classification, NER, QA, and as the encoder in RAG systems. The MLM pre-training objective explains why BERT understands context so well.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using BERT for text generation — BERT is a masked language model trained for understanding, not generation. For generation, use GPT-2, GPT-4, T5, or BART (an encoder-decoder). BERT&#x27;s bidirectional attention doesn&#x27;t support autoregressive generation.</li><li>Fine-tuning BERT without the [CLS] token strategy — for classification, use the [CLS] token embedding (the first token&#x27;s representation) as the input to the classification head. It is designed to capture the aggregate sentence representation.</li><li>Using BERT with sequences longer than 512 tokens — BERT&#x27;s positional embeddings only go up to 512 tokens. For long documents, use chunking, sliding windows, or Longformer/<code>BigBird</code> models.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Probe BERT&#x27;s MLM representations: (1) take 20 sentences with an ambiguous word (e.g., &#x27;I went to the [MASK] — one sentence about rivers, one about finance), (2) run BERT&#x27;s MLM predictions for the mask, (3) show that BERT correctly disambiguates based on context, (4) compare: mask a word at different positions in the sentence and show how surrounding context changes predictions, (5) fine-tune <code>BertForMaskedLM</code> on domain-specific text (medical, legal) for 1 epoch — does it improve predictions for domain-specific vocabulary?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s3" data-progress-check>
+    <div>
+      <h2>Next sentence prediction</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Next Sentence Prediction (NSP) is a pre-training task used in the original BERT model alongside Masked Language Modeling (MLM). In NSP, the model is given two sentences A and B and must predict whether B actually follows A in the original document (<code>IsNext</code>) or is a random sentence from the corpus (<code>NotNext</code>). This teaches the model to understand relationships between sentences, not just within individual sentences.</p><p>NSP training data construction: (1) take a document corpus, (2) for each training example, 50% of the time select sentence A and its actual following sentence B (label: <code>IsNext</code>), (3) 50% of the time select sentence A and a random sentence from the corpus as B (label: <code>NotNext</code>). Input format: [CLS] Sentence A [SEP] Sentence B [SEP]. The [CLS] token embedding is trained to encode the <code>IsNext</code>/<code>NotNext</code> judgment.</p><p>NSP input encoding: token embeddings (which token) + position embeddings (where in the sequence) + segment embeddings (segment A=0 or segment B=1). Segment embeddings distinguish which sentence each token belongs to. The final hidden state of the [CLS] token is passed to a binary classification head to predict <code>IsNext</code> vs <code>NotNext</code>.</p><p>Criticism and successors: subsequent research found that NSP was too easy and did not improve downstream performance. The <code>RoBERTa</code> paper showed that removing NSP (training on longer sequences without NSP) improved performance on most benchmarks. ALBERT replaced NSP with Sentence Order Prediction (SOP): given two consecutive sentences, predict which one came first — a harder and more useful task. BERT-variants like <code>RoBERTa</code>, <code>DeBERTa</code>, ALBERT have mostly moved away from NSP.</p><p>Why NSP enabled cross-sentence understanding: before BERT, pre-trained models processed one sentence at a time. NSP forced BERT to capture discourse coherence — understanding that &#x27;I went to the store. I bought milk.&#x27; are related, while &#x27;I went to the store. The quantum field collapsed.&#x27; are not. This enables BERT to excel at tasks requiring multi-sentence understanding: question answering (Q and A are two sentences), natural language inference, document similarity.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import BertTokenizer, BertForNextSentencePrediction
+import torch
+tokenizer = BertTokenizer.from_pretrained(&#x27;bert-base-uncased&#x27;)
+model = BertForNextSentencePrediction.from_pretrained(&#x27;bert-base-uncased&#x27;)
+# Is sentence B the next sentence after A?
+sentence_A = &#x27;The cat sat on the mat.&#x27;
+sentence_B_next = &#x27;It was warm and comfortable.&#x27;
+sentence_B_random = &#x27;Quantum mechanics describes atomic behavior.&#x27;
+for s_b, label in [(sentence_B_next, &#x27;IsNext&#x27;), (sentence_B_random, &#x27;NotNext&#x27;)]:
+    inputs = tokenizer(sentence_A, s_b, return_tensors=&#x27;pt&#x27;)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    probs = torch.softmax(outputs.logits, dim=-1)
+    print(f&#x27;{label}: P(IsNext)={probs[0,0]:.3f}, P(NotNext)={probs[0,1]:.3f}&#x27;)</code></pre><pre><code># Sentence pair similarity with BERT CLS token
+from transformers import BertModel
+bert = BertModel.from_pretrained(&#x27;bert-base-uncased&#x27;)
+def sentence_similarity(s1, s2):
+    inputs = tokenizer(s1, s2, return_tensors=&#x27;pt&#x27;, padding=True, truncation=True)
+    with torch.no_grad():
+        out = bert(**inputs)
+    cls_embedding = out.last_hidden_state[:,0,:]  # [CLS] token
+    return cls_embedding
+# Use for sentence pair classification tasks</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>NSP shows how pre-training tasks shape the representations a model learns. Understanding NSP explains why BERT&#x27;s [CLS] token embedding is useful for sentence pair classification tasks (NLI, QA, document ranking) — it was explicitly trained to encode cross-sentence relationships.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using NSP BERT for sentence similarity — BERT&#x27;s [CLS] token is trained for NSP (<code>IsNext</code> vs <code>NotNext</code>), not semantic similarity. Using CLS for similarity gives poor results. Use sentence-<code>transformers</code> (SBERT) instead.</li><li>Assuming all BERT variants support NSP — <code>RoBERTa</code>, <code>DeBERTa</code>, and most modern BERT-like models do NOT have an NSP head. Only the original BERT and Albert (with SOP) have cross-sentence prediction heads.</li><li>Using NSP for long documents — BERT&#x27;s maximum sequence length is 512 tokens. For longer documents, use Longformer, <code>BigBird</code>, or chunking strategies.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use the BERT NSP model to build a coherence checker: (1) given a paragraph, check each pair of consecutive sentences — what is P(<code>IsNext</code>) for each pair?, (2) deliberately swap two sentences in the paragraph — does P(<code>IsNext</code>) drop for the swapped pair?, (3) build a paragraph reordering system: given 5 sentences in random order, use NSP scores to find the most coherent ordering (greedy: pick the next sentence that maximizes P(<code>IsNext</code>) given the last sentence), (4) compare NSP coherence vs Sentence-BERT cosine similarity for this task.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s4" data-progress-check>
+    <div>
+      <h2>Subword tokenization</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Subword tokenization splits words into smaller units (subwords) rather than treating each word as a single token. Why: (1) vocabulary efficiency — with whole-word tokenization, a 50,000-word vocabulary misses rare words (&#x27;bioaugmentation&#x27;, &#x27;COVID-19&#x27; → [UNK]). With subword tokens, rare words are split into known subwords (&#x27;bio&#x27;, &#x27;##aug&#x27;, &#x27;##ment&#x27;, &#x27;##ation&#x27;). (2) Cross-lingual transfer — subwords are shared across languages (English and French share &#x27;nation&#x27;, &#x27;tion&#x27;, &#x27;al&#x27;).</p><p>Byte Pair Encoding (BPE): start with individual characters. Iteratively merge the most frequent adjacent pair. Repeat until the vocabulary reaches the target size (e.g., 50,000). GPT-2, GPT-3, GPT-4, and <code>RoBERTa</code> use BPE. Example: &#x27;low&#x27;, &#x27;lower&#x27;, &#x27;lowest&#x27; might produce tokens &#x27;low&#x27;, &#x27;##er&#x27;, &#x27;##est&#x27;. BPE is greedy and deterministic once the merge rules are learned.</p><p><code>WordPiece</code>: similar to BPE but uses a different merge criterion — instead of frequency, merges the pair that maximizes the likelihood of the corpus under the language model. Used by BERT (## prefix indicates a continuation token). &#x27;unbelievable&#x27; → &#x27;un&#x27;, &#x27;##believ&#x27;, &#x27;##able&#x27;. The ## prefix distinguishes word-initial tokens from word-continuation tokens.</p><p><code>SentencePiece</code>: a language-agnostic subword tokenizer that treats the input as a raw byte stream (no whitespace tokenization). Handles any language including those without word boundaries (Chinese, Japanese). Used by XLNet, T5, LLaMA, Mistral, and most modern open-source LLMs. <code>SentencePiece</code> trains on text to find the subword vocabulary using BPE or unigram language model.</p><p>Tokenization in practice: <code>tokenizer.encode</code>(&#x27;Hello world&#x27;) returns a list of integer token IDs. <code>tokenizer.decode</code>([15496, 995]) returns the original text. tokenizer(text, <code>return_tensors</code>=&#x27;pt&#x27;, truncation=True, <code>max_length</code>=512, padding=&#x27;<code>max_length</code>&#x27;) prepares a batch for a transformer model. Understanding tokenization is crucial for: (1) understanding model input length limits, (2) counting tokens for API cost estimation (GPT-4 costs per token), (3) debugging model behavior on OOD text.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained(&#x27;bert-base-uncased&#x27;)
+text = &#x27;The unbelievable transformers tokenization&#x27;
+tokens = tokenizer.tokenize(text)
+ids = tokenizer.encode(text)
+print(&#x27;Tokens:&#x27;, tokens)
+print(&#x27;IDs:&#x27;, ids)
+print(&#x27;Decoded:&#x27;, tokenizer.decode(ids))</code></pre><pre><code># Understand vocabulary
+print(f&#x27;Vocab size: {tokenizer.vocab_size}&#x27;)
+print(f&#x27;[UNK] id: {tokenizer.unk_token_id}&#x27;)
+print(f&#x27;Max length: {tokenizer.model_max_length}&#x27;)
+# Rare word handling
+print(tokenizer.tokenize(&#x27;COVID-19 bioaugmentation&#x27;))  # splits into subwords</code></pre><pre><code># Batch encoding with padding and truncation
+batch = [&#x27;Short sentence.&#x27;, &#x27;A much longer sentence that might need truncation to fit.&#x27;]
+encoded = tokenizer(batch, padding=True, truncation=True, max_length=20, return_tensors=&#x27;pt&#x27;)
+print(encoded.input_ids.shape)  # (2, 20)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Subword tokenization is the foundation of modern NLP. Understanding it explains: why model costs scale with tokens (not characters or words), why rare words and OOV terms are handled correctly, why different models have different vocabulary sizes, and why tokenization affects model performance on specialized domains.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Assuming one token = one word — &#x27;tokenization&#x27; might be 4 tokens: &#x27;token&#x27;, &#x27;##iza&#x27;, &#x27;##tion&#x27;. A 100-word sentence might be 120–150 tokens. Always count tokens, not words, for context length and API cost estimates.</li><li>Using the wrong tokenizer for a model — each model has its own tokenizer vocabulary. BERT&#x27;s tokenizer will produce garbage if used with <code>RoBERTa</code>&#x27;s model. Always use <code>AutoTokenizer</code>.<code>from_pretrained</code>(<code>model_name</code>).</li><li>Not handling truncation for long documents — tokenizer(text) with a 10,000-character text raises an error or silently truncates. Always set truncation=True and <code>max_length</code> explicitly.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Explore tokenization differences: (1) tokenize the same 20-sentence paragraph with BERT, GPT-2, and LLaMA tokenizers — compare the number of tokens produced by each, (2) create a medical text with specialized vocabulary (&#x27;propofol&#x27;, &#x27;hypertension&#x27;, &#x27;electroencephalogram&#x27;) — show how each tokenizer handles it, (3) compute the token cost of 1 million documents using the approximate token rates, (4) implement a text splitter that chunks documents into segments of at most 512 tokens with 50-token overlap using the <code>HuggingFace</code> tokenizer.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s5" data-progress-check>
+    <div>
+      <h2>BPE and WordPiece</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>BPE (Byte Pair Encoding) and <code>WordPiece</code> are the two dominant subword tokenization algorithms in NLP. Both start from characters and iteratively merge subwords to build a vocabulary. Their difference: BPE merges based on pair frequency (the most common adjacent pair is merged), while <code>WordPiece</code> merges based on the mutual information of the pair (the merge that most increases the likelihood of the corpus).</p><p>BPE algorithm step by step: (1) initialize vocabulary with all characters plus an end-of-word symbol. (2) Count all adjacent symbol pairs in the corpus. (3) Merge the most frequent pair into a new symbol: &#x27;l o w&#x27; → &#x27;lo w&#x27;. (4) Update the corpus with the merged symbol. (5) Repeat from step 2 until vocabulary size reaches K. For K=50,000, this runs ~50,000 merge operations, each adding one new token to the vocabulary.</p><p><code>WordPiece</code> algorithm: similar to BPE but the merge criterion is different. Instead of frequency, <code>WordPiece</code> maximizes: log P(corpus with merge) - log P(corpus without merge). This is equivalent to selecting the pair where the merged symbol probability exceeds the product of the individual symbol probabilities — a mutual information criterion. The ## prefix is added to all tokens that are word-internal (not word-starting) in the learned vocabulary.</p><p>In practice: for most applications, you do not implement BPE or <code>WordPiece</code> yourself — you use a pre-trained tokenizer. The critical skill is loading the correct tokenizer for your model, understanding the vocabulary, and handling special tokens ([CLS], [SEP], [PAD], [MASK] for BERT; &lt;s&gt;, &lt;/s&gt;, &lt;pad&gt;, &lt;unk&gt; for others). Special tokens have fixed IDs and specific roles in the model&#x27;s attention patterns.</p><p>Unigram language model (<code>SentencePiece</code>): an alternative to BPE/<code>WordPiece</code>. Start with a large vocabulary, iteratively REMOVE symbols whose removal minimally decreases the language model likelihood. The result is a vocabulary where each token has a probability score. During tokenization, the segmentation with the highest probability is chosen. More principled than BPE but more complex. Used by T5, ALBERT, XLM-<code>RoBERTa</code>.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Inspect BPE merges (GPT-2 tokenizer)
+from transformers import GPT2Tokenizer
+tok = GPT2Tokenizer.from_pretrained(&#x27;gpt2&#x27;)
+print(&#x27;Vocab size:&#x27;, tok.vocab_size)  # 50257
+print(&#x27;Example tokens:&#x27;, tok.encode(&#x27;Hello world&#x27;))
+print(&#x27;Decoded:&#x27;, tok.decode(tok.encode(&#x27;Hello world&#x27;)))</code></pre><pre><code># Train your own BPE tokenizer on custom data
+from tokenizers import ByteLevelBPETokenizer
+tokenizer = ByteLevelBPETokenizer()
+tokenizer.train(files=[&#x27;corpus.txt&#x27;], vocab_size=10000, min_frequency=2,
+    special_tokens=[&#x27;&lt;unk&gt;&#x27;, &#x27;&lt;pad&gt;&#x27;, &#x27;&lt;s&gt;&#x27;, &#x27;&lt;/s&gt;&#x27;])
+tokenizer.save_model(&#x27;my_tokenizer&#x27;)</code></pre><pre><code># Compare BPE vs WordPiece on same text
+gpt2_tok = AutoTokenizer.from_pretrained(&#x27;gpt2&#x27;)
+bert_tok = AutoTokenizer.from_pretrained(&#x27;bert-base-uncased&#x27;)
+text = &#x27;The unbelievable tokenization differences&#x27;
+print(&#x27;BPE (GPT2):&#x27;, gpt2_tok.tokenize(text))
+print(&#x27;WP (BERT):&#x27;, bert_tok.tokenize(text))</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>BPE and <code>WordPiece</code> explain why different models have different token boundaries and vocabulary sizes. This directly affects: domain adaptation (is medical terminology in the vocabulary?), API cost (token count varies across tokenizers), and model behavior (models with smaller vocabularies that split words more aggressively have different representations for rare words).</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a domain-specific model without adapting the tokenizer — a BERT fine-tuned on medical text still uses the general English tokenizer. Medical terms are split into many subwords, reducing model efficiency. Train a custom BPE tokenizer on medical text and initialize from scratch or extend the vocabulary.</li><li>Forgetting that tokenization is language-specific — standard BPE/<code>WordPiece</code> tokenizers trained on English data produce poor tokenizations for Chinese, Japanese, or Arabic. Use multilingual tokenizers (mBERT, XLM-<code>RoBERTa</code>) or language-specific tokenizers.</li><li>Not accounting for special tokens in sequence length — &#x27;bert-base-uncased&#x27; adds [CLS] at the start and [SEP] at the end. A 512-max-length BERT can actually process only 510 tokens of your text.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a domain-adapted tokenizer: (1) take a corpus of 10,000 scientific papers from arXiv (or simulate with a technical text), (2) train a BPE tokenizer with <code>vocab_size</code>=10000 using <code>HuggingFace</code> tokenizers library, (3) compare: tokenize 50 scientific terms with general BERT tokenizer vs your domain tokenizer — how many tokens does each produce per word?, (4) compute fertility (average tokens per word) for both — lower fertility means more efficient tokenization, (5) initialize a small BERT model with your tokenizer and fine-tune on a text classification task.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s6" data-progress-check>
+    <div>
+      <h2>Fine-tuning BERT</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Fine-tuning BERT (or any pre-trained language model) means taking the pre-trained encoder and adapting it for a specific downstream task by continuing training on task-specific labeled data. BERT was pre-trained on masked language modeling and next sentence prediction — tasks that gave it rich contextual language understanding. Fine-tuning redirects this understanding toward a specific task.</p><p>The fine-tuning architecture adds a task-specific head on top of BERT&#x27;s [CLS] token representation. For classification: a linear layer Dense([CLS_embedding → <code>num_classes</code>]). For token classification (NER): a linear layer at every token position Dense(<code>token_embedding</code> → <code>num_tags</code>). For question answering: two linear layers predicting the start and end positions of the answer span. The entire model (BERT encoder + task head) is trained end-to-end.</p><p>Fine-tuning hyperparameters are different from pre-training. Learning rate: very small (1e-5 to 5e-5) to avoid catastrophic forgetting. Batch size: 16–32 (larger batches improve stability). Epochs: 3–5 only (more epochs cause overfitting on small datasets). Warmup steps: linearly increase lr from 0 to target for the first 10% of steps, then use cosine decay. These recommendations come from the original BERT paper.</p><p>Fine-tuning requires relatively little labeled data compared to training from scratch. BERT fine-tuned on 1,000 labeled examples typically outperforms a traditional ML model trained on 10,000+ examples because BERT already understands language. For specialized domains with very little data (&lt; 100 examples), few-shot or prompt-based approaches may work better.</p><p>Evaluation during fine-tuning should use the same metrics as production. For classification: F1-macro (balanced across classes, good for imbalanced datasets). For NER: entity-level F1 (strict matching of entity span and type). For QA: exact match and F1. Always evaluate on a held-out test set, never on the validation set used for early stopping.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import BertForSequenceClassification, Trainer, TrainingArguments
+model = BertForSequenceClassification.from_pretrained(&#x27;bert-base-uncased&#x27;, num_labels=3)</code></pre><pre><code>Tokenize: tokenizer = BertTokenizer.from_pretrained(&#x27;bert-base-uncased&#x27;)
+encoded = tokenizer(texts, truncation=True, padding=True, max_length=512)</code></pre><pre><code>Training args: TrainingArguments(output_dir=&#x27;./results&#x27;, num_train_epochs=3, per_device_train_batch_size=16, warmup_steps=500, learning_rate=2e-5, evaluation_strategy=&#x27;epoch&#x27;)</code></pre><pre><code>Train: trainer = Trainer(model=model, args=args, train_dataset=train_ds, eval_dataset=val_ds, compute_metrics=compute_metrics); trainer.train()</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Fine-tuning BERT is the standard approach for NLP classification, NER, and QA with moderate amounts of labeled data. Understanding how to fine-tune a pre-trained model is the most practical NLP engineering skill after prompting.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using a learning rate too high (e.g., 1e-3) — catastrophic forgetting destroys all pre-trained knowledge in the first few steps.</li><li>Training for too many epochs (&gt;5) on small datasets — the model memorizes the training set and validation performance degrades.</li><li>Using [CLS] token representation for token-level tasks like NER — use all token representations, not just [CLS].</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Fine-tune BERT-base-uncased for 3-class sentiment classification on IMDB reviews or SST-3. Use <code>HuggingFace</code> Trainer with early stopping based on validation F1. Train for up to 5 epochs. Report final test-set accuracy and F1. Plot training and validation loss. Compare against: TF-IDF + <code>LogisticRegression</code> baseline, and zero-shot GPT-4 prompting.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s7" data-progress-check>
+    <div>
+      <h2>Sentence-BERT</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Sentence-BERT (SBERT) is a modification of BERT that produces fixed-size sentence embeddings optimized for semantic similarity comparison. Regular BERT requires running a forward pass over pairs of sentences to compute similarity — O(N^2) for a corpus of N sentences. SBERT independently encodes each sentence, making similarity search O(N) and enabling efficient semantic search over millions of sentences.</p><p>SBERT is trained with a siamese network architecture: two identical BERT models with shared weights process two sentences independently. The [CLS] tokens or mean-pooled representations are compared using cosine similarity. The model is fine-tuned on natural language inference (NLI) data and semantic textual similarity (STS) benchmarks using a contrastive loss that pulls similar sentence embeddings together and pushes dissimilar ones apart.</p><p>The resulting embeddings capture semantic similarity much better than averaging BERT token embeddings or using BERT&#x27;s [CLS] token without fine-tuning. For the task &#x27;find the most similar sentence to query Q from 10,000 candidates&#x27;, SBERT can embed all 10,000 sentences once (during indexing) and embed Q once at query time — then cosine similarity finds the nearest neighbors in milliseconds. BERT would require 10,000 forward passes per query.</p><p>Multiple SBERT models are available for different use cases: all-mpnet-base-v2 (best quality, 768-dim), all-<code>MiniLM</code>-L6-v2 (fast, good quality, 384-dim), multi-qa-mpnet-base-dot-v1 (optimized for question-answer retrieval), and multilingual models (paraphrase-multilingual-mpnet-base-v2) for cross-lingual search.</p><p>SBERT is the backbone of most semantic search and RAG retrieval systems. When you see <code>sentence_transformers</code> in a RAG pipeline, it is producing SBERT-style embeddings. The quality of retrieval in RAG directly depends on embedding quality — upgrading from a basic SBERT model to a task-specific fine-tuned version is often the highest-leverage improvement for RAG system quality.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import SentenceTransformer
+model = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)</code></pre><pre><code>Encode corpus: corpus_embeddings = model.encode(corpus, batch_size=64, show_progress_bar=True) → shape (N, 384)</code></pre><pre><code>Encode query: query_embedding = model.encode([user_query]) → shape (1, 384)</code></pre><pre><code>Search: from sentence_transformers import util
+hits = util.semantic_search(query_embedding, corpus_embeddings, top_k=5) → [{corpus_id, score}, ...]</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>SBERT enables efficient semantic search at scale. Without it, semantic search requires O(N^2) BERT computations. With it, you can search millions of documents in milliseconds. SBERT is why RAG systems and semantic search are practical.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using BERT&#x27;s raw [CLS] token without SBERT fine-tuning — raw [CLS] embeddings have poor semantic similarity properties; use SBERT which was specifically trained for this.</li><li>Encoding very long documents as a single SBERT embedding — SBERT has a 256-512 token limit; longer inputs are truncated. Chunk long documents first.</li><li>Mixing embedding models — never compare embeddings from different models; the vector spaces are incompatible.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a semantic FAQ search engine: 100 FAQ questions and answers. Encode all with SBERT. Given a user query, find the top-3 most relevant FAQ entries. Compare against BM25 keyword search on 20 test queries where the user&#x27;s phrasing differs from the FAQ&#x27;s wording. Show semantic search wins on paraphrase cases.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s8" data-progress-check>
+    <div>
+      <h2>Cross-encoder vs bi-encoder</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Bi-encoders and cross-encoders are two architectures for computing sentence similarity or relevance scores, with fundamentally different accuracy/speed trade-offs. Understanding this distinction is essential for building efficient retrieval systems.</p><p>Bi-encoder (also called dual encoder): encodes each sentence independently with a shared (or separate) encoder. f(<code>sentence_A</code>) → <code>embedding_A</code>; f(<code>sentence_B</code>) → <code>embedding_B</code>. Similarity = cosine(<code>embedding_A</code>, <code>embedding_B</code>). Key advantage: precompute and cache all embeddings. For 1 million documents, compute 1 million embeddings once and store them. At query time, embed the query (one inference) and compute cosine similarity against all stored embeddings — extremely fast with FAISS approximate nearest neighbor search. Key limitation: the encoder cannot see both sentences simultaneously, so it misses cross-sentence attention (interactions between specific tokens in A and B).</p><p>Cross-encoder: takes both sentences as input simultaneously: f([CLS] <code>sentence_A</code> [SEP] <code>sentence_B</code> [SEP]) → relevance score. The encoder sees both sentences at once — all attention heads can attend to tokens across both sentences. This allows the model to detect fine-grained relevance (e.g., &#x27;the model achieves state-of-the-art on GLUE&#x27; is relevant to &#x27;GLUE benchmark results&#x27;, which requires understanding that &#x27;state-of-the-art on GLUE&#x27; relates to &#x27;GLUE benchmark results&#x27;). Much more accurate than bi-encoders but extremely slow for retrieval: for Q against 1 million documents, need 1 million forward passes.</p><p>Bi-encoder + cross-encoder pipeline (retrieve then rerank): retrieve the top-100 most similar documents using fast bi-encoder + FAISS, then rerank those 100 with the accurate cross-encoder. This combines the speed of bi-encoders (retrieve 100 from 1M in milliseconds) with the accuracy of cross-encoders (rerank 100 precisely). This is the standard production architecture for dense retrieval systems.</p><p>Training: bi-encoders are trained with contrastive loss (e.g., multiple negatives ranking loss: given a batch of (query, positive) pairs, all other positives in the batch are negatives). Cross-encoders are trained with binary/regression cross-entropy on labeled (query, document, relevance) triples. Sentence-<code>transformers</code> library provides both: <code>SentenceTransformer</code> (bi-encoder) and <code>CrossEncoder</code> classes.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import SentenceTransformer, CrossEncoder, util
+import numpy as np
+# Bi-encoder: fast similarity
+bi_enc = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)
+query = &#x27;What is BERT used for?&#x27;
+docs = [&#x27;BERT is used for NLP tasks.&#x27;, &#x27;Python is a programming language.&#x27;, &#x27;BERT excels at text classification and QA.&#x27;]
+q_emb = bi_enc.encode(query, normalize_embeddings=True)
+d_embs = bi_enc.encode(docs, normalize_embeddings=True)
+bi_scores = (q_emb @ d_embs.T)
+print(&#x27;Bi-encoder scores:&#x27;, bi_scores)</code></pre><pre><code># Cross-encoder: accurate reranking
+cross_enc = CrossEncoder(&#x27;cross-encoder/ms-marco-MiniLM-L-6-v2&#x27;)
+cross_scores = cross_enc.predict([(query, doc) for doc in docs])
+print(&#x27;Cross-encoder scores:&#x27;, cross_scores)
+# Full pipeline: bi-encoder retrieve + cross-encoder rerank
+top_k_indices = np.argsort(bi_scores)[::-1][:5]  # top 5 from bi-encoder
+top_k_docs = [docs[i] for i in top_k_indices]
+reranked_scores = cross_enc.predict([(query, doc) for doc in top_k_docs])
+reranked = sorted(zip(top_k_docs, reranked_scores), key=lambda x: x[1], reverse=True)
+print(&#x27;Reranked:&#x27;, [(d[:40], round(s,3)) for d,s in reranked])</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Bi-encoder vs cross-encoder is the central trade-off in modern neural retrieval systems. Every production search or RAG system must choose where on the speed-accuracy spectrum to operate. Knowing this distinction lets you design scalable retrieval systems that are both fast (bi-encoder for candidate generation) and accurate (cross-encoder for reranking).</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using a cross-encoder for retrieval over large corpora — cross-encoder inference is O(<code>n_docs</code>) per query. For 1M documents, this is 1M forward passes per query — completely infeasible. Use bi-encoder + FAISS for retrieval.</li><li>Using a bi-encoder for reranking without a cross-encoder — bi-encoders are fast but miss cross-sentence interactions. For a top-10 result list where precision matters, use a cross-encoder to rerank.</li><li>Training a bi-encoder on labeled binary relevance pairs only — in-batch negatives training (treating other batch items as negatives) is much more efficient and effective. Use sentence-<code>transformers</code>&#x27; <code>MultipleNegativesRankingLoss</code>.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete retrieve-then-rerank pipeline for a Q&amp;A dataset: (1) encode 10,000 passages with a bi-encoder (all-<code>MiniLM</code>-L6-v2), store embeddings in FAISS, (2) for 100 test queries, retrieve top-50 with FAISS, (3) rerank the top-50 with a cross-encoder (ms-marco-<code>MiniLM</code>-L-6-v2), (4) compare MRR@10 and NDCG@10 for: bi-encoder-only (top-10), cross-encoder-only (top-10), and retrieve-then-rerank (top-50 → rerank to top-10), (5) measure latency of each approach — demonstrate the speed-accuracy trade-off.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s9" data-progress-check>
+    <div>
+      <h2>Zero-shot NLP classification</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Zero-shot classification in NLP uses natural language inference (NLI) models to classify text into arbitrary classes without any task-specific labeled training data. Given a text and a list of candidate class labels, the model predicts which label best describes the text by formulating the classification as an entailment problem: does this text &#x27;entail&#x27; that it is about topic X?</p><p>NLI models (like Facebook&#x27;s bart-large-mnli or roberta-large-mnli) were trained to predict if a hypothesis is entailed, neutral, or contradicted by a premise. Zero-shot classification repurposes this: premise = your text, hypothesis = &#x27;This text is about {label}&#x27;. The model&#x27;s entailment score for each label hypothesis serves as the classification probability.</p><p><code>HuggingFace</code>&#x27;s pipeline(task=&#x27;zero-shot-classification&#x27;) makes this straightforward. You provide text and a list of candidate labels — no training required. This is extremely useful for prototyping and for classification tasks with insufficient labeled data, changing label sets (new product categories, emerging topics), or rare categories where collecting training data is infeasible.</p><p>Zero-shot classification is less accurate than a fine-tuned classifier trained on task-specific labeled data. A fine-tuned BERT classifier typically achieves 90%+ accuracy on standard benchmarks; zero-shot NLI typically achieves 70–85% on the same benchmarks. But zero-shot requires zero labeled examples while fine-tuning requires hundreds to thousands.</p><p>Large instruction-tuned LLMs (GPT-4, Claude) are extremely effective at zero-shot classification via prompting — often better than NLI-based zero-shot. &#x27;Classify the following text as one of: {labels}. Return only the label.&#x27; works reliably. This is the recommended approach when cost is not a concern. NLI-based zero-shot is preferable for high-volume, cost-sensitive applications.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import pipeline
+classifier = pipeline(&#x27;zero-shot-classification&#x27;, model=&#x27;facebook/bart-large-mnli&#x27;)</code></pre><pre><code>result = classifier(&#x27;This movie was absolutely terrible. The acting was wooden and the plot made no sense.&#x27;, candidate_labels=[&#x27;positive review&#x27;, &#x27;negative review&#x27;, &#x27;neutral review&#x27;])</code></pre><pre><code>Output: {&#x27;sequence&#x27;: &#x27;...&#x27;, &#x27;labels&#x27;: [&#x27;negative review&#x27;, &#x27;neutral review&#x27;, &#x27;positive review&#x27;], &#x27;scores&#x27;: [0.92, 0.05, 0.03]}</code></pre><pre><code>Multi-label: result = classifier(text, candidate_labels, multi_label=True) → allows multiple labels to be true.</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Zero-shot classification enables applying NLP classification to any domain or category without collecting labeled data. For new products or emerging categories where you cannot wait for data collection and labeling, zero-shot gets you working immediately.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using generic labels — &#x27;good&#x27; and &#x27;bad&#x27; are harder for NLI than &#x27;positive customer review&#x27; and &#x27;negative customer review&#x27;. Make labels more descriptive.</li><li>Expecting fine-tuned accuracy from zero-shot — zero-shot is a starting point; if accuracy needs to exceed 85%, collect labels and fine-tune.</li><li>Not using <code>multi_label</code>=True for multi-label tasks — the default assumes mutually exclusive classes.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Use zero-shot classification to classify 100 news headlines into 10 topic categories (politics, sports, technology, etc.). Compare accuracy against a fine-tuned BERT classifier trained on 50 labeled examples per category and a GPT-4 zero-shot prompt approach. Report accuracy, cost per classification, and time to deploy for each approach.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="nlp-with-transformers-and-bert-s10" data-progress-check>
+    <div>
+      <h2>NER with transformers</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Named Entity Recognition (NER) is the task of identifying and classifying named entities in text: persons (PER), organizations (ORG), locations (LOC), dates, money amounts, and custom domain entities. Transformer-based NER uses a BERT-like encoder to generate contextual token representations, then a classification head assigns a BIO tag to each token.</p><p>BIO tagging scheme: B-TYPE = beginning of entity, I-TYPE = continuation of entity, O = outside any entity. &#x27;Apple Inc. is based in Cupertino&#x27; → Apple=B-ORG, Inc.=I-ORG, .=O, is=O, based=O, in=O, Cupertino=B-LOC. The BIO scheme allows entities that span multiple tokens. BIOES adds E (end) and S (single token) tags for more expressiveness.</p><p>Token-level classification: the NER model passes the input tokens through a transformer encoder. Each token gets a contextual embedding. A linear classification head maps each token&#x27;s embedding to a probability vector over BIO tags. Training loss: cross-entropy computed for each token. The key challenge: tokenization. BERT&#x27;s <code>WordPiece</code> tokenizer may split &#x27;Cupertino&#x27; into [&#x27;Cu&#x27;, &#x27;##per&#x27;, &#x27;##tino&#x27;] — only the first subword token should be labeled; others are typically masked in the loss.</p><p>Fine-tuning approach: start from a pretrained encoder (BERT, <code>RoBERTa</code>, or domain-specific BERT like <code>BioBERT</code> for medical). Add a token classification head. Fine-tune on annotated NER data. With 1,000-5,000 annotated sentences, transformer NER achieves near state-of-the-art. The <code>HuggingFace</code> `pipeline(&#x27;ner&#x27;)` provides a ready-to-use interface for common entity types.</p><p>spaCy for NER: spaCy provides fast, production-ready NER with pretrained models for common entities. `nlp = <code>spacy</code>.load(&#x27;<code>en_core_web_trf</code>&#x27;)` (transformer-based). `doc = nlp(&#x27;Apple Inc. is in Cupertino&#x27;)`. `<code>doc.ents</code>` returns entity spans with type and confidence. For custom entities, train a custom NER component with spaCy&#x27;s training CLI.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import pipeline
+# Zero-shot NER with transformers pipeline
+ner_pipeline = pipeline(&#x27;ner&#x27;, model=&#x27;dbmdz/bert-large-cased-finetuned-conll03-english&#x27;, aggregation_strategy=&#x27;simple&#x27;)
+text = &#x27;Apple Inc. was founded by Steve Jobs in Cupertino, California in 1976.&#x27;
+entities = ner_pipeline(text)
+for ent in entities:
+    print(f&#x27;Entity: {ent[&quot;word&quot;]:20s} | Type: {ent[&quot;entity_group&quot;]:4s} | Score: {ent[&quot;score&quot;]:.3f}&#x27;)
+# → Entity: Apple Inc.    | Type: ORG  | Score: 0.998
+# → Entity: Steve Jobs    | Type: PER  | Score: 0.999
+# → Entity: Cupertino     | Type: LOC  | Score: 0.997
+# → Entity: California    | Type: LOC  | Score: 0.994</code></pre><pre><code># Fine-tune NER model
+from transformers import AutoModelForTokenClassification, AutoTokenizer, TrainingArguments, Trainer
+from datasets import load_dataset
+# Load CoNLL-2003 benchmark dataset
+dataset = load_dataset(&#x27;conll2003&#x27;)
+# Label mapping
+label_list = dataset[&#x27;train&#x27;].features[&#x27;ner_tags&#x27;].feature.names
+model = AutoModelForTokenClassification.from_pretrained(&#x27;bert-base-cased&#x27;, num_labels=len(label_list))
+tokenizer = AutoTokenizer.from_pretrained(&#x27;bert-base-cased&#x27;)
+# tokenize_and_align_labels handles subword alignment
+def tokenize_and_align_labels(examples):
+    tokenized = tokenizer(examples[&#x27;tokens&#x27;], truncation=True, is_split_into_words=True)
+    labels = []
+    for i, label in enumerate(examples[&#x27;ner_tags&#x27;]):
+        word_ids = tokenized.word_ids(batch_index=i)
+        labels.append([-100 if w is None or w != word_ids[max(0,j-1)] else label[w] for j,w in enumerate(word_ids)])
+    tokenized[&#x27;labels&#x27;] = labels
+    return tokenized</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>NER is a foundational NLP task used in information extraction, knowledge graph construction, document processing, and compliance systems (extracting PII, company names, dollar amounts from contracts). Understanding how <code>transformers</code> handle token-level classification — especially the subword alignment problem — is essential for anyone building NLP pipelines.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not handling subword token alignment — BERT tokenizes &#x27;Cupertino&#x27; as [&#x27;Cu&#x27;, &#x27;##per&#x27;, &#x27;##tino&#x27;]. If you label all subwords with the entity tag, the loss is inflated and the model trains poorly. Assign the label only to the first subword token; mask (-100) the rest so they&#x27;re excluded from the loss computation.</li><li>Using <code>aggregation_strategy</code>=&#x27;none&#x27; when you need grouped entities — &#x27;none&#x27; returns one entry per subword token (&#x27;Ap&#x27;, &#x27;##ple&#x27;, &#x27;Inc&#x27;, &#x27;.&#x27;) instead of the grouped entity &#x27;Apple Inc.&#x27;. Use <code>aggregation_strategy</code>=&#x27;simple&#x27; or &#x27;first&#x27; for human-readable output.</li><li>Not evaluating with seqeval — NER is evaluated at the entity level (did the model correctly identify the full span), not the token level. Use the `seqeval` metric from <code>HuggingFace</code> — it computes exact entity match precision, recall, and F1.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a custom NER model: (1) annotate 200 sentences for a custom domain (e.g., medical: DISEASE, DRUG, SYMPTOM) using Prodigy or Label Studio, (2) fine-tune bert-base-cased with a token classification head, (3) evaluate with seqeval: F1 per entity type, overall F1, (4) compare: in-domain BERT vs domain-specific BERT (<code>BioBERT</code>, <code>SciBERT</code>) — how much does domain pretraining help? (5) test on out-of-domain text — does entity type precision/recall degrade uniformly or does one entity type fail first?</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>NLP with transformers and BERT</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="nlp-foundations.html">Previous</a><a class="btn primary" href="advanced-nlp-and-information-extraction.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

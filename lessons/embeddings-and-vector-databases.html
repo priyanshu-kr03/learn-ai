@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Embeddings and vector databases | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -30,7 +31,7 @@
       <header class="content-head">
         <span class="eyebrow">08 Generative AI and LLMs</span>
         <h1>Embeddings and vector databases</h1>
-        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 29</span></div>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 33</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">Embeddings</span><span class="tag">Sentence embeddings</span><span class="tag">Cosine similarity</span><span class="tag">Semantic search</span><span class="tag">Vector database</span><span class="tag">FAISS</span><span class="tag">Chroma</span><span class="tag">Pinecone Milvus pgvector</span><span class="tag">Metadata filtering</span><span class="tag">Hybrid search</span><span class="tag">Chunking</span><span class="tag">Embedding evaluation</span></div>
       </header>
@@ -43,18 +44,23 @@
       <h2>Embeddings</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Embeddings is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>An embedding is a dense, fixed-size vector of real numbers that represents the semantic meaning of a piece of text, an image, or other data in a continuous vector space. Items that are semantically similar should have embeddings that are close together (measured by cosine similarity or dot product), while dissimilar items should be far apart. Embeddings capture meaning in a form that mathematical operations can manipulate.</p><p>Text embeddings are produced by encoder models like BERT, sentence-<code>transformers</code>, or <code>OpenAI</code>&#x27;s text-embedding-ada-002. These models encode the input text into a vector of typically 768 or 1536 dimensions. The embedding captures not just keywords but semantic concepts: &#x27;king&#x27; and &#x27;monarch&#x27; will be nearby even if they share no characters. &#x27;Paris is to France as Berlin is to ___&#x27; can be answered by vector arithmetic: <code>Berlin_embedding</code> + (<code>France_embedding</code> - <code>Paris_embedding</code>) ≈ <code>Germany_embedding</code>.</p><p>Embeddings enable semantic search. Instead of keyword matching (which fails when different words express the same concept), you embed the query and all documents, then find documents whose embeddings are nearest to the query embedding. This is the core of RAG systems and semantic search engines. Vector databases (Pinecone, Weaviate, Chroma, FAISS) are optimized for storing millions of embeddings and performing approximate nearest-neighbor search in milliseconds.</p><p>Beyond text, embeddings exist for images (CLIP embeds images and text in the same space), audio (Whisper encoder produces audio embeddings), tabular data (entity embeddings for categorical features), and graphs (node2vec for graph nodes). The crucial property in multimodal systems: if an image and its caption have nearby embeddings, you can search images with text queries and vice versa.</p><p>Embedding fine-tuning (creating domain-specific embeddings) improves semantic search on specialized domains. General embeddings trained on web text may not capture domain-specific vocabulary well — in medical text, &#x27;MI&#x27; means myocardial infarction, not Michigan. Fine-tuning embeddings on domain-specific text or contrastive pairs (this document is relevant to this query, that one is not) can dramatically improve retrieval precision.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Embeddings is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import SentenceTransformer
+model = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)  # 384-dim embeddings</code></pre><pre><code>Embed texts: embeddings = model.encode([&#x27;I love cats&#x27;, &#x27;I adore felines&#x27;, &#x27;The stock market crashed&#x27;])</code></pre><pre><code>Compute similarity: from sklearn.metrics.pairwise import cosine_similarity
+sim = cosine_similarity(embeddings)
+# sim[0][1] ≈ 0.88 (cats/felines similar); sim[0][2] ≈ 0.02 (cats/stock market dissimilar)</code></pre><pre><code>Semantic search: query_emb = model.encode([&#x27;my cat is sick&#x27;])
+scores = cosine_similarity([query_emb], document_embeddings)[0]
+top_k = scores.argsort()[-5:][::-1]  # 5 most similar documents</code></pre>
       </div>
       <pre><code>query_vector = embed(&quot;refund policy&quot;)
 results = vector_db.search(query_vector, top_k=5)</code></pre>
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Embeddings, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Embeddings are the mathematical foundation of modern semantic search, RAG systems, recommendation engines, and zero-shot classification. Every time you use semantic search or RAG, embeddings are doing the heavy lifting.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using keyword search when you need semantic search — keywords miss synonyms and paraphrases; embeddings capture semantic equivalence.</li><li>Embedding very long documents as a single vector — the embedding averages all content and the specific relevant passage is diluted. Chunk documents into 256–512 token pieces and embed each chunk separately.</li><li>Comparing embeddings from different models — embeddings from different models live in different vector spaces; they cannot be directly compared.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Embed 50 news article headlines using sentence-<code>transformers</code>. Build a semantic search system: for a given query, find the 5 most similar headlines. Compare semantic search results against keyword search (TF-IDF) for 10 queries. Show 3 cases where semantic search finds relevant results that keyword search misses. Visualize the embedding space with t-SNE.</div>
     </div>
   </div>
 </section>
@@ -66,18 +72,41 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Sentence embeddings</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Sentence embeddings is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Sentence embeddings (also called sentence vectors) map a full sentence or paragraph to a dense vector representation where semantically similar texts are close together in vector space. Unlike word embeddings (word2vec, <code>GloVe</code>) which embed individual words, sentence embeddings embed complete utterances — capturing sentence-level meaning including word order, negation, and context.</p><p>Sentence-BERT (SBERT): the foundational sentence embedding model, trained by fine-tuning BERT with siamese network training on NLI (Natural Language Inference) and STS (Semantic Textual Similarity) datasets. Given sentence pairs labeled as entailment/contradiction/neutral, SBERT learns embeddings where entailing sentences are close and contradicting sentences are far apart. SBERT embeddings dramatically outperform naive [CLS] pooling or average pooling of BERT token embeddings for similarity tasks.</p><p>Pooling strategies: how to go from token embeddings (one embedding per token) to a single sentence embedding. Mean pooling: average all token embeddings weighted by attention mask (ignore padding). [CLS] pooling: use only the [CLS] token&#x27;s embedding (original BERT). Max pooling: take the maximum activation across all positions for each dimension. Mean pooling is most common and generally best for sentence similarity. <code>WeightedMean</code> pooling weights more recent layers higher.</p><p>Modern sentence embedding models: <code>OpenAI</code> text-embedding-3-small (1536 dimensions, strong performance), <code>OpenAI</code> text-embedding-3-large (3072 dimensions, state-of-the-art), all-<code>MiniLM</code>-L6-v2 (384 dimensions, fast, open-source), all-mpnet-base-v2 (768 dimensions, best quality open-source general-purpose), E5-large, BGE-large (Chinese + English), Cohere Embed v3. For production RAG systems: text-embedding-3-small is a great default (fast, cheap, high quality).</p><p>Dimensionality and normalization: sentence embeddings range from 384 to 3072 dimensions. For cosine similarity: normalize embeddings to unit length so that cosine similarity = dot product (faster). For storage: reduce to 256 or 512 dimensions with PCA or MRL (Matryoshka Representation Learning) for 4-8× storage reduction with minimal quality loss. <code>OpenAI</code>&#x27;s text-embedding-3 models support dimensions parameter for built-in truncation.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Sentence embeddings is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import SentenceTransformer
+import numpy as np
+model = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)  # 384-dim, fast
+sentences = [
+    &#x27;Machine learning is a subset of artificial intelligence.&#x27;,
+    &#x27;AI and ML are closely related fields.&#x27;,
+    &#x27;The stock market fell 2% today.&#x27;,
+]
+# Encode: normalize to unit sphere for cosine similarity
+embeddings = model.encode(sentences, normalize_embeddings=True, show_progress_bar=True)
+print(f&#x27;Shape: {embeddings.shape}&#x27;)  # (3, 384)
+# Cosine similarity matrix
+sim_matrix = embeddings @ embeddings.T
+print(&#x27;Similarity matrix:\n&#x27;, sim_matrix.round(3))</code></pre><pre><code># Using OpenAI embeddings
+from openai import OpenAI
+client = OpenAI()
+response = client.embeddings.create(
+    model=&#x27;text-embedding-3-small&#x27;,
+    input=[&#x27;Machine learning is a subset of AI.&#x27;, &#x27;Deep learning uses neural networks.&#x27;],
+    dimensions=512  # reduce dimensions for storage
+)
+embeds = [item.embedding for item in response.data]
+similarity = np.dot(embeds[0], embeds[1])  # already normalized
+print(f&#x27;Similarity: {similarity:.3f}&#x27;)</code></pre>
       </div>
       <pre><code>query_vector = embed(&quot;refund policy&quot;)
 results = vector_db.search(query_vector, top_k=5)</code></pre>
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Sentence embeddings, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Sentence embeddings are the foundation of modern semantic search, RAG systems, recommendation engines, and document clustering. Any system that needs to find semantically similar content (not just keyword matches) relies on sentence embeddings. Understanding how they work enables building powerful, scalable semantic search at any scale.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using word embeddings (<code>GloVe</code>/word2vec) for sentence similarity by averaging word vectors — this loses word order and context. &#x27;The dog bit the man&#x27; and &#x27;The man bit the dog&#x27; get the same embedding. Use sentence-specific models.</li><li>Using [CLS] token from BERT without fine-tuning for similarity — vanilla BERT&#x27;s [CLS] embedding is not trained for similarity (only for NSP). It performs poorly. Use SBERT or sentence-<code>transformers</code>.</li><li>Mixing embeddings from different models — all FAISS indices and embeddings must come from the same model with the same normalization. Adding <code>OpenAI</code> embeddings to an SBERT index gives nonsensical results.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a semantic search demo: (1) encode a dataset of 5000 Wikipedia sentences with all-<code>MiniLM</code>-L6-v2, (2) implement brute-force cosine search (<code>numpy</code> dot product) and FAISS ANN search, (3) compare speed: brute force vs FAISS for 100 queries against 5000, 50000, 500000 sentences, (4) implement embedding clustering: run K-means on the embeddings and visualize with UMAP, (5) compare embedding models: all-<code>MiniLM</code>-L6-v2 vs all-mpnet-base-v2 on STS benchmark — report Spearman correlation with human judgments.</div>
     </div>
   </div>
 </section>
@@ -89,17 +118,26 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Cosine similarity</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Cosine similarity is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Cosine similarity measures the cosine of the angle between two vectors: cos(θ) = (A·B)/(||A|| * ||B||). It ranges from -1 (opposite direction) to +1 (same direction). A cosine similarity of 1 means the vectors point in the same direction (regardless of magnitude). This makes it ideal for text and embedding similarity — two documents about &#x27;machine learning&#x27; should be similar whether they are short or long.</p><p>Why cosine similarity is preferred for text: a long document about machine learning and a short document about machine learning have different TF-IDF vector magnitudes (the long one has larger values because terms appear more times). But their direction is similar. Cosine similarity normalizes by magnitude — it measures direction (topic) rather than magnitude (length). Euclidean distance would incorrectly find the long document dissimilar from the short one.</p><p>In embedding spaces (word2vec, BERT, sentence <code>transformers</code>), semantically similar concepts have high cosine similarity. king - man + woman ≈ queen: the difference vectors are parallel in the embedding space. Semantic search retrieves documents with high cosine similarity to the query embedding. This is how all modern embedding-based retrieval works.</p><p>Computing cosine similarity efficiently: for large sets of vectors, precompute normalized embeddings (divide each by its L2 norm), then use matrix multiplication to compute all pairwise dot products: similarities = <code>X_norm</code> @ <code>X_norm</code>.T. Since vectors are normalized, dot products equal cosine similarities. This vectorized approach is 100–1000× faster than computing similarities in a Python loop.</p><p>Cosine similarity vs dot product: normalized dot product = cosine similarity. For semantic search, normalizing embeddings before computing dot products enables using efficient MIPS (Maximum Inner Product Search) algorithms — the same algorithms used in FAISS and vector databases — for cosine similarity search.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Cosine similarity is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+a = np.array([1.0, 0.0, 1.0])  # document about topic A
+b = np.array([2.0, 0.0, 2.0])  # same topic, longer document
+c = np.array([0.0, 1.0, 0.0])  # different topic
+print(cosine_similarity(a, b))  # 1.0 — same direction
+print(cosine_similarity(a, c))  # 0.0 — orthogonal</code></pre><pre><code>Batch similarities: X_norm = X / np.linalg.norm(X, axis=1, keepdims=True)
+similarity_matrix = X_norm @ X_norm.T  # (n × n) all-pairs</code></pre><pre><code>sklearn: from sklearn.metrics.pairwise import cosine_similarity
+sim = cosine_similarity(query_embeddings, doc_embeddings)  # (n_queries, n_docs)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Cosine similarity, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Cosine similarity is the universal metric for semantic similarity in NLP and embedding-based search. Understanding it enables you to build semantic search, find similar users/items in recommendation systems, and cluster documents by topic.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using Euclidean distance instead of cosine similarity for text embeddings — Euclidean distance penalizes different magnitudes (document lengths) rather than topic similarity.</li><li>Not normalizing before using dot products as similarities — raw dot products are scale-dependent. Normalize to unit vectors first.</li><li>Expecting cosine similarity to work for vectors with many near-zero dimensions — sparse vectors (TF-IDF) need dot product computation on only non-zero dimensions for efficiency. Use sparse matrix operations.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a document similarity system using cosine similarity: (1) embed 500 Wikipedia paragraphs with a sentence transformer, (2) build a brute-force search: for any query, rank all docs by cosine similarity, (3) compute the full pairwise similarity matrix, (4) find the 10 most similar pairs of documents, (5) find semantic duplicates (similarity &gt; 0.95). Compare search times for brute-force vs FAISS IVF index. Report: how much faster is FAISS?</div>
     </div>
   </div>
 </section>
@@ -111,17 +149,48 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Semantic search</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Semantic search is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Semantic search retrieves documents based on meaning rather than exact keyword match. Traditional keyword search (BM25, Elasticsearch) finds documents containing the exact query words. Semantic search finds documents with similar meaning even if they use completely different words. Query: &#x27;dog diseases&#x27; → semantic search also finds &#x27;canine health conditions&#x27;, &#x27;veterinary illnesses&#x27; — keyword search would miss these.</p><p>Dense retrieval pipeline: (1) offline indexing: embed all documents with a sentence encoder, store embeddings in a vector index (FAISS, Pinecone, Weaviate, Chroma). (2) Online query: embed the query, search the vector index for the nearest neighbor embeddings, return the top-K most similar documents. The entire process takes milliseconds even for millions of documents using approximate nearest neighbor (ANN) search.</p><p>Hybrid search: combining dense (semantic) and sparse (keyword/BM25) retrieval. BM25 is strong for exact matches, acronyms, proper nouns, and out-of-vocabulary terms. Dense retrieval is strong for synonyms, paraphrases, and conceptual matches. Hybrid search uses both and combines scores (Reciprocal Rank Fusion, or convex combination). Most production search systems use hybrid search — it outperforms either alone.</p><p>Embedding-based semantic search vs cross-encoder reranking: semantic search with bi-encoders is for retrieval (candidate generation from a large corpus), cross-encoder reranking is for precision (rescore a small candidate set). The two-stage architecture — retrieve top-100 with bi-encoder, rerank with cross-encoder — combines speed and accuracy.</p><p>Evaluation metrics: NDCG@k (Normalized Discounted Cumulative Gain), MRR (Mean Reciprocal Rank), Recall@k (did the relevant document appear in top-k results?), MAP (Mean Average Precision). BEIR benchmark evaluates retrieval models across 18 diverse IR datasets. Run evaluation on your specific domain — general-purpose models may underperform domain-specific fine-tuned models on specialized corpora.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Semantic search is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import SentenceTransformer
+import faiss
+import numpy as np
+model = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)
+documents = [&#x27;BERT is a bidirectional transformer.&#x27;, &#x27;PyTorch is a deep learning framework.&#x27;,
+             &#x27;Dogs are loyal companions.&#x27;, &#x27;NLP processes natural language text.&#x27;]
+# Index documents
+doc_embeddings = model.encode(documents, normalize_embeddings=True).astype(&#x27;float32&#x27;)
+index = faiss.IndexFlatIP(doc_embeddings.shape[1])  # Inner product (= cosine for normalized)
+index.add(doc_embeddings)
+# Query
+query = &#x27;transformers for NLP&#x27;
+q_emb = model.encode([query], normalize_embeddings=True).astype(&#x27;float32&#x27;)
+scores, indices = index.search(q_emb, k=3)
+for i, idx in enumerate(indices[0]):
+    print(f&#x27;{i+1}. [{scores[0,i]:.3f}] {documents[idx]}&#x27;)</code></pre><pre><code># Hybrid search: BM25 + dense retrieval with RRF
+from rank_bm25 import BM25Okapi
+# BM25 retrieval
+corpus = [doc.lower().split() for doc in documents]
+bm25 = BM25Okapi(corpus)
+bm25_scores = bm25.get_scores(query.lower().split())
+bm25_rank = np.argsort(bm25_scores)[::-1]
+dense_rank = indices[0].tolist()
+# Reciprocal Rank Fusion
+def rrf(ranks, k=60):
+    scores = {}
+    for rank_list in ranks:
+        for position, doc_id in enumerate(rank_list):
+            scores[doc_id] = scores.get(doc_id, 0) + 1/(k + position + 1)
+    return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+hybrid = rrf([bm25_rank, dense_rank])
+print(&#x27;Hybrid results:&#x27;, [(documents[i], round(s,4)) for i,s in hybrid[:3]])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Semantic search, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Semantic search is the foundation of modern RAG systems, enterprise search, and recommendation engines. It solves the vocabulary mismatch problem that has plagued information retrieval for decades. Understanding dense retrieval, vector indices, and hybrid search enables building search experiences that actually understand what users mean.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using cosine similarity on non-normalized embeddings with dot product — if embeddings are not normalized to unit length, dot product is not cosine similarity. Either normalize before storing or use <code>faiss.IndexFlatL2</code> (Euclidean distance) and convert.</li><li>Indexing chunks without metadata — when retrieving a chunk, you need to know which document it came from, its position, and how to fetch surrounding context. Always store metadata alongside embeddings.</li><li>Not evaluating retrieval quality separately from generation quality — in a RAG system, a poor retriever will always produce poor answers even with a perfect LLM. Evaluate retrieval (Recall@k) independently from end-to-end answer quality.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a semantic search system over a document corpus: (1) load 1000 Wikipedia articles, split into 200-word chunks (with 50-word overlap), (2) embed with all-<code>MiniLM</code>-L6-v2, store in FAISS (<code>IndexHNSWFlat</code> for ANN), (3) implement BM25 retrieval over the same corpus, (4) implement hybrid retrieval with RRF, (5) evaluate all 3 approaches on 50 test queries with known relevant documents: compute Recall@5, MRR, NDCG@10, (6) implement metadata filtering: only retrieve from articles published after 2020.</div>
     </div>
   </div>
 </section>
@@ -133,17 +202,29 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Vector database</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Vector database is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Embeddings and vector databases, learn Vector database with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+        <p>A vector database is a database system optimized for storing and searching high-dimensional vector embeddings. Traditional databases support exact lookups (find records where id=123) or text search (find records containing &#x27;machine learning&#x27;). Vector databases support approximate nearest neighbor (ANN) search: find the K vectors most similar to a query vector by cosine or Euclidean distance. This enables semantic search over large collections of embeddings.</p><p>Why approximate nearest neighbor? Exact nearest neighbor search in d dimensions requires comparing the query against all n vectors — O(n*d) — which is feasible for n &lt; 1M but too slow for large collections. ANN algorithms trade a small accuracy loss (not always finding the exact nearest neighbor) for dramatic speedups. HNSW (Hierarchical Navigable Small World) is the current state-of-the-art ANN algorithm: it builds a multi-layer graph where higher layers provide long-range connections and lower layers provide precise short-range connections. Query time is approximately O(log(n)).</p><p>Vector database options: FAISS (Facebook AI Similarity Search) is an open-source library (not a full database) — fast, supports GPU, excellent for research and prototyping. Chroma is an open-source database designed for LLM applications — simple API, metadata filtering, good for development. Pinecone is a managed cloud vector database — fully managed, scales to billions of vectors, expensive. Weaviate and Qdrant are open-source full-featured vector databases with REST APIs, metadata filtering, and hybrid search. pgvector is a <code>PostgreSQL</code> extension — add vector search to your existing <code>PostgreSQL</code> database with minimal new infrastructure.</p><p>Metadata filtering enables combining vector similarity with structured attribute constraints. A document database might store embeddings alongside metadata: {<code>document_id</code>, date, author, topic, department}. A query like &#x27;find the 5 most similar documents about compliance written after 2023-01-01 by the legal team&#x27; requires both vector similarity and metadata filtering. All modern vector databases support this combination — it is essential for production RAG systems.</p><p>Choosing a vector database: for development/prototyping, use Chroma (easy setup, local persistence). For small production deployments (&lt; 10M vectors), use pgvector (no new infrastructure if you already use <code>PostgreSQL</code>). For large production deployments (&gt; 100M vectors) with SLA requirements, use Pinecone or Qdrant managed cloud. For privacy-sensitive use cases with full data control, self-hosted Qdrant or Weaviate.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Embeddings and vector databases.</li><li>Change one input and describe why the result changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>FAISS: import faiss; import numpy as np
+dimension = 1536; index = faiss.IndexFlatIP(dimension)  # inner product (cosine sim on normalized vectors)
+embeddings = np.array(embeddings_list, dtype=&#x27;float32&#x27;)
+faiss.normalize_L2(embeddings)
+index.add(embeddings)
+D, I = index.search(np.array([query_embedding], dtype=&#x27;float32&#x27;), k=5)  # distances, indices</code></pre><pre><code>Chroma: import chromadb
+client = chromadb.Client()
+collection = client.create_collection(&#x27;my_docs&#x27;)
+collection.add(documents=[&#x27;doc1&#x27;, &#x27;doc2&#x27;], embeddings=[emb1, emb2], ids=[&#x27;1&#x27;,&#x27;2&#x27;], metadatas=[{&#x27;source&#x27;:&#x27;pdf&#x27;},...])
+results = collection.query(query_embeddings=[query_emb], n_results=5, where={&#x27;source&#x27;: &#x27;pdf&#x27;})</code></pre><pre><code>pgvector: CREATE EXTENSION vector;
+CREATE TABLE docs (id SERIAL, content TEXT, embedding vector(1536));
+INSERT INTO docs VALUES (1, &#x27;text...&#x27;, &#x27;[0.1, 0.2, ...]&#x27;::vector);
+SELECT * FROM docs ORDER BY embedding &lt;=&gt; &#x27;[...]&#x27;::vector LIMIT 5;  -- cosine distance</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Vector database by hand or in Python. Explain what each number means in one sentence.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Vector databases are the infrastructure layer for all semantic search and RAG applications. Without one, embedding-based retrieval requires comparing the query to every stored embedding — O(n) per query. With an ANN index, the same query runs in milliseconds even across millions of embeddings.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not normalizing embeddings before using inner product similarity — for cosine similarity via inner product, embeddings must be L2-normalized. Un-normalized vectors give arbitrary results.</li><li>Using FAISS <code>IndexFlatL2</code> (exact search) for large collections — flat indices do not scale. Use FAISS <code>IndexIVFFlat</code> or HNSW for n &gt; 100K.</li><li>Storing the full document text in the vector database — text is large; store it separately and keep only the ID and metadata in the vector DB. Retrieve text from your primary database using the returned IDs.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a semantic search system over 1000 Wikipedia passages. Encode all passages with a sentence-<code>transformers</code> model (all-<code>MiniLM</code>-L6-v2). Store in FAISS with HNSW indexing. Build a search interface: given a query, return the top 5 passages with similarity scores. Compare results for 10 queries: exact keyword match vs semantic search. Show 3 examples where semantic search finds the right answer but keyword search fails.</div>
     </div>
   </div>
 </section>
@@ -155,17 +236,46 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>FAISS</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>FAISS is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>FAISS (Facebook AI Similarity Search) is an open-source library for efficient similarity search over dense vectors. It solves the fundamental problem: given millions of embedding vectors, find the K most similar vectors to a query vector in milliseconds. Without FAISS, brute-force cosine similarity over 1 million 768-dimensional vectors takes ~1 second per query; FAISS ANN search takes &lt; 1 millisecond.</p><p>FAISS index types: (1) <code>IndexFlatL2</code> / <code>IndexFlatIP</code> — exact search. Computes exact Euclidean (L2) or inner product (IP = cosine for normalized) distance. Accurate but O(n) per query. For &lt; 100K vectors, use this. (2) <code>IndexIVFFlat</code> — Inverted File Index. Clusters vectors into nlist buckets (using K-means), searches only nprobe buckets at query time. Fast (10-100× speedup) with slight accuracy loss. For 100K-10M vectors. (3) <code>IndexHNSWFlat</code> — Hierarchical Navigable Small World graph. Very fast ANN search. Better accuracy-speed trade-off than IVF. (4) <code>IndexIVFPQ</code> — IVF + Product Quantization. Compresses vectors to ~1/32 their size — fits 100M vectors in RAM. Some accuracy loss.</p><p><code>IndexIVF</code> training: IVF indices require training a K-means clustering (quantizer) before adding vectors. <code>faiss.index_factory</code> creates composite indices. Rule of thumb: nlist = 4 × sqrt(<code>n_vectors</code>). nprobe (number of clusters searched at query time): higher nprobe = higher accuracy, lower speed. Tune nprobe for your accuracy-speed requirement.</p><p>GPU acceleration: FAISS has GPU implementations (faiss-gpu) that can index and search 100× faster than CPU. For large production systems: offline indexing on GPU, serve the index from CPU (GPU servers are expensive). Or use managed vector databases (Pinecone, Weaviate, Qdrant) which handle infrastructure.</p><p>FAISS vs vector databases: FAISS is a library (Python, C++) — you manage the file I/O, updates, and serving yourself. Vector databases (Pinecone, Weaviate, Chroma, Qdrant, pgvector) add: persistent storage, CRUD operations (add/update/delete), metadata filtering, HTTP API, authentication, and horizontal scaling. For production: use a vector database. For research or on-premises: use FAISS directly.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Embeddings and vector databases and needs to apply FAISS. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where FAISS is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import faiss
+import numpy as np
+d = 384  # embedding dimension
+n = 100000  # number of documents
+np.random.seed(42)
+xb = np.random.randn(n, d).astype(&#x27;float32&#x27;)  # document embeddings
+faiss.normalize_L2(xb)  # normalize for cosine similarity
+# Exact search (baseline)
+index_flat = faiss.IndexFlatIP(d)
+index_flat.add(xb)
+# ANN search with HNSW
+index_hnsw = faiss.IndexHNSWFlat(d, 32)  # 32 neighbors per node
+index_hnsw.add(xb)
+# Query
+xq = np.random.randn(1, d).astype(&#x27;float32&#x27;)
+faiss.normalize_L2(xq)
+D_flat, I_flat = index_flat.search(xq, k=5)
+D_hnsw, I_hnsw = index_hnsw.search(xq, k=5)
+print(&#x27;Exact:&#x27;, I_flat[0], &#x27;\nHNSW:&#x27;, I_hnsw[0])
+print(&#x27;HNSW recall:&#x27;, len(set(I_flat[0]) &amp; set(I_hnsw[0]))/5)</code></pre><pre><code># IVF index for large scale
+nlist = 100  # number of clusters
+quantizer = faiss.IndexFlatIP(d)
+index_ivf = faiss.IndexIVFFlat(quantizer, d, nlist)
+index_ivf.train(xb)  # K-means clustering
+index_ivf.add(xb)
+index_ivf.nprobe = 10  # search 10 clusters at query time
+D, I = index_ivf.search(xq, k=5)
+# Save and load index
+faiss.write_index(index_ivf, &#x27;my_index.faiss&#x27;)
+index_loaded = faiss.read_index(&#x27;my_index.faiss&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for FAISS, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>FAISS is the building block behind every vector similarity search at scale. Whether you use <code>LangChain</code>, <code>LlamaIndex</code>, Weaviate, or Chroma — they all use FAISS or its algorithms under the hood. Understanding FAISS directly gives you full control over index configuration, accuracy-speed trade-offs, and memory usage.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not normalizing embeddings before adding to <code>IndexFlatIP</code> — <code>IndexFlatIP</code> computes inner product, which equals cosine similarity ONLY for unit-norm vectors. Call <code>faiss.normalize_L2</code>(xb) before adding to IP indices.</li><li>Using <code>IndexFlatL2</code>/IP for millions of vectors — exact flat indices are O(n) per query. For &gt; 100K vectors, switch to HNSW or IVF for acceptable query latency.</li><li>Not training the IVF index before adding vectors — <code>IndexIVFFlat</code>.train(xb) must be called before <code>add()</code>. Skipping this raises an error or produces wrong results.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Benchmark FAISS index types: (1) generate 1M embeddings of dimension 384, (2) build 4 indices: <code>FlatIP</code> (exact), HNSW32, IVFFlat(nlist=1000, nprobe=50), IVFPQ(nlist=1000, m=48, nprobe=50), (3) for each: measure (a) index build time, (b) RAM usage, (c) query latency (100 queries average), (d) recall@10 vs <code>FlatIP</code> ground truth, (4) choose the optimal index for the use case: (a) max accuracy, (b) max speed, (c) minimal RAM, (5) implement incremental add: add 10K new vectors to the existing index without rebuilding.</div>
     </div>
   </div>
 </section>
@@ -177,17 +287,44 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Chroma</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Chroma is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p><code>ChromaDB</code> is an open-source, lightweight vector database designed specifically for embedding-based retrieval in LLM applications. Unlike production vector databases (Pinecone, Weaviate, Qdrant), Chroma prioritizes ease of use and runs in-process (no separate server) or as a lightweight server. It&#x27;s the default vector store for <code>LangChain</code> and <code>LlamaIndex</code> in development and small-scale deployment.</p><p>Core concepts: Collection — a named container for embeddings, similar to a table in a relational database. Each collection stores: embeddings (vectors), documents (the original text), metadata (key-value pairs for filtering), and IDs (unique identifiers). Documents, embeddings, and metadata are stored together so you can retrieve the original text alongside similarity scores.</p><p>Embedding functions: Chroma has a default embedding function (sentence-<code>transformers</code>/all-<code>MiniLM</code>-L6-v2) that is called automatically when you add documents. You can also provide precomputed embeddings. For production quality, override with a better embedding model: `<code>embedding_function</code> = <code>embedding_functions.OpenAIEmbeddingFunction</code>(<code>api_key</code>=..., <code>model_name</code>=&#x27;text-embedding-3-large&#x27;)`.</p><p>Persistence: by default, Chroma runs in-memory (no persistence across sessions). For persistence: `client = <code>chromadb</code>.<code>PersistentClient</code>(path=&#x27;./<code>chroma_db</code>&#x27;)` — stores the database on disk and can be reloaded in future sessions. For multi-process or multi-machine access: use `<code>chromadb</code>.<code>HttpClient</code>(host=&#x27;localhost&#x27;, port=8000)` with a running Chroma server.</p><p>When to use Chroma vs other options: Chroma is perfect for: local development, prototyping, small-scale applications (&lt; 1M vectors), educational use. Switch to managed services (Pinecone, Weaviate Cloud) when: you need cloud hosting, very large collections (&gt; 10M vectors), production reliability (uptime SLAs), or advanced features (hybrid search, multi-tenancy).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Embeddings and vector databases and needs to apply Chroma. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Chroma is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import chromadb
+from chromadb.utils import embedding_functions
+# Persistent Chroma client
+client = chromadb.PersistentClient(path=&#x27;./chroma_db&#x27;)
+# Create or get collection
+collection = client.get_or_create_collection(
+    name=&#x27;product_docs&#x27;,
+    embedding_function=embedding_functions.DefaultEmbeddingFunction()
+)
+# Add documents
+documents = [
+    &#x27;The iPhone 15 Pro has a titanium design and USB-C.&#x27;,
+    &#x27;MacBook Pro M3 has 18-hour battery life.&#x27;,
+    &#x27;AirPods Pro 2 support spatial audio and noise cancellation.&#x27;
+]
+collection.add(
+    documents=documents,
+    ids=[&#x27;doc_001&#x27;, &#x27;doc_002&#x27;, &#x27;doc_003&#x27;],
+    metadatas=[{&#x27;category&#x27;: &#x27;phone&#x27;}, {&#x27;category&#x27;: &#x27;laptop&#x27;}, {&#x27;category&#x27;: &#x27;audio&#x27;}]
+)
+# Query
+results = collection.query(
+    query_texts=[&#x27;wireless earbuds with noise cancellation&#x27;],
+    n_results=2,
+    where={&#x27;category&#x27;: &#x27;audio&#x27;}  # metadata filter
+)
+for doc, score in zip(results[&#x27;documents&#x27;][0], results[&#x27;distances&#x27;][0]):
+    print(f&#x27;Score: {score:.4f} | Doc: {doc}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Chroma, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br><code>ChromaDB</code> is the fastest way to add vector search to an LLM application. Setting up Chroma takes 10 lines of code; setting up Pinecone or Weaviate takes 30+ lines and requires external accounts. For learning RAG, building prototypes, or running locally, Chroma is the right default. Knowing when to graduate to a managed vector database is the next skill.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using in-memory Chroma for anything that should persist — `<code>chromadb.Client()</code>` loses all data when the process ends. Use <code>PersistentClient</code> for any data you want to keep between sessions.</li><li>Not specifying an embedding function — if you don&#x27;t provide an embedding function when creating a collection, Chroma uses its default. If you later query with a different embedding model, similarity scores will be meaningless (comparing apples to oranges in embedding space). Always explicitly specify and document which embedding model a collection uses.</li><li>Not handling IDs carefully — Chroma requires each document to have a unique ID. Adding a document with the same ID as an existing one will raise an error. Use deterministic IDs (hash of content) to enable idempotent upserts.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a document Q&amp;A system with <code>ChromaDB</code>: (1) load 20 product support articles (any domain), (2) split each into 200-word chunks with 50-word overlap, (3) add to a persistent <code>ChromaDB</code> collection with metadata (<code>source_url</code>, category), (4) implement: query → retrieve top-5 chunks → filter by metadata → generate answer with Claude, (5) add: <code>collection.count()</code> logging, and log cosine similarity scores for each retrieved chunk, (6) test with 10 questions — what fraction of answers are correctly grounded in retrieved documents?</div>
     </div>
   </div>
 </section>
@@ -199,17 +336,54 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Pinecone Milvus pgvector</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Pinecone Milvus pgvector is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Pinecone, Milvus, and pgvector are production vector databases for storing and querying high-dimensional embeddings at scale. Unlike <code>ChromaDB</code> (developer tool), these are designed for production workloads: millions to billions of vectors, high query throughput, low latency, and enterprise features like access control and monitoring.</p><p>Pinecone: a fully managed, serverless vector database. Pros: zero infrastructure management, automatic scaling, REST API, handles billions of vectors. Cons: vendor lock-in, cost (serverless pricing by usage). Best for: teams without ML infrastructure expertise, startups that want to move fast. An index in Pinecone is a fully managed collection: you specify dimension, metric (cosine/euclidean/dotproduct), and serverless configuration.</p><p>Milvus: an open-source vector database (Apache 2.0 license). Can be self-hosted (Docker, Kubernetes) or used via Zilliz Cloud (managed service). Supports many index types (HNSW, IVF_FLAT, IVF_SQ8) for different performance-accuracy tradeoffs. Supports multiple vector fields per collection, hybrid search (scalar + vector filtering), and multi-tenancy. Best for: teams with infrastructure capability and cost sensitivity.</p><p>pgvector: a <code>PostgreSQL</code> extension that adds vector similarity search to Postgres. `CREATE EXTENSION vector`. Pros: no new infrastructure if you already use Postgres, SQL queries with vector similarity, ACID transactions, combine with relational data natively. Cons: performance degrades for very large vector collections (&gt; 10M vectors) without careful tuning. Best for: existing Postgres users with moderate vector search needs (&lt; 10M vectors, &lt; 100 QPS).</p><p>Choosing a vector database: start with pgvector if you&#x27;re already using Postgres and have &lt; 5M vectors. Use Pinecone for fast prototyping with &lt; 1M vectors on a managed service. Use Milvus when you have &gt; 10M vectors, need maximum query performance (HNSW index), and have <code>DevOps</code> capability to manage the deployment.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Pinecone Milvus pgvector is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># pgvector setup (SQL)
+# 1. Install extension: pip install pgvector
+# 2. CREATE EXTENSION vector;  -- in Postgres
+# 3. Create table with vector column
+from pgvector.psycopg2 import register_vector
+import psycopg2
+import numpy as np
+conn = psycopg2.connect(database=&#x27;mydb&#x27;, user=&#x27;postgres&#x27;, host=&#x27;localhost&#x27;)
+register_vector(conn)
+cur = conn.cursor()
+cur.execute(&#x27;CREATE TABLE IF NOT EXISTS docs (id serial PRIMARY KEY, content text, embedding vector(384))&#x27;)
+# Insert embeddings
+embeddings = np.random.rand(100, 384).astype(&#x27;float32&#x27;)
+for i in range(100):
+    cur.execute(&#x27;INSERT INTO docs (content, embedding) VALUES (%s, %s)&#x27;, (f&#x27;doc_{i}&#x27;, embeddings[i].tolist()))
+conn.commit()
+# Create HNSW index for fast search
+cur.execute(&#x27;CREATE INDEX ON docs USING hnsw (embedding vector_cosine_ops)&#x27;)
+# Query: find 5 most similar docs
+query_vec = np.random.rand(384).tolist()
+cur.execute(&#x27;SELECT id, content, embedding &lt;=&gt; %s AS distance FROM docs ORDER BY embedding &lt;=&gt; %s LIMIT 5&#x27;, (query_vec, query_vec))
+results = cur.fetchall()
+for id, content, dist in results: print(f&#x27;{content}: distance={dist:.4f}&#x27;)</code></pre><pre><code># Pinecone setup
+from pinecone import Pinecone, ServerlessSpec
+pc = Pinecone(api_key=&#x27;your-api-key&#x27;)
+# Create index
+if &#x27;my-index&#x27; not in pc.list_indexes().names():
+    pc.create_index(
+        name=&#x27;my-index&#x27;, dimension=384, metric=&#x27;cosine&#x27;,
+        spec=ServerlessSpec(cloud=&#x27;aws&#x27;, region=&#x27;us-east-1&#x27;)
+    )
+index = pc.Index(&#x27;my-index&#x27;)
+# Upsert vectors
+vectors = [(f&#x27;id_{i}&#x27;, np.random.rand(384).tolist(), {&#x27;category&#x27;: &#x27;product&#x27;}) for i in range(100)]
+index.upsert(vectors=vectors)
+# Query
+results = index.query(vector=np.random.rand(384).tolist(), top_k=5, filter={&#x27;category&#x27;: &#x27;product&#x27;})
+for match in results.matches: print(f&#x27;id={match.id}, score={match.score:.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Pinecone Milvus pgvector, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Production vector databases are the infrastructure layer that makes RAG applications scalable. <code>ChromaDB</code> running locally on a single machine can handle thousands of vectors; Pinecone can handle billions. Understanding the tradeoffs between managed services (Pinecone), open-source self-hosted (Milvus), and database extensions (pgvector) lets you choose the right infrastructure for each project&#x27;s scale, budget, and operational constraints.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Choosing Pinecone for a personal project with a small budget — Pinecone&#x27;s serverless pricing is fine for prototyping, but costs increase significantly with traffic. For a personal project with low traffic, pgvector or <code>ChromaDB</code> is free.</li><li>Not creating a vector index in pgvector — without `CREATE INDEX USING hnsw`, similarity queries in pgvector do full table scans (O(n)). With an HNSW index, queries are O(log n). The HNSW index must be explicitly created.</li><li>Not normalizing vectors for cosine similarity — cosine similarity measures the angle between vectors. If your embedding model doesn&#x27;t output unit-normalized vectors, you must normalize before inserting: `embedding / <code>np.linalg.norm</code>(embedding)`. Without normalization, cosine similarity scores are inaccurate.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare vector database options for a RAG system: (1) implement the same document retrieval pipeline with: <code>ChromaDB</code> (in-process), pgvector (Postgres), and Pinecone (or a Milvus Docker container), (2) load 10,000 document chunks with embeddings into each, (3) benchmark: query latency (50 queries), memory usage, setup time, code complexity, (4) test metadata filtering (retrieve only docs from category X) with each — how does pgvector&#x27;s SQL filter compare to Pinecone&#x27;s metadata filter?, (5) document the setup steps for each — which is most <code>DevOps</code>-friendly?</div>
     </div>
   </div>
 </section>
@@ -221,17 +395,43 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Metadata filtering</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Metadata filtering is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Metadata filtering combines vector similarity search with structured attribute filtering — retrieve documents that are both semantically relevant AND match specific attribute conditions. &#x27;Find product documentation for iPhone 15 models&#x27; requires: semantic match (&#x27;iPhone 15&#x27;) AND attribute filter (<code>product_line</code>=&#x27;iPhone&#x27;, version=&#x27;15&#x27;).</p><p>Why metadata filtering matters: without filtering, vector search returns the most similar documents globally. In a knowledge base with documents for multiple products, a query about Product A may retrieve documents from Products B and C if they&#x27;re topically similar. Metadata filtering restricts the search to the relevant subset, improving precision without sacrificing recall.</p><p>Pre-filtering vs post-filtering: pre-filtering — restrict the search space to documents matching the metadata condition, then find the most similar within that subset. Faster for large collections when the filter is selective. Post-filtering — retrieve top-k by similarity, then filter by metadata. Works when the filter is not very selective (returns many documents). Most vector databases use pre-filtering for indexed metadata fields.</p><p>Metadata design: which fields to include as metadata depends on your access patterns. For customer support: <code>product_name</code>, <code>product_version</code>, category, language, <code>date_created</code>. For news: source, date, topic, sentiment. For code: language, repository, <code>file_type</code>, <code>last_modified</code>. Index fields you&#x27;ll frequently filter on; store infrequently-used fields as additional context.</p><p>Combining filters: AND, OR, NOT conditions. &#x27;category=electronics AND price&lt;500 AND <code>in_stock</code>=true.&#x27; Vector databases implement this as structured query syntax — Pinecone uses <code>MongoDB</code>-style operators: {&quot;$and&quot;: [{&quot;category&quot;: &quot;electronics&quot;}, {&quot;price&quot;: {&quot;$lt&quot;: 500}}]}. pgvector uses SQL WHERE clause natively.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Embeddings and vector databases and needs to apply Metadata filtering. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Metadata filtering is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import chromadb
+# Metadata filtering in ChromaDB
+client = chromadb.PersistentClient(path=&#x27;./db&#x27;)
+collection = client.get_or_create_collection(&#x27;support_docs&#x27;)
+# Add documents with metadata
+collection.add(
+    documents=[&#x27;iPhone 15 screen replacement guide&#x27;, &#x27;iPhone 14 battery replacement&#x27;, &#x27;MacBook Pro keyboard fix&#x27;],
+    ids=[&#x27;doc_1&#x27;, &#x27;doc_2&#x27;, &#x27;doc_3&#x27;],
+    metadatas=[
+        {&#x27;product&#x27;: &#x27;iPhone&#x27;, &#x27;version&#x27;: &#x27;15&#x27;, &#x27;category&#x27;: &#x27;screen&#x27;},
+        {&#x27;product&#x27;: &#x27;iPhone&#x27;, &#x27;version&#x27;: &#x27;14&#x27;, &#x27;category&#x27;: &#x27;battery&#x27;},
+        {&#x27;product&#x27;: &#x27;MacBook&#x27;, &#x27;version&#x27;: &#x27;Pro&#x27;, &#x27;category&#x27;: &#x27;keyboard&#x27;},
+    ]
+)
+# Query with metadata filter: only iPhone docs
+results = collection.query(
+    query_texts=[&#x27;how to fix the display&#x27;],
+    n_results=2,
+    where={&#x27;product&#x27;: &#x27;iPhone&#x27;}  # AND condition: must have product=iPhone
+)
+print(results[&#x27;documents&#x27;])
+# Complex filter: iPhone AND (version=15 OR version=14)
+results_complex = collection.query(
+    query_texts=[&#x27;screen issues&#x27;],
+    n_results=3,
+    where={&#x27;$and&#x27;: [{&#x27;product&#x27;: &#x27;iPhone&#x27;}, {&#x27;$or&#x27;: [{&#x27;version&#x27;: &#x27;15&#x27;}, {&#x27;version&#x27;: &#x27;14&#x27;}]}]}
+)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Metadata filtering, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Metadata filtering is the difference between a demo RAG system and a production RAG system. A customer support RAG without metadata filtering retrieves documentation for all products when a user asks about one specific product — generating answers that mix information from different products. Metadata filtering restricts retrieval to contextually appropriate documents, dramatically improving answer quality.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Over-filtering to the point of retrieving nothing — too strict a filter (exact version match, exact category) may return zero relevant documents if the metadata is slightly inconsistent. Implement a fallback: if filtered results &lt; 2, retry with a relaxed filter.</li><li>Not indexing frequently-filtered metadata fields — vector databases store metadata, but not all fields are indexed for fast filtering. Check your database&#x27;s documentation — in Pinecone, all metadata fields are filterable; in Milvus, you must create a scalar index on fields used for filtering.</li><li>Storing too much in metadata — metadata should contain structured, filterable attributes. Long text content belongs in the document field, not in metadata. Storing a full document as metadata defeats the purpose of the document field and makes metadata filtering slower.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a filtered retrieval system: (1) create a collection of 200 articles with metadata: topic (tech/sports/politics), language (en/fr/es), date (2022-2024), sentiment (positive/neutral/negative), (2) implement a query function that accepts metadata filters and returns filtered + semantically ranked results, (3) test: (a) topic=tech AND date &gt;= 2024, (b) language=fr OR language=es, (c) sentiment=negative AND topic=politics, (4) measure recall: for each filter condition, how many of the ground-truth relevant documents are retrieved in top-10? (5) compare filtered vs unfiltered: does metadata filtering improve precision without hurting recall?</div>
     </div>
   </div>
 </section>
@@ -243,17 +443,46 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Hybrid search</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Hybrid search is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Hybrid search combines dense vector search (semantic similarity via embeddings) with sparse lexical search (keyword matching via BM25 or TF-IDF) to retrieve documents that are either semantically related OR contain exact keywords. Neither method alone is optimal: dense search excels at semantic similarity but misses exact keyword matches; sparse search excels at exact terms but misses paraphrases.</p><p>Why the combination matters: query &#x27;<code>PyTorch</code> gradient checkpointing&#x27; — dense search might return documents about &#x27;memory optimization in deep learning&#x27; (semantically related but doesn&#x27;t mention the exact technique). BM25 returns documents containing all three exact terms. The hybrid retrieves both: semantic matches for context, exact matches for technical precision. This is especially important for technical documentation, code search, and medical information.</p><p>Reciprocal Rank Fusion (RRF): the simplest way to combine results from multiple retrieval systems. For each retrieved document, assign a score: RRF(d) = Σ 1/(k + <code>rank_in_retrieval_system_i</code>) where k=60 is a constant. Documents appearing in both systems get double contribution. RRF doesn&#x27;t require calibrated scores across systems — it only uses rank position.</p><p>Alpha-weighted fusion: alternatively, compute a weighted sum of dense and sparse scores: <code>final_score</code> = α × <code>dense_score</code> + (1-α) × <code>sparse_score</code>. Requires normalizing scores to [0,1] first. α is a hyperparameter that balances semantic vs keyword matching. Optimize α on a validation set — typical values are α=0.5 to 0.7 (slightly favoring dense).</p><p>Production hybrid search: Weaviate, Elasticsearch, and <code>OpenSearch</code> support hybrid search natively. Qdrant and Pinecone provide sparse+dense vector storage. For <code>LangChain</code>: `<code>EnsembleRetriever</code>` combines a BM25Retriever (sparse) and a <code>VectorStoreRetriever</code> (dense) with configurable weights.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Embeddings and vector databases and needs to apply Hybrid search. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Hybrid search is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain.retrievers import BM25Retriever, EnsembleRetriever
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+# Setup
+docs = [...]  # list of Document objects
+# Dense retriever (semantic)
+embeddings = HuggingFaceEmbeddings(model_name=&#x27;all-MiniLM-L6-v2&#x27;)
+vectorstore = Chroma.from_documents(docs, embeddings)
+dense_retriever = vectorstore.as_retriever(search_kwargs={&#x27;k&#x27;: 5})
+# Sparse retriever (keyword)
+bm25_retriever = BM25Retriever.from_documents(docs)
+bm25_retriever.k = 5
+# Ensemble with RRF
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[bm25_retriever, dense_retriever],
+    weights=[0.4, 0.6]  # 40% BM25, 60% dense
+)
+results = ensemble_retriever.invoke(&#x27;PyTorch gradient checkpointing memory optimization&#x27;)
+for r in results: print(r.page_content[:100])</code></pre><pre><code># RRF implementation from scratch
+def reciprocal_rank_fusion(results_list, k=60):
+    scores = {}
+    for results in results_list:
+        for rank, doc_id in enumerate(results):
+            scores[doc_id] = scores.get(doc_id, 0) + 1.0 / (k + rank + 1)
+    return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+# Usage
+dense_results = [&#x27;doc_3&#x27;, &#x27;doc_7&#x27;, &#x27;doc_1&#x27;, &#x27;doc_5&#x27;, &#x27;doc_2&#x27;]  # by dense score
+sparse_results = [&#x27;doc_1&#x27;, &#x27;doc_3&#x27;, &#x27;doc_8&#x27;, &#x27;doc_4&#x27;, &#x27;doc_6&#x27;]  # by BM25 score
+fused = reciprocal_rank_fusion([dense_results, sparse_results])
+print(fused[:5])  # doc_3 and doc_1 appear in both → higher RRF score</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Hybrid search, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Hybrid search consistently outperforms either pure dense or pure sparse retrieval across most RAG benchmarks by 5-15% on recall@10. The improvement is highest for queries with specific technical terms or proper nouns that are sparsely represented in the embedding space. In production RAG systems, hybrid search is the recommended default retrieval strategy.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not normalizing scores before alpha-weighted combination — dense scores (cosine similarity: 0-1) and sparse scores (BM25: 0-50) have very different ranges. Without normalization, one dominates. Always normalize to [0,1] before weighted fusion.</li><li>Using BM25 alone for short queries — BM25 gives very noisy results for single-word queries (&#x27;fraud&#x27;, &#x27;churn&#x27;) where most documents contain that word. Dense search performs better for short or vague queries. Hybrid helps most for medium-length technical queries (4-15 words).</li><li>Not evaluating hybrid vs dense-only on your specific dataset — hybrid generally wins, but on datasets with very unique terminology or code, BM25 may dominate. Always measure: recall@10 for dense-only, BM25-only, and hybrid on your validation set.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare retrieval strategies on a technical documentation corpus: (1) collect 100 technical documents (Python docs, API references, or similar), (2) create 50 test queries with known relevant documents, (3) implement: dense-only (<code>ChromaDB</code>), sparse-only (BM25), hybrid (RRF), (4) measure recall@5 and recall@10 for each strategy, (5) plot: which query types benefit most from hybrid (long vs short queries, specific technical terms vs general concepts)? (6) tune the RRF k parameter and the ensemble weights — what values work best for your corpus?</div>
     </div>
   </div>
 </section>
@@ -265,17 +494,36 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Chunking</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Chunking is a concept inside Embeddings and vector databases that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Chunking is the process of splitting long documents into smaller segments (chunks) before embedding and indexing them in a vector store. This is necessary because: (1) embedding models have context window limits (typically 512 tokens), (2) smaller chunks provide more precise retrieval (a 100-word chunk about &#x27;attention mechanism&#x27; will rank higher for an attention query than a 5000-word chapter that mentions attention once), (3) the LLM context window limits how much retrieved text can be included in the prompt.</p><p>Fixed-size chunking: split every n tokens (or characters) with an optional overlap. Pros: simple, predictable chunk sizes. Cons: may split in the middle of a sentence, paragraph, or concept. overlap=50 tokens means consecutive chunks share 50 tokens — this ensures continuity at chunk boundaries and prevents important context from being split across chunks. Example: <code>chunk_size</code>=256 tokens, overlap=32 tokens.</p><p>Semantic chunking: split at natural semantic boundaries — sentence boundaries, paragraph breaks, section headings. spaCy&#x27;s sentencizer splits at sentence boundaries. Markdown splitter splits at ## headings. HTML splitter splits at tags. These produce variable-length chunks that preserve semantic units. The trade-off: some chunks may be too long for the embedding model or too short to be meaningful.</p><p>Recursive character text splitter (<code>LangChain</code> default): tries to split at the most natural boundary available, in order of preference: \n\n (paragraph), \n (newline), &#x27;. &#x27; (sentence), &#x27; &#x27; (word), &#x27;&#x27; (character). This produces chunks that respect document structure while enforcing a maximum size.</p><p>Optimal chunk size: depends on the use case. For dense factual documents (legal, medical): 128-256 tokens (precise retrieval of specific facts). For narrative documents (books, articles): 512-1024 tokens (preserves context). For code: split by function/class (variable size). Always evaluate retrieval quality at multiple chunk sizes — there is no single optimal size. Rule of thumb: match chunk size to the expected length of the relevant passage for your queries.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Split a handbook by headings into 400 to 800 token chunks with a small overlap, then keep page number and section metadata with every chunk.</p>
-        <ol><li>Set up a small realistic scenario from Embeddings and vector databases where Chunking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain.text_splitter import RecursiveCharacterTextSplitter
+# Recursive splitter — preserves semantic structure
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=512,       # max characters per chunk
+    chunk_overlap=64,     # overlap for continuity at boundaries
+    length_function=len,  # or use tiktoken for token counting
+    separators=[&#x27;\n\n&#x27;, &#x27;\n&#x27;, &#x27;. &#x27;, &#x27; &#x27;, &#x27;&#x27;]
+)
+document = open(&#x27;my_document.txt&#x27;).read()
+chunks = splitter.split_text(document)
+print(f&#x27;{len(chunks)} chunks, avg length: {sum(len(c) for c in chunks)/len(chunks):.0f} chars&#x27;)</code></pre><pre><code># Token-based splitting with tiktoken (for OpenAI embedding limits)
+import tiktoken
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+enc = tiktoken.get_encoding(&#x27;cl100k_base&#x27;)
+def token_count(text): return len(enc.encode(text))
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=256, chunk_overlap=32, length_function=token_count,
+)
+chunks = splitter.split_documents(documents)  # preserves metadata
+# Each chunk: {page_content: &#x27;...&#x27;, metadata: {source: &#x27;file.pdf&#x27;, page: 5}}</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Chunking, explain it in 5 to 8 lines, and connect it to Embeddings and vector databases.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Chunking strategy directly affects retrieval quality in RAG systems. Poor chunking (too large: imprecise retrieval; too small: loses context; splitting mid-sentence: incoherent chunks) is one of the most common causes of poor RAG performance. Thoughtful chunking is as important as embedding model choice.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using fixed character-based chunking without overlap — chunk at exactly 1000 characters means the last sentence of one chunk and first sentence of the next chunk are separated. A query spanning the boundary won&#x27;t find either chunk. Use overlap of 10-20% of chunk size.</li><li>Using the same chunk size for all document types — code should be chunked by function, markdown by section heading, legal documents by clause. Use document-type-aware chunking.</li><li>Not storing metadata with chunks — when a chunk is retrieved, you need to know: which document it came from, which page, what section. This is needed for citations, context expansion, and debugging. Always preserve and store metadata.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Evaluate chunking strategies on a RAG benchmark: (1) take a 50-page technical document (PDF), (2) chunk with: fixed 256 tokens (no overlap), fixed 256 tokens (32-token overlap), recursive splitter 256 tokens, sentence splitter, and paragraph splitter, (3) for each strategy: embed chunks with all-<code>MiniLM</code>-L6-v2, build FAISS index, (4) evaluate with 30 test queries: Recall@3 (is the relevant chunk in the top 3?), (5) visualize chunk size distribution for each strategy, (6) identify queries where different strategies give different results — what does each strategy retrieve?</div>
     </div>
   </div>
 </section>
@@ -287,18 +535,52 @@ results = vector_db.search(query_vector, top_k=5)</code></pre>
       <h2>Embedding evaluation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Embedding evaluation is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Embeddings and vector databases, test Embedding evaluation with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Embedding evaluation measures whether an embedding model captures the semantic properties relevant to your use case. Generic embedding benchmarks (MTEB — Massive Text Embedding Benchmark) measure across many tasks, but the best embedding model for generic tasks may not be best for your specific domain (legal contracts, medical notes, code).</p><p>Intrinsic evaluation: measures properties of the embedding space directly without a downstream task. Semantic similarity: compute embeddings for pairs of sentences with human-judged similarity scores (STS-Benchmark, STS-B). Measure Spearman correlation between cosine similarity and human scores. A high Spearman correlation means the model&#x27;s similarity judgments match human intuition.</p><p>Extrinsic evaluation (most important for production): evaluate embeddings on your actual downstream task. For RAG: given a query and a corpus, retrieve top-k documents — what fraction contain the answer? (Recall@k). For semantic search: given queries with labeled relevant documents, compute NDCG@10 (Normalized Discounted Cumulative Gain). For clustering: cluster embeddings and compare to known labels with ARI.</p><p>Domain adaptation matters: an embedding model trained on Wikipedia performs well on general text. For legal contracts, medical notes, or scientific papers, a domain-specific model (Legal-BERT, <code>BioBERT</code>, <code>SciBERT</code>) or a general model fine-tuned on your domain often outperforms off-the-shelf general models by 10-20% on intrinsic metrics and up to 30% on retrieval metrics.</p><p>MTEB leaderboard: the <code>HuggingFace</code> MTEB leaderboard ranks embedding models across 56 datasets and 7 task types. For choosing an off-the-shelf model: sort by your task type (retrieval, clustering, classification). Consider: model size (tradeoff between quality and inference speed), dimension (higher dimension generally = better quality but higher storage/compute), license (commercial use?). Current top general models: bge-large-en-v1.5, e5-mistral-7b, text-embedding-3-large.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Semantic search: embed the question &#x27;How do I reset my password?&#x27; and retrieve help articles with similar meaning even if they use different words like &#x27;account recovery&#x27;.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Embedding evaluation changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sentence_transformers import SentenceTransformer
+from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from datasets import load_dataset
+import numpy as np
+# Intrinsic evaluation: STS Benchmark
+stsb = load_dataset(&#x27;mteb/stsbenchmark-sts&#x27;)
+model = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)
+# Evaluate semantic similarity on STS-B
+evaluator = EmbeddingSimilarityEvaluator.from_input_examples(
+    [{&#x27;sentence1&#x27;: row[&#x27;sentence1&#x27;], &#x27;sentence2&#x27;: row[&#x27;sentence2&#x27;], &#x27;score&#x27;: row[&#x27;score&#x27;]/5.0}
+     for row in stsb[&#x27;test&#x27;]],
+    name=&#x27;sts-benchmark&#x27;
+)
+result = evaluator(model)
+print(f&#x27;STS-B Spearman: {result[&quot;sts-benchmark_spearman_cosine&quot;]:.4f}&#x27;)
+# Compare two models
+for model_name in [&#x27;all-MiniLM-L6-v2&#x27;, &#x27;all-mpnet-base-v2&#x27;, &#x27;bge-large-en-v1.5&#x27;]:
+    m = SentenceTransformer(model_name)
+    r = EmbeddingSimilarityEvaluator.from_input_examples([...], name=&#x27;sts&#x27;)(m)
+    print(f&#x27;{model_name}: {r:.4f}&#x27;)</code></pre><pre><code># Extrinsic evaluation: retrieval recall@k
+def evaluate_retrieval(model_name, queries, corpus, relevant_doc_ids, k=10):
+    from sentence_transformers import SentenceTransformer
+    import numpy as np
+    from sklearn.metrics.pairwise import cosine_similarity
+    model = SentenceTransformer(model_name)
+    corpus_embeddings = model.encode(corpus, batch_size=64)
+    query_embeddings = model.encode(queries, batch_size=64)
+    scores = cosine_similarity(query_embeddings, corpus_embeddings)
+    recalls = []
+    for i, rel_ids in enumerate(relevant_doc_ids):
+        top_k = np.argsort(scores[i])[::-1][:k]
+        recall = len(set(top_k) &amp; set(rel_ids)) / len(rel_ids)
+        recalls.append(recall)
+    return np.mean(recalls)
+print(evaluate_retrieval(&#x27;all-MiniLM-L6-v2&#x27;, queries, corpus, relevant_ids, k=10))</code></pre>
       </div>
       <pre><code>query_vector = embed(&quot;refund policy&quot;)
 results = vector_db.search(query_vector, top_k=5)</code></pre>
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Embedding evaluation. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Choosing the wrong embedding model can silently degrade RAG performance by 20-40%. A RAG system that retrieves 60% of relevant documents (recall@5 = 0.60) will generate answers with missing context. Without evaluation, you don&#x27;t know whether switching from all-<code>MiniLM</code>-L6-v2 to bge-large-en-v1.5 would improve recall to 0.75. Evaluation gives you the evidence to make these decisions.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Choosing an embedding model based on MTEB overall rank without checking task-specific performance — the top-ranked model on MTEB overall may not be the best for retrieval. Sort MTEB by &#x27;Retrieval&#x27; task type when building a RAG system.</li><li>Not evaluating on domain-specific data — a model that ranks highly on MTEB general benchmarks may rank poorly on your specific domain (medical, legal, code). Build a domain-specific evaluation set (100 query-document pairs) and measure retrieval recall before choosing a model.</li><li>Ignoring inference speed — the largest and best embedding models (7B parameter models like e5-mistral) are 10-50x slower than small models (all-<code>MiniLM</code>-L6-v2). For a production search system with low latency requirements, a slightly worse but much faster model may be the right choice.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Evaluate and compare embedding models for a RAG use case: (1) build a corpus of 200 documents in your domain (technical, medical, legal, or general), (2) create a ground-truth retrieval dataset: 50 queries, each with labeled relevant documents (1-3 per query), (3) evaluate 4 models: all-<code>MiniLM</code>-L6-v2, all-mpnet-base-v2, bge-large-en-v1.5, and one domain-specific model, (4) for each: compute recall@5, recall@10, mean reciprocal rank (MRR), and embedding time per query, (5) plot the pareto frontier: retrieval quality vs inference speed — which model gives the best quality-speed tradeoff?</div>
     </div>
   </div>
 </section>

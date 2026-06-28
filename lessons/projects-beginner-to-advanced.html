@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Projects: beginner to advanced | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -31,7 +32,7 @@
       <header class="content-head">
         <span class="eyebrow">11 Projects and Portfolio</span>
         <h1>Projects: beginner to advanced</h1>
-        <div class="meta"><span class="pill">Beginner to Advanced</span><span class="pill">Ongoing</span><span class="pill">Lesson 39</span></div>
+        <div class="meta"><span class="pill">Beginner to Advanced</span><span class="pill">Ongoing</span><span class="pill">Lesson 43</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">Beginner projects</span><span class="tag">EDA project</span><span class="tag">House price prediction</span><span class="tag">Spam classifier</span><span class="tag">Churn prediction</span><span class="tag">Fraud detection</span><span class="tag">Recommendation project</span><span class="tag">Image classifier</span><span class="tag">Chat with PDF</span><span class="tag">Agent with tools</span><span class="tag">MLOps pipeline</span><span class="tag">Multimodal document AI</span><span class="tag">README and case study</span></div>
       </header>
@@ -44,17 +45,37 @@
       <h2>Beginner projects</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Beginner projects is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Beginner ML projects build foundational skills and produce tangible, demonstrable results. The best beginner projects use clean, publicly available datasets, involve a complete end-to-end pipeline (data → features → model → evaluation), and produce a clear output (a working prediction, a visualization, a trained model). Starting with something too ambitious leads to frustration; starting with something too simple provides no real learning.</p><p>Titanic Survival Prediction (Kaggle): the canonical beginner project. Binary classification: predict which passengers survived the Titanic disaster. Dataset has interesting features (age, sex, passenger class, cabin, fare, family size). Skills: data exploration, handling missing values, feature engineering (extract title from name, create &#x27;alone&#x27; feature), categorical encoding, <code>sklearn</code> Pipeline. Easy to evaluate (classification accuracy, AUC) and submit to Kaggle for external validation.</p><p>House Price Prediction: regression problem, Ames Housing Dataset or California Housing. Predict house sale prices from 80+ features (square footage, neighborhood, quality ratings, year built). Skills: exploratory data analysis, handling skewed targets (log transform), regularization (Ridge, Lasso), feature importance. Great for learning that data quality and feature engineering matters more than model choice.</p><p>Handwritten Digit Recognition (MNIST): the &#x27;Hello World&#x27; of deep learning. 70,000 28×28 grayscale images of handwritten digits 0-9. Skills: neural networks, convolutional networks, regularization, hyperparameter tuning. Achieves &gt; 99% accuracy with a simple CNN. The benchmark nature makes it easy to compare your results with published baselines.</p><p>SMS Spam Classifier: binary text classification. Dataset: 5,574 labeled SMS messages (spam/ham). Skills: text preprocessing (tokenization, stopword removal), TF-IDF vectorization, Naive Bayes (natural for text classification), precision/recall tradeoff. A complete NLP pipeline that introduces the entire text classification workflow in a compact, understandable problem.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Beginner projects. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Beginner projects is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Titanic end-to-end pipeline
+import pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+train = pd.read_csv(&#x27;titanic_train.csv&#x27;)
+# Feature engineering
+train[&#x27;FamilySize&#x27;] = train[&#x27;SibSp&#x27;] + train[&#x27;Parch&#x27;] + 1
+train[&#x27;IsAlone&#x27;] = (train[&#x27;FamilySize&#x27;] == 1).astype(int)
+train[&#x27;Title&#x27;] = train[&#x27;Name&#x27;].str.extract(&#x27; ([A-Za-z]+)\.&#x27;, expand=False).map({&#x27;Mr&#x27;: 0, &#x27;Miss&#x27;: 1, &#x27;Mrs&#x27;: 2, &#x27;Master&#x27;: 3}).fillna(4)
+numeric_features = [&#x27;Age&#x27;, &#x27;Fare&#x27;, &#x27;FamilySize&#x27;]
+categorical_features = [&#x27;Sex&#x27;, &#x27;Embarked&#x27;, &#x27;Pclass&#x27;]
+X = train[numeric_features + categorical_features + [&#x27;IsAlone&#x27;, &#x27;Title&#x27;]].copy()
+y = train[&#x27;Survived&#x27;]
+preprocessor = ColumnTransformer([(&#x27;num&#x27;, Pipeline([(&#x27;imp&#x27;, SimpleImputer()), (&#x27;scale&#x27;, StandardScaler())]), numeric_features), (&#x27;cat&#x27;, Pipeline([(&#x27;imp&#x27;, SimpleImputer(strategy=&#x27;most_frequent&#x27;)), (&#x27;ohe&#x27;, OneHotEncoder(handle_unknown=&#x27;ignore&#x27;))]), categorical_features)])
+pipe = Pipeline([(&#x27;pre&#x27;, preprocessor), (&#x27;model&#x27;, RandomForestClassifier(n_estimators=200, random_state=42))])
+scores = cross_val_score(pipe, X, y, cv=5, scoring=&#x27;accuracy&#x27;)
+print(f&#x27;5-fold accuracy: {scores.mean():.4f} ± {scores.std():.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Beginner projects, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Beginner projects build the muscle memory of the full ML workflow: loading data, exploring it, handling messiness, engineering features, fitting and evaluating a model. This hands-on experience is irreplaceable — no amount of reading about cross-validation substitutes for running it and examining the fold results yourself.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not doing EDA before modeling — jumping straight to <code>model.fit()</code> without understanding the data. EDA reveals: missing patterns, outliers, class imbalances, and feature relationships that should inform feature engineering and model selection.</li><li>Using a complex model for a beginner project — starting with neural networks or XGBoost for Titanic obscures the fundamentals. Start with logistic regression or a single decision tree, understand what it&#x27;s doing, THEN upgrade to more complex models.</li><li>Not versioning your work — beginner projects often accumulate as one giant notebook. Use git from day 1: commit after each significant step so you can compare with earlier versions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Complete the Titanic project fully: (1) download the Titanic dataset from Kaggle, (2) perform EDA: visualize survival rates by age, sex, class, and family size, (3) implement the full feature engineering pipeline (title extraction, family size, <code>IsAlone</code>), (4) compare 5 models: logistic regression, decision tree, random forest, gradient boosting, SVM — cross-validated AUC, (5) tune the best model with <code>GridSearchCV</code>, (6) submit to Kaggle and achieve top 30% on the leaderboard, (7) write a 1-page analysis explaining your most impactful feature engineering decisions.</div>
     </div>
   </div>
 </section>
@@ -66,17 +87,42 @@
       <h2>EDA project</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>EDA project belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Projects: beginner to advanced, treat EDA project as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>An EDA (Exploratory Data Analysis) project is a structured investigation of a new dataset to understand its structure, distribution, and interesting patterns before building any ML models. A thorough EDA prevents wasted model training efforts, surfaces data quality issues, and generates hypotheses for feature engineering.</p><p>EDA workflow: (1) load and inspect (shape, dtypes, missing values, duplicates), (2) univariate analysis (distribution of each variable), (3) bivariate analysis (relationship between pairs of variables, especially with the target), (4) multivariate analysis (correlations, interaction effects), (5) target analysis (what drives the target variable?), (6) data quality findings and recommendations.</p><p>Key EDA questions: What is the class distribution for the target variable? What fraction of values are missing in each column? Are there obvious outliers? What features are most correlated with the target? Are there pairs of features with very high correlation (multicollinearity)? Are there unexpected patterns in the data (bimodal distributions, values at exactly 0 or 100 that might be sentinel values)?</p><p>From EDA to hypotheses: EDA is not just description — it should generate specific hypotheses to test. &#x27;Users who logged in more than 3 times in the last 7 days have higher conversion rates → engineer feature: <code>logins_last_7_days</code>.&#x27; &#x27;Feature X has 30% missing values but is highly correlated with the target → investigate why it&#x27;s missing, it may be missing not at random.&#x27;</p><p>EDA deliverable: a Jupyter notebook with clear section headers, each visualization annotated with the finding it demonstrates, a summary table of all features with their type/missing rate/range, and a section listing 5-10 hypotheses for feature engineering or data cleaning.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a 10-row customer table and apply EDA project. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply EDA project and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+# Comprehensive EDA function
+def exploratory_analysis(df: pd.DataFrame, target: str):
+    print(f&#x27;=== DATASET OVERVIEW ===&#x27;)
+    print(f&#x27;Shape: {df.shape}, Target: {target}&#x27;)
+    print(f&#x27;Missing: {df.isnull().mean().sort_values(ascending=False).head(10)}&#x27;)
+    print(f&#x27;Duplicates: {df.duplicated().sum()}&#x27;)
+    print(f&#x27;Target distribution:\n{df[target].value_counts(normalize=True).round(3)}&#x27;)
+    # Numerical feature distributions
+    num_cols = df.select_dtypes(include=&#x27;number&#x27;).columns.tolist()
+    if target in num_cols: num_cols.remove(target)
+    # Correlations with target
+    if df[target].nunique() == 2:  # Binary target
+        corr = {col: stats.pointbiserialr(df[col].fillna(0), df[target])[0] for col in num_cols}
+        top_corr = sorted(corr.items(), key=lambda x: abs(x[1]), reverse=True)[:10]
+        print(f&#x27;\nTop correlations with target:&#x27;)
+        for feat, c in top_corr: print(f&#x27;  {feat}: {c:.4f}&#x27;)
+    # Feature correlation matrix
+    corr_matrix = df[num_cols].corr()
+    high_corr = [(i, j, corr_matrix.loc[i,j]) for i in num_cols for j in num_cols if i &lt; j and abs(corr_matrix.loc[i,j]) &gt; 0.8]
+    if high_corr: print(f&#x27;\nHighly correlated features: {high_corr[:5]}&#x27;)
+explorer_analysis(df, target=&#x27;churn&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply EDA project. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>EDA is where you earn the right to train a model. Skipping EDA means you don&#x27;t know what you&#x27;re working with — you discover data quality issues mid-training, you miss obvious feature engineering opportunities, and you train models that predict artifacts of data collection rather than real patterns. An hour of thorough EDA saves days of debugging model failures.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>EDA without a clear question — aimless exploration produces charts without insights. Start with: &#x27;what would help me build a better model or understand the business problem?&#x27; Every visualization should answer a specific question.</li><li>Not checking for data leakage during EDA — if a feature is computed from the target (e.g., &#x27;<code>days_to_churn</code>&#x27; computed after churn is known), it will appear highly correlated with the target in EDA. Always ask: &#x27;is this feature available at prediction time?&#x27;</li><li>Treating EDA as a one-time step — as you clean data, engineer features, and run initial models, you&#x27;ll discover new questions to investigate. EDA is iterative — return to it whenever you find unexpected model behavior.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Conduct a complete EDA project: (1) choose a dataset with at least 10 features and a binary target (churn, fraud, click), (2) follow the EDA workflow: inspect → univariate → bivariate → multivariate → target analysis, (3) produce a notebook with at least 12 visualizations, each with a one-sentence finding annotation, (4) write a summary section: 3 most interesting findings, 5 feature engineering hypotheses, 3 data quality issues found, (5) implement the top 3 feature engineering ideas from your hypotheses and verify each improves model performance.</div>
     </div>
   </div>
 </section>
@@ -88,17 +134,32 @@
       <h2>House price prediction</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>House price prediction is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>House price prediction is the canonical regression project for ML practitioners. It combines real-world complexity (many features, mixed types, missing values, skewed distributions) with a clear, intuitive target. The Ames Housing dataset (Kaggle competition) has 79 features describing houses in Ames, Iowa, with the target being the sale price. Building a complete pipeline on this dataset teaches end-to-end ML engineering.</p><p>Data exploration for housing: check the target distribution (<code>SalePrice</code> is right-skewed — log transformation helps). Identify feature types: continuous (<code>GrLivArea</code>, <code>TotalBsmtSF</code>), categorical (Neighborhood, <code>BldgType</code>), ordinal (<code>OverallQual</code> 1-10, <code>OverallCond</code> 1-10), datetime (<code>YearBuilt</code>, <code>YrSold</code>), and boolean (<code>HasGarage</code>, <code>HasPool</code>). Visualize correlations — <code>GrLivArea</code>, <code>TotalBsmtSF</code>, <code>OverallQual</code> are strongly correlated with price.</p><p>Feature engineering for houses: (1) <code>total_area</code> = <code>GrLivArea</code> + <code>TotalBsmtSF</code> (total living area including basement), (2) <code>house_age</code> = <code>YrSold</code> - <code>YearBuilt</code> (age at time of sale), (3) <code>remodel_age</code> = <code>YrSold</code> - <code>YearRemodAdd</code> (years since last remodel), (4) <code>has_garage</code> = (<code>GarageType</code> != &#x27;NA&#x27;).astype(int), (5) <code>has_fireplace</code> = (Fireplaces &gt; 0).astype(int), (6) <code>neighborhood_avg_price</code> = <code>target_encode</code>(Neighborhood). These engineered features often have higher predictive power than the raw features.</p><p>Model comparison: for this type of tabular regression problem, tree-based models dominate. Baseline: linear regression on scaled features + OHE. Competitive: random forest, gradient boosting (XGBoost, <code>LightGBM</code>). State of the art for this dataset: XGBoost or <code>LightGBM</code> with hyperparameter tuning + feature engineering. Neural networks typically underperform tree models on small tabular datasets (&lt; 100K samples) unless significantly tuned.</p><p>Evaluation and error analysis: use RMSE on log(<code>SalePrice</code>) — most Kaggle participants do this because it prevents large expensive houses from dominating the loss. After training, analyze residuals: which houses have the highest errors? Look for patterns: are expensive houses systematically underpredicted? Are houses in a specific neighborhood systematically wrong? This analysis guides further feature engineering and model improvement.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply House price prediction. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where House price prediction is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd, numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OrdinalEncoder
+from sklearn.compose import ColumnTransformer
+df = pd.read_csv(&#x27;train.csv&#x27;)
+df[&#x27;SalePrice&#x27;] = np.log1p(df[&#x27;SalePrice&#x27;])  # log transform target
+# Feature engineering
+df[&#x27;TotalArea&#x27;] = df[&#x27;GrLivArea&#x27;] + df.get(&#x27;TotalBsmtSF&#x27;, 0)
+df[&#x27;HouseAge&#x27;] = df[&#x27;YrSold&#x27;] - df[&#x27;YearBuilt&#x27;]</code></pre><pre><code>from xgboost import XGBRegressor
+from sklearn.metrics import mean_squared_error
+model = XGBRegressor(n_estimators=1000, learning_rate=0.05, max_depth=6,
+    subsample=0.8, colsample_bytree=0.8, random_state=42, early_stopping_rounds=50)
+model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=100)
+y_pred = model.predict(X_val)
+rmse = np.sqrt(mean_squared_error(y_val, y_pred))
+print(f&#x27;Val RMSE (log scale): {rmse:.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for House price prediction, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>House price prediction is a required project in any ML portfolio. It demonstrates: data cleaning (79 features with various missing value patterns), feature engineering (domain-specific transformations), preprocessing pipelines, model comparison, and error analysis. Completing this project end-to-end demonstrates ML engineering competence.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not log-transforming the target — <code>SalePrice</code> is right-skewed. Models trained on raw prices are dominated by outliers (million-dollar mansions). Log-transforming makes the distribution more symmetric and improves RMSE on the leaderboard.</li><li>One-hot encoding high-cardinality categoricals (Neighborhood: 25 unique values) without regularization — this creates 25 columns, most very sparse. Use target encoding or ordinal encoding instead.</li><li>Not handling missing values with domain knowledge — MSSubClass NA means &#x27;no missing&#x27;, <code>GarageType</code> NA means &#x27;no garage&#x27;. Use <code>LotFrontage</code> NA → fill with neighborhood median. Different features have different NA meanings.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Complete end-to-end Ames Housing project: (1) EDA: distribution plots for top 10 features, correlation heatmap, scatter plots of key features vs <code>SalePrice</code>, (2) preprocessing: handle all 79 features&#x27; missing values appropriately, (3) engineer 10 features (domain-specific combinations), (4) train baseline (linear regression), intermediate (random forest), and advanced (XGBoost + hyperparameter tuning) models, (5) error analysis: for the top 10 highest-error predictions, visualize the house characteristics — what systematic patterns exist?, (6) Kaggle submission: submit and compare rank. Target: top 25% on the leaderboard.</div>
     </div>
   </div>
 </section>
@@ -110,17 +171,36 @@
       <h2>Spam classifier</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Spam classifier is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A spam classifier distinguishes unwanted messages from legitimate ones. It is a classic binary text classification problem with well-known public datasets (SMS Spam Collection: 5,574 SMS messages, 87% ham, 13% spam; 20 Newsgroups; Enron email dataset). Building a spam classifier teaches the full text classification pipeline: text cleaning, feature extraction, model training, and threshold tuning.</p><p>Text preprocessing: tokenize (split into words), lowercase (convert &#x27;FREE&#x27; to &#x27;free&#x27;), remove stop words (the, a, is — common words that don&#x27;t convey meaning), remove punctuation and special characters, optionally stem (reducing words to root: running→run) or lemmatize (running→run, better than stemming but slower). For spam specifically, preserve special characters like $ (common in spam) and repeated characters (&#x27;FRREEE!!&#x27;).</p><p>Feature extraction: Bag of Words (<code>CountVectorizer</code>) — count how many times each word appears in the message. TF-IDF (<code>TfidfVectorizer</code>) — downweight common words (the, and) and upweight discriminative words (FREE, WIN, PRIZE). N-grams: include bigrams (free prize, click here) which are more discriminative than unigrams alone. <code>max_features</code>=10000 is a good starting point for SMS data.</p><p>Model comparison: Multinomial Naive Bayes is the classic baseline for text classification — fast, works well with small data, interpretable (you can see which words are most predictive). Logistic Regression with TF-IDF is usually better. Linear SVM (<code>LinearSVC</code>) is often best for text classification. BERT fine-tuning can achieve near-perfect accuracy but is 100× slower and overkill for SMS spam.</p><p>Threshold tuning for spam: false positives (blocking legitimate email) are very costly. A false negative (spam reaching inbox) is annoying but recoverable. Set a high precision threshold: at recall=80%, what is precision? The threshold should be calibrated so that precision is ≥95% — users trust the spam filter because it rarely blocks legitimate messages.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Spam classifier. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Spam classifier is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+import pandas as pd
+df = pd.read_csv(&#x27;sms_spam.csv&#x27;, encoding=&#x27;latin-1&#x27;)[[&#x27;v1&#x27;, &#x27;v2&#x27;]]
+df.columns = [&#x27;label&#x27;, &#x27;text&#x27;]
+df[&#x27;label&#x27;] = (df[&#x27;label&#x27;] == &#x27;spam&#x27;).astype(int)
+X_train, X_test, y_train, y_test = train_test_split(df.text, df.label, test_size=0.2, stratify=df.label)</code></pre><pre><code>pipe = Pipeline([
+    (&#x27;tfidf&#x27;, TfidfVectorizer(ngram_range=(1,2), max_features=10000, min_df=2)),
+    (&#x27;clf&#x27;, MultinomialNB(alpha=1.0))
+])
+pipe.fit(X_train, y_train)
+y_prob = pipe.predict_proba(X_test)[:, 1]
+from sklearn.metrics import precision_recall_curve, average_precision_score
+print(f&#x27;AUC-PR: {average_precision_score(y_test, y_prob):.4f}&#x27;)</code></pre><pre><code># Show most spam-predictive words
+vectorizer = pipe.named_steps[&#x27;tfidf&#x27;]
+nb_model = pipe.named_steps[&#x27;clf&#x27;]
+feature_names = vectorizer.get_feature_names_out()
+top_spam_words = np.argsort(nb_model.feature_log_prob_[1])[-20:]
+print(&#x27;Top spam words:&#x27;, [feature_names[i] for i in top_spam_words])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Spam classifier, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>The spam classifier is the most approachable end-to-end NLP project. It teaches text preprocessing, TF-IDF, Naive Bayes, and evaluation for imbalanced classification. Every ML practitioner should have this project — it is frequently asked about in interviews.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not accounting for class imbalance (87% ham) — use stratified splits and AUC-PR instead of accuracy for evaluation.</li><li>Evaluating with just accuracy — accuracy of 87% sounds good (better than the base rate), but a model that never predicts spam achieves this. Use precision, recall, F1, and AUC-PR.</li><li>Not tuning the spam/ham threshold — the default 0.5 threshold may classify too much as spam (high false positive rate). Use <code>precision_recall_curve</code> to find the threshold that achieves your target precision.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a production spam classifier: (1) load the SMS Spam Collection dataset, (2) apply text preprocessing (lowercase, remove URLs, handle repeated chars), (3) compare: <code>CountVectorizer</code>, TF-IDF (1-gram), TF-IDF (1-gram + 2-gram), (4) compare: <code>MultinomialNB</code>, Logistic Regression, <code>LinearSVC</code>, (5) for the best model: tune the threshold for 99% precision — what recall do you achieve?, (6) use LIME to explain 5 spam predictions and 5 ham predictions — which words drove the classification?, (7) deploy as a Flask API that accepts a text message and returns spam probability.</div>
     </div>
   </div>
 </section>
@@ -132,17 +212,31 @@
       <h2>Churn prediction</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Churn prediction is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Customer churn prediction identifies customers likely to cancel their subscription, stop using a product, or switch to a competitor. Churn prediction is a binary classification problem: churned (1) or retained (0). It is one of the highest-ROI ML applications in business — retaining an existing customer is 5–25× cheaper than acquiring a new one. A model that identifies at-risk customers allows targeted retention campaigns.</p><p>Defining churn: the exact definition depends on the business. Telecom: customer cancels their plan. <code>SaaS</code>: customer doesn&#x27;t renew subscription. E-commerce: customer hasn&#x27;t purchased in 90 days. The observation window (how far back to look for features) and label window (how long after the observation to look for churn) must be carefully defined to avoid data leakage.</p><p>Feature engineering for churn: the most predictive features capture behavioral trends. (1) Recency: days since last activity, last purchase, last login. (2) Frequency: number of purchases, sessions, logins in the last 30/60/90 days. (3) Monetary: total spend, average order value, change in spend over time. (4) Engagement: support tickets opened, complaints, feature usage. (5) Satisfaction: NPS score, review ratings. (6) Contractual: days until renewal, discount received, plan tier.</p><p>Handling class imbalance: churn rates are typically 5–30%, creating moderate imbalance. Use stratified splits, <code>class_weight</code>=&#x27;balanced&#x27; in <code>sklearn</code>, or <code>scale_pos_weight</code> in XGBoost. AUC-ROC is the standard metric (but AUC-PR is better for very imbalanced cases). Business metric: at what threshold does the model maximize ROI? (Recall × avg LTV saved - Precision-based campaign cost).</p><p>Model deployment: a churn prediction model is typically run in batch mode: weekly or monthly on all active customers, generating a churn probability score per customer. High-risk customers (score &gt; threshold) are passed to the retention team or automatically enrolled in a retention campaign (discount offer, personalized outreach). The model must be monitored for drift as customer behavior changes.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Churn prediction. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Churn prediction is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+df = pd.read_csv(&#x27;telecom_churn.csv&#x27;)
+# Feature engineering
+df[&#x27;tenure_months&#x27;] = (df[&#x27;end_date&#x27;] - df[&#x27;start_date&#x27;]).dt.days / 30
+df[&#x27;monthly_change&#x27;] = df[&#x27;revenue_last30&#x27;] - df[&#x27;revenue_prev30&#x27;]
+df[&#x27;support_rate&#x27;] = df[&#x27;support_tickets&#x27;] / df[&#x27;tenure_months&#x27;].clip(lower=1)
+y = df[&#x27;churned&#x27;]
+X = df.drop([&#x27;churned&#x27;, &#x27;customer_id&#x27;, &#x27;start_date&#x27;, &#x27;end_date&#x27;], axis=1)</code></pre><pre><code>from xgboost import XGBClassifier
+from sklearn.metrics import roc_auc_score, average_precision_score
+model = XGBClassifier(n_estimators=500, scale_pos_weight=len(y[y==0])/len(y[y==1]),
+    learning_rate=0.05, max_depth=6, eval_metric=&#x27;aucpr&#x27;, early_stopping_rounds=30)
+model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=100)
+y_prob = model.predict_proba(X_val)[:, 1]
+print(f&#x27;Val AUC: {roc_auc_score(y_val, y_prob):.4f}&#x27;)
+print(f&#x27;Val AUC-PR: {average_precision_score(y_val, y_prob):.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Churn prediction, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Churn prediction is the most common business ML use case after fraud detection. Every subscription business (<code>SaaS</code>, telecom, streaming, financial services) has a churn prediction project. Building a production-quality churn predictor demonstrates: feature engineering from behavioral data, handling imbalance, and business-aligned evaluation.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Defining churn without a proper label window — labeling &#x27;churned&#x27; based on whether the customer cancelled EVER (including 2 years later) creates label leakage. Define a specific label window: churned within 90 days of the observation date.</li><li>Not accounting for survivors bias — if you only look at customers who joined before a certain date (survived long enough to accumulate features), you introduce selection bias. Include all customers who were active during the feature window.</li><li>Building a model without business impact analysis — a model with AUC=0.85 is meaningless without the business context: what retention action will we take, what is its cost and success rate, and what is the LTV of a saved customer? Always quantify expected ROI.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build end-to-end churn prediction: (1) generate or use a telecom churn dataset, (2) define clear observation and label windows, (3) engineer 15 behavioral features (RFM + engagement + satisfaction), (4) train XGBoost with <code>class_weight</code> handling, evaluate with AUC-ROC and AUC-PR, (5) tune threshold for maximum ROI given: 5% expected outreach conversion, $100 retention incentive cost, $600 average customer LTV saved, (6) deploy as a weekly batch job that scores all active customers and outputs a priority-ranked list for the retention team, (7) set up a 3-month monitoring plan to detect model drift.</div>
     </div>
   </div>
 </section>
@@ -154,17 +248,39 @@
       <h2>Fraud detection</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Fraud detection is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Fraud detection is a canonical ML application that involves all the challenges of real-world ML: severe class imbalance (0.1-1% fraud rate), adversarial dynamics (fraudsters adapt), high stakes (both false positives and false negatives have significant costs), regulatory requirements (explain rejections), and real-time constraints (must decide within milliseconds for payment authorization).</p><p>Dataset: Kaggle&#x27;s Credit Card Fraud Detection dataset has 284,807 transactions, 492 fraud (0.17%). Features V1-V28 are PCA components of anonymized transaction features. The target is Class (0=normal, 1=fraud). This gives a realistic class imbalance of 577:1. Training accuracy is meaningless here (predicting 0 for all = 99.83% accuracy).</p><p>Feature engineering for fraud: time features (hour of day, day of week — fraud patterns vary by time), amount features (<code>log_amount</code>, <code>is_round_amount</code> — fraud often uses round amounts), velocity features (transactions per hour, cumulative amount per day), location features (distance from usual transaction location, international transaction flag), behavioral features (time since last transaction, unusual merchant category).</p><p>Model choices: Gradient boosting (XGBoost, <code>LightGBM</code>) with <code>scale_pos_weight</code> handles class imbalance natively. Isolation Forest for unsupervised anomaly detection (catch novel fraud patterns without labeled examples). Rule-based filters for known fraud patterns (block known stolen card numbers, block geo-impossible transactions). Neural networks with focal loss (focal loss upweights the contribution of hard-to-classify examples).</p><p>Evaluation: for fraud detection, report at a fixed operating point: &#x27;at recall=0.9 (catch 90% of fraud), what is our precision (fraction of flagged transactions that are actually fraud)?&#x27;. AUC-PR is the most relevant aggregate metric. Business metric: cost avoided = (<code>caught_fraud</code> × <code>average_fraud_amount</code>) - (<code>false_positives</code> × <code>cost_of_false_positive</code>). Build a cost matrix and choose the threshold that maximizes value.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Fraud detection. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Fraud detection is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+import numpy as np
+from sklearn.ensemble import IsolationForest
+from xgboost import XGBClassifier
+from sklearn.metrics import average_precision_score, precision_recall_curve
+df = pd.read_csv(&#x27;creditcard.csv&#x27;)
+X = df.drop(&#x27;Class&#x27;, axis=1); y = df[&#x27;Class&#x27;]
+# Handle class imbalance
+neg, pos = (y == 0).sum(), (y == 1).sum()
+model = XGBClassifier(scale_pos_weight=neg/pos, n_estimators=300, learning_rate=0.05,
+    eval_metric=&#x27;aucpr&#x27;, early_stopping_rounds=20, random_state=42)
+# Time-based split (temporal validation)
+split = int(len(df) * 0.8)
+X_train, X_val = X.iloc[:split], X.iloc[split:]
+y_train, y_val = y.iloc[:split], y.iloc[split:]
+model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
+y_score = model.predict_proba(X_val)[:,1]
+print(f&#x27;AUC-PR: {average_precision_score(y_val, y_score):.4f}&#x27;)
+# Find threshold for recall=0.9
+precision, recall, thresholds = precision_recall_curve(y_val, y_score)
+target_recall = 0.9
+idx = np.argmin(np.abs(recall - target_recall))
+print(f&#x27;At recall={recall[idx]:.3f}: precision={precision[idx]:.3f}, threshold={thresholds[idx-1]:.3f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Fraud detection, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Fraud detection is one of the highest-value ML applications and teaches every real-world ML challenge: class imbalance, adversarial dynamics, cost-sensitive evaluation, and real-time constraints. Building a complete fraud detection system builds skills that transfer directly to other high-stakes classification problems.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using accuracy as the metric for fraud detection — 99.83% accuracy (predict all normal) is worse than useless. Use AUC-PR, recall at a fixed precision, or F1. The metric must reflect the cost structure.</li><li>Using random train/test split for time series data — fraud detection data is temporal. Randomly splitting means training on future transactions to predict past ones. Use a temporal split: train on the first 80% of time, test on the last 20%.</li><li>Not considering the cost of false positives — blocking a legitimate customer&#x27;s credit card (false positive) has real costs: customer service calls, account cancellation, reputational damage. Optimize for the business metric (net fraud savings - cost of false positives), not just recall.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a production-quality fraud detection system: (1) download and explore the Kaggle Credit Card Fraud dataset, (2) create temporal train/val/test splits (first 60%, next 20%, last 20% by time), (3) train XGBoost with <code>scale_pos_weight</code>, (4) implement SMOTE and compare with class weights, (5) tune the threshold to minimize total cost given: $500 per fraud missed (FN), $10 per legitimate transaction blocked (FP), (6) implement a two-stage system: Isolation Forest for high-confidence anomalies (flag immediately), XGBoost for borderline cases, (7) measure end-to-end latency: can you score 1000 transactions per second?</div>
     </div>
   </div>
 </section>
@@ -176,17 +292,37 @@
       <h2>Recommendation project</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Recommendation project is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Projects: beginner to advanced, connect Recommendation project to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>A recommendation project is an end-to-end ML project that builds a system to recommend items to users. It is one of the most valuable ML applications — every major platform (Netflix, Amazon, Spotify, <code>YouTube</code>) uses recommendation systems to drive engagement. Building one demonstrates: collaborative filtering, matrix factorization, content-based filtering, hybrid systems, and offline/online evaluation.</p><p>Project scope: choose a dataset (<code>MovieLens</code> 1M, Amazon product reviews, Last.fm music plays). Define the task: top-N recommendation (recommend the 10 items a user is most likely to enjoy). Define the evaluation metric: NDCG@10, Precision@10, or Recall@10. Implement: baseline (popularity-based), collaborative filtering (user-user or item-item), matrix factorization (SVD or NMF), and optionally a neural approach.</p><p>Cold start strategy: new users have no history. Handle with: demographic-based recommendations (users in age 25-35 tend to like X), onboarding questions (ask 5 preferences explicitly), or content-based filtering until 5+ interactions are collected. Document how the system handles cold start — this is always a challenge.</p><p>Offline vs online evaluation: offline evaluation uses historical data with a temporal split (train on months 1-10, test on month 11). Measure NDCG@10, Precision@10, and coverage (fraction of items ever recommended). Online evaluation is the real test: A/B test the recommendation algorithm against the current system and measure real click-through rates and engagement.</p><p>The complete deliverable: a <code>GitHub</code> repository with: data processing pipeline, model training and evaluation code, a comparison table of all algorithms (baseline vs collaborative filtering vs matrix factorization), a short analysis of the most and least recommended items, and a deployed demo (Streamlit app where you can enter a user ID and see recommendations).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add Recommendation project to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Recommendation project is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import TruncatedSVD
+# MovieLens-style collaborative filtering
+# ratings: user_id, item_id, rating columns
+user_item_matrix = ratings.pivot_table(index=&#x27;user_id&#x27;, columns=&#x27;item_id&#x27;, values=&#x27;rating&#x27;).fillna(0)
+# Matrix factorization (SVD)
+svd = TruncatedSVD(n_components=50, random_state=42)
+user_factors = svd.fit_transform(user_item_matrix)  # [n_users, 50]
+item_factors = svd.components_.T                    # [n_items, 50]
+reconstructed = user_factors @ item_factors.T        # predicted ratings
+def recommend_for_user(user_id, n=10, exclude_seen=True):
+    user_idx = user_item_matrix.index.get_loc(user_id)
+    user_predictions = reconstructed[user_idx]
+    if exclude_seen:
+        seen_items = set(ratings[ratings.user_id==user_id].item_id)
+        user_predictions = pd.Series(user_predictions, index=user_item_matrix.columns)
+        user_predictions = user_predictions[~user_predictions.index.isin(seen_items)]
+    return user_predictions.nlargest(n).index.tolist()
+print(recommend_for_user(user_id=123, n=10))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add Recommendation project to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A recommendation project is the ideal ML portfolio piece: it covers collaborative filtering and matrix factorization (core ML), evaluation with ranking metrics (not just accuracy), cold start problem (real-world challenge), and has a natural deployable demo. It demonstrates knowledge valued by nearly every consumer tech company.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Evaluating with random train/test split instead of temporal split — randomly removing 20% of ratings for testing allows future data to influence training (data leakage). Always split by time: train on all ratings before date T, test on ratings after T.</li><li>Not including a popularity baseline — &#x27;recommend the 10 most-watched items&#x27; is a surprisingly strong baseline (accounts for 60-70% of what most recommender systems do). If your collaborative filtering model doesn&#x27;t significantly outperform this, investigate why.</li><li>Ignoring item coverage — a system that recommends only the top 100 most popular items to everyone has poor coverage. Measure: fraction of the catalog ever recommended, fraction of users getting diverse recommendations. Coverage is a key business metric alongside accuracy.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete recommendation system: (1) download <code>MovieLens</code> 1M, (2) implement 4 algorithms: popularity baseline, user-user collaborative filtering, SVD matrix factorization, and a neural collaborative filtering model (<code>PyTorch</code> embedding layers), (3) use temporal train/test split, evaluate all algorithms with NDCG@10 and Precision@10, (4) analyze: which users are hardest to recommend for? What is the coverage of each algorithm?, (5) deploy a Streamlit app: enter a user ID, get top-10 recommendations from your best model, (6) write a README with your results table and discussion.</div>
     </div>
   </div>
 </section>
@@ -198,17 +334,43 @@
       <h2>Image classifier</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Image classifier is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>An image classification project trains a model to assign images to categories. It is the &#x27;hello world&#x27; of computer vision and demonstrates: transfer learning, data augmentation, training loops, and model evaluation with confusion matrices. Even a well-executed image classification project demonstrates production-relevant skills.</p><p>Transfer learning approach: start from a pretrained model (<code>ResNet50</code>, <code>EfficientNet</code>, <code>ViT</code>) trained on <code>ImageNet</code> (1.28M images, 1000 classes). Replace the final classification layer with one that outputs your number of classes. Fine-tune either the full model (if you have lots of data, &gt; 10K examples) or only the final layers (if you have limited data, &lt; 1K examples).</p><p>Data augmentation: training images are augmented to simulate different viewing conditions. Horizontal flip, random rotation (± 15 degrees), color jitter (brightness, contrast, saturation), random crop, and mixup/cutmix (blend two images). <code>PyTorch</code>&#x27;s <code>transforms.Compose</code> pipeline applies augmentations on-the-fly during training. Augmentation typically improves accuracy by 3-8 percentage points.</p><p>Evaluation beyond accuracy: for imbalanced classes, per-class precision and recall (via <code>classification_report</code>), confusion matrix (visualize which classes are confused with which), and top-1 vs top-5 accuracy (is the correct class in the top 5 predictions?). Display examples of: correctly classified images, confidently wrong predictions (high probability but wrong class), and low-confidence correct predictions.</p><p>Deployment: export the model to ONNX for cross-platform inference: `<code>torch</code>.<code>onnx.export</code>(model, <code>dummy_input</code>, &#x27;<code>model.onnx</code>&#x27;)`. Deploy as a <code>FastAPI</code> endpoint that accepts an image upload and returns the top-3 predictions with probabilities. Build a Streamlit demo for portfolio display.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Image classifier is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import torch
+import torch.nn as nn
+from torchvision import models, transforms, datasets
+from torch.utils.data import DataLoader
+# Transfer learning from ResNet50
+model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+n_classes = 10
+# Replace final layer
+model.fc = nn.Linear(model.fc.in_features, n_classes)
+# Freeze all except final layer for fast initial training
+for param in model.parameters(): param.requires_grad = False
+for param in model.fc.parameters(): param.requires_grad = True
+# Training transforms (with augmentation)
+train_transforms = transforms.Compose([
+    transforms.RandomResizedCrop(224), transforms.RandomHorizontalFlip(),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+    transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+])
+val_transforms = transforms.Compose([transforms.Resize(256), transforms.CenterCrop(224), transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+# Training loop
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.AdamW(model.fc.parameters(), lr=1e-3)
+for epoch in range(5):
+    model.train()
+    for images, labels in train_loader:
+        optimizer.zero_grad(); loss = criterion(model(images), labels); loss.backward(); optimizer.step()
+    print(f&#x27;Epoch {epoch+1}: Loss = {loss.item():.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Image classifier, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>An image classifier is the most accessible deep learning project with immediate visual feedback. You can see your model working (or failing) by looking at example predictions. Building one teaches the complete deep learning training loop: data loading, augmentation, model architecture, loss functions, optimization, evaluation, and deployment. This foundation transfers to object detection, segmentation, and video understanding.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not normalizing images with <code>ImageNet</code> statistics — pretrained models were trained on images normalized with mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]. Not applying the same normalization to your input will produce random-looking activations in the pretrained layers.</li><li>Training all layers with a high learning rate from the start — using lr=1e-3 for all layers when fine-tuning overwrites the pretrained weights with random updates before the final layer can adapt. Use different learning rates: lr=1e-4 for pretrained layers, lr=1e-3 for the new final layer.</li><li>Not using a validation set for model selection — use the test set only once. Use the validation set to choose the best epoch (early stopping) and tune hyperparameters. Only report test accuracy after all decisions are made.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build and deploy an image classifier: (1) choose a dataset with 10 classes (CIFAR-10, Flowers102, or custom), (2) fine-tune <code>ResNet50</code> using transfer learning, (3) implement: learning rate warmup, cosine annealing, data augmentation, (4) evaluate: per-class accuracy, confusion matrix, 10 most confidently wrong predictions, (5) export to ONNX and build a <code>FastAPI</code> endpoint, (6) deploy as a Streamlit app that accepts image upload and returns top-3 predictions with confidence scores.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -220,17 +382,39 @@
       <h2>Chat with PDF</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Chat with PDF is a concept inside Projects: beginner to advanced that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Chat with PDF is one of the most practical LLM applications — allowing users to ask questions about documents in natural language. It is a RAG (Retrieval-Augmented Generation) application: the document is chunked, embedded, stored in a vector database, and at query time, relevant chunks are retrieved and passed to the LLM as context. The LLM generates an answer grounded in the document content.</p><p>Pipeline components: (1) document loading — extract text from PDFs using <code>PyMuPDF</code> (fitz), pdfminer, or <code>LangChain</code>&#x27;s <code>PyPDFLoader</code>. Handle: multi-column layouts, tables, images with text (OCR), headers/footers to exclude. (2) text chunking — split into chunks of 500–1000 characters with 50–100 character overlap. <code>RecursiveCharacterTextSplitter</code> splits on paragraphs, then sentences, then characters. Chunk size is a critical hyperparameter — too small loses context, too large exceeds the embedding model&#x27;s limit and reduces retrieval precision. (3) embedding — convert each chunk to a dense vector using a text embedding model (<code>OpenAI</code> text-embedding-3-small, BAAI/bge-small-en, or sentence-<code>transformers</code>/all-mpnet-base-v2).</p><p>Vector database: store chunk text, embedding vector, and metadata (page number, section, document name) in a vector database. For local development: FAISS (in-memory, no server required) or <code>ChromaDB</code> (persistent, simple API). For production: Pinecone, Weaviate, Milvus, pgvector. At query time: embed the user&#x27;s question and search for the K nearest chunks by cosine similarity.</p><p>Generation: take the top-K retrieved chunks (K=3–5), format them as context: &#x27;Use the following context to answer the question: {chunks}. Question: {question}. Answer only based on the provided context. If unsure, say you don&#x27;t know.&#x27; This grounding instruction prevents hallucination. Add citations: include the page number and chunk text in the response so users can verify.</p><p>Advanced techniques: (1) query rewriting — use an LLM to reformulate the user&#x27;s question for better retrieval (&#x27;What is the CEO&#x27;s salary?&#x27; → &#x27;executive compensation&#x27;, &#x27;annual salary CEO&#x27;), (2) hybrid search — combine semantic search (embedding similarity) with keyword search (BM25) for better recall, (3) reranking — use a cross-encoder to rerank the top-K retrieved chunks before passing to the LLM, (4) multi-hop reasoning — for questions that require combining information from multiple parts of the document.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Projects: beginner to advanced and needs to apply Chat with PDF. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where Chat with PDF is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
+# Load and chunk
+loader = PyPDFLoader(&#x27;document.pdf&#x27;)
+docs = loader.load()
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+chunks = splitter.split_documents(docs)</code></pre><pre><code># Embed and store
+embeddings = OpenAIEmbeddings(model=&#x27;text-embedding-3-small&#x27;)
+vectorstore = FAISS.from_documents(chunks, embeddings)
+vectorstore.save_local(&#x27;pdf_index&#x27;)
+# Query
+qa = RetrievalQA.from_chain_type(
+    llm=ChatOpenAI(model=&#x27;gpt-4-turbo&#x27;), chain_type=&#x27;stuff&#x27;,
+    retriever=vectorstore.as_retriever(search_kwargs={&#x27;k&#x27;: 5}))
+result = qa({&#x27;query&#x27;: &#x27;What is the main finding of this paper?&#x27;})
+print(result[&#x27;result&#x27;])</code></pre><pre><code># Open-source alternative with local models
+from langchain_community.embeddings import HuggingFaceEmbeddings
+embeddings = HuggingFaceEmbeddings(model_name=&#x27;BAAI/bge-small-en-v1.5&#x27;)
+vectorstore = FAISS.from_documents(chunks, embeddings)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Chat with PDF, explain it in 5 to 8 lines, and connect it to Projects: beginner to advanced.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Chat with PDF is the most-requested LLM application by businesses. Legal contracts, research papers, user manuals, financial reports — every organization has documents that employees need to query. Building a complete, production-quality Chat with PDF system is one of the highest-value LLM projects to have in your portfolio.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not experimenting with chunk size — chunk size has a huge impact on retrieval quality. Too small (100 chars) loses context; too large (2000 chars) reduces precision (the relevant sentence is buried in irrelevant text). Start with 500 chars and tune.</li><li>Using embedding models that truncate at 512 tokens — some sentence-transformer models silently truncate long chunks. Check your embedding model&#x27;s <code>max_seq_length</code> and ensure chunks are shorter.</li><li>Not adding source citations to answers — users cannot trust or verify answers without knowing which part of the document they came from. Always include page number and the relevant chunk in the response.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete Chat with PDF application: (1) load a 50-page research paper or technical document, (2) implement chunking with <code>RecursiveCharacterTextSplitter</code> (compare <code>chunk_size</code> 200, 500, 1000), (3) embed with both <code>OpenAI</code> and open-source embeddings (BAAI/bge), (4) implement the query pipeline with source attribution (page + chunk), (5) create 20 test questions with ground truth answers, (6) evaluate: retrieval recall (was the relevant chunk in top-5?) and answer accuracy (did the LLM give the right answer?), (7) add query rewriting to improve retrieval for ambiguous questions.</div>
     </div>
   </div>
 </section>
@@ -242,17 +426,45 @@
       <h2>Agent with tools</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Agent with tools is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Projects: beginner to advanced, test Agent with tools with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>An &#x27;agent with tools&#x27; project builds a complete, deployable LLM agent that can use tools to accomplish real tasks. This is the capstone of LLM application development — it combines: tool design, agent loop implementation, error handling, tracing, and evaluation. A deployed agent that actually works and solves a user problem is one of the most impressive portfolio pieces in AI.</p><p>Project ideas: research assistant (search the web + summarize + extract key facts), data analyst (write and execute Python data analysis code + explain results), code helper (read a codebase + search documentation + explain and suggest fixes), travel planner (search flights/hotels + compare prices + create an itinerary), or customer support agent (search knowledge base + answer questions + escalate to human).</p><p>Implementation stack: <code>LangChain</code> or raw API calls for the agent loop, Anthropic&#x27;s tool use feature for tool calling, <code>FastAPI</code> for the backend API, Streamlit or React for the frontend, <code>LangSmith</code> for tracing. This stack is industry-standard and demonstrates familiarity with the full production AI toolchain.</p><p>Tool design for the project: define 3-5 tools relevant to the task. Each tool should solve a specific subproblem. Example for research assistant: <code>web_search</code>(query), <code>get_webpage</code>(url), <code>extract_key_facts</code>(text), summarize(text), <code>save_to_notes</code>(title, content). The tool descriptions should be unambiguous enough that the model always calls the right tool.</p><p>Evaluation: create 20 test tasks with expected outcomes. Measure: task completion rate (did the agent accomplish the goal?), tool accuracy (which tools were called correctly vs incorrectly?), latency (how many seconds to complete?), and quality (LLM judge: 1-5 on helpfulness and accuracy). Document the failure modes.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Agent with tools changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+import json
+from typing import Callable
+client = anthropic.Anthropic()
+# Complete agent loop with tools
+def run_agent(user_message: str, tools: list, tool_dispatch: dict, max_turns: int = 5) -&gt; str:
+    messages = [{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: user_message}]
+    for turn in range(max_turns):
+        response = client.messages.create(
+            model=&#x27;claude-opus-4-8&#x27;, max_tokens=4096, tools=tools, messages=messages
+        )
+        messages.append({&#x27;role&#x27;: &#x27;assistant&#x27;, &#x27;content&#x27;: response.content})
+        if response.stop_reason == &#x27;end_turn&#x27;:
+            return response.content[-1].text if response.content else &#x27;&#x27;
+        elif response.stop_reason == &#x27;tool_use&#x27;:
+            tool_results = []
+            for block in response.content:
+                if block.type == &#x27;tool_use&#x27;:
+                    fn = tool_dispatch.get(block.name)
+                    result = fn(**block.input) if fn else {&#x27;error&#x27;: f&#x27;Unknown tool: {block.name}&#x27;}
+                    tool_results.append({&#x27;type&#x27;: &#x27;tool_result&#x27;, &#x27;tool_use_id&#x27;: block.id, &#x27;content&#x27;: json.dumps(result)})
+            messages.append({&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: tool_results})
+    return &#x27;Agent reached maximum turns without completing the task.&#x27;
+# Example: web search tool
+def web_search(query: str, max_results: int = 5) -&gt; dict:
+    return {&#x27;results&#x27;: [{&#x27;title&#x27;: f&#x27;Result for {query}&#x27;, &#x27;url&#x27;: &#x27;https://example.com&#x27;, &#x27;snippet&#x27;: &#x27;...&#x27;}]}
+tool_dispatch = {&#x27;web_search&#x27;: web_search}
+result = run_agent(&#x27;What is the latest news about AI?&#x27;, [{&#x27;name&#x27;: &#x27;web_search&#x27;, &#x27;description&#x27;: &#x27;Search the web&#x27;, &#x27;input_schema&#x27;: {&#x27;type&#x27;: &#x27;object&#x27;, &#x27;properties&#x27;: {&#x27;query&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;}}}}], tool_dispatch)
+print(result)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Agent with tools. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Building an agent with tools is the most comprehensive AI engineering project you can undertake. It demonstrates: tool design (API design thinking), agent loop (control flow and error handling), integration (connecting multiple systems), evaluation (how do you know the agent is working?), and deployment (serving it to real users). Employers in AI engineering roles specifically ask about agent implementation experience.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not implementing a maximum turn limit — without <code>max_turns</code>, an agent that gets stuck in a loop will run forever, accumulating tokens and costs. Always cap the number of turns and return a failure message if exceeded.</li><li>Not testing with adversarial inputs — test inputs designed to confuse the agent: ambiguous queries, missing information, conflicting tool results. Agents often fail on these edge cases, and discovering them before deployment is crucial.</li><li>Not tracing agent runs for debugging — without <code>LangSmith</code> or custom logging, debugging an agent failure is guesswork. Enable tracing from the start so you can see exactly what the model planned, which tools it called, and what each tool returned.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build and deploy a research agent: (1) implement 4 tools: <code>web_search</code>, <code>get_webpage_content</code>, <code>summarize_text</code>, <code>save_research_note</code>, (2) implement the full agent loop with <code>max_turns</code>=10 and proper error handling, (3) enable <code>LangSmith</code> tracing, (4) test on 10 research questions, evaluate with LLM judge (1-5 on accuracy and completeness), (5) deploy as a <code>FastAPI</code> backend with a Streamlit frontend, (6) document: average turns per task, most common tool sequences, task completion rate.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -264,17 +476,45 @@
       <h2>MLOps pipeline</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>MLOps pipeline belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Projects: beginner to advanced, treat MLOps pipeline as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>An MLOps pipeline automates the ML lifecycle: data preparation → model training → evaluation → deployment → monitoring → retraining. Without MLOps, model updates are manual, error-prone, and slow. With a pipeline, deploying a new model version takes minutes instead of days and is verifiable at each step.</p><p>MLflow for experiment tracking: log all parameters, metrics, and artifacts from every training run. `<code>mlflow</code>.<code>log_params</code>({&#x27;lr&#x27;: 0.001, &#x27;<code>n_estimators</code>&#x27;: 200})`, `<code>mlflow</code>.<code>log_metrics</code>({&#x27;auc&#x27;: 0.89})`, `<code>mlflow</code>.<code>sklearn</code>.<code>log_model</code>(model, &#x27;model&#x27;)`. The MLflow UI shows all runs, enables comparison, and serves as the single source of truth for experiment history.</p><p>Model registry: a centralized store for versioned model artifacts with lifecycle states (Staging, Production, Archived). After a training run produces a model better than the current production model, promote it to Production in the registry. The serving infrastructure always loads the &#x27;Production&#x27; model from the registry — no manual file copying.</p><p>CI/CD for ML: triggered by a git push or a scheduled job, the pipeline: (1) trains on latest data, (2) evaluates on the fixed test set, (3) compares to the current production model, (4) if better: promotes to production and deploys. <code>GitHub</code> Actions, <code>GitLab</code> CI, or Kubeflow Pipelines orchestrate this sequence. The key: automated promotion only if the new model passes all quality gates.</p><p>Data and model drift monitoring: after deployment, monitor: input feature distributions (are today&#x27;s inputs similar to training data?), prediction distributions (is the model predicting a different class distribution?), and model performance on labeled samples (if labels are available via ground truth feedback). Alert when drift exceeds a threshold — this triggers retraining.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a 10-row customer table and apply MLOps pipeline. Show the table before and after, then explain whether the change makes the data more useful for a model.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply MLOps pipeline and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+# Complete MLflow experiment
+mlflow.set_experiment(&#x27;churn_prediction&#x27;)
+with mlflow.start_run(run_name=&#x27;xgb_v3&#x27;) as run:
+    # Log parameters
+    params = {&#x27;n_estimators&#x27;: 200, &#x27;learning_rate&#x27;: 0.05, &#x27;max_depth&#x27;: 5}
+    mlflow.log_params(params)
+    # Train
+    model = GradientBoostingClassifier(**params, random_state=42)
+    model.fit(X_train, y_train)
+    # Log metrics
+    auc = roc_auc_score(y_test, model.predict_proba(X_test)[:,1])
+    mlflow.log_metric(&#x27;auc&#x27;, auc)
+    print(f&#x27;AUC: {auc:.4f}&#x27;)
+    # Log model
+    mlflow.sklearn.log_model(model, &#x27;model&#x27;, registered_model_name=&#x27;churn_model&#x27;)
+    # Compare to production
+    client = mlflow.MlflowClient()
+    prod_models = client.get_latest_versions(&#x27;churn_model&#x27;, stages=[&#x27;Production&#x27;])
+    if prod_models:
+        prod_run = mlflow.get_run(prod_models[0].run_id)
+        prod_auc = float(prod_run.data.metrics[&#x27;auc&#x27;])
+        if auc &gt; prod_auc + 0.005:  # 0.5% improvement threshold
+            client.transition_model_version_stage(&#x27;churn_model&#x27;, prod_models[0].version, &#x27;Archived&#x27;)
+            client.transition_model_version_stage(&#x27;churn_model&#x27;, run.info.run_id, &#x27;Production&#x27;)
+            print(f&#x27;Promoted to Production (AUC: {auc:.4f} &gt; {prod_auc:.4f})&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply MLOps pipeline. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>MLOps is what converts ML research into reliable production systems. Without MLOps, every model update is manual and risky — who trained this model? What data was used? Was it tested? MLOps answers these questions automatically. Building an MLOps pipeline for a project demonstrates production engineering maturity and is one of the highest-value skills in industry ML roles.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not versioning both data and model together — model v3 trained on data v2 produces different behavior than model v3 trained on data v3. Always link the training data version (DVC tag) to the model version (MLflow run) in the experiment tracking metadata.</li><li>Setting the promotion threshold too low — automatically promoting models with 0.001 AUC improvement means frequent deployments for negligible gains, with high risk of introducing regressions in non-AUC metrics. Set a meaningful threshold (0.5-1% improvement on the primary metric, no regression on secondary metrics).</li><li>Not including rollback in the pipeline — if a deployed model causes issues, the pipeline must have a documented and tested rollback procedure: `<code>client.transition_model_version_stage</code>(&#x27;<code>churn_model</code>&#x27;, <code>current_version</code>, &#x27;Archived&#x27;)` and restore the previous version to Production.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete MLOps pipeline: (1) set up MLflow tracking and model registry (local or hosted), (2) implement an automated training script that: trains on versioned data, logs all params and metrics, compares to production model, promotes if better, (3) add data quality checks that block training if data fails validation, (4) create a <code>GitHub</code> Actions workflow that runs the training pipeline on push to main, (5) add drift monitoring: simulate drift by shifting the test distribution and verify the drift alert triggers, (6) document: how to roll back a bad model deployment.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -286,17 +526,44 @@
       <h2>Multimodal document AI</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Multimodal document AI is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Projects: beginner to advanced, test Multimodal document AI with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Multimodal document AI combines multiple document processing capabilities — OCR, layout analysis, table extraction, and visual Q&amp;A — into a unified pipeline that can process any business document regardless of its structure, format, or content type. This is the culmination of document AI: a system that processes a mixed batch of invoices, contracts, reports, and forms and extracts structured information from all of them.</p><p>End-to-end pipeline: document ingestion (any file type: PDF, image, DOCX) → file type detection → preprocessing (convert to images at 300 DPI) → layout analysis (detect text regions, tables, figures) → OCR for text regions → table structure recognition + cell extraction → figure captioning → NLP extraction (entities, key-value pairs, dates, amounts) → structured output (JSON).</p><p>Universal document understanding: a single model that handles multiple document types without separate per-type models. Document AI models (<code>PaddleOCR</code>, <code>LayoutLMv3</code> fine-tuned on diverse document types, Donut — Document Understanding Transformer) can classify document type and extract information from diverse formats without explicit per-type logic.</p><p>Post-processing and validation: extracted data must be validated. A date extracted as &#x27;32/13/2024&#x27; is invalid. An invoice total that doesn&#x27;t match the sum of line items has an extraction error. Post-processing: (1) normalize extracted values (dates → ISO 8601, amounts → float), (2) validate formats (regex for dates, amounts, IDs), (3) cross-validate (total = sum of line items), (4) flag low-confidence extractions for human review.</p><p>Building the complete system: pipeline orchestration (process incoming document queue with Airflow or Celery), storage (raw documents in S3, extracted data in <code>PostgreSQL</code> or <code>BigQuery</code>), API layer (<code>FastAPI</code> endpoints for document submission and extraction retrieval), and monitoring (extraction accuracy on a sample, processing latency, error rate).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to Multimodal document AI, the response, and one failure case.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Multimodal document AI changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from pathlib import Path
+import json
+def process_document(file_path: str) -&gt; dict:
+    path = Path(file_path)
+    result = {&#x27;file&#x27;: str(path), &#x27;type&#x27;: None, &#x27;pages&#x27;: [], &#x27;extracted&#x27;: {}}
+    # Step 1: Determine file type and convert to images
+    if path.suffix.lower() == &#x27;.pdf&#x27;:
+        from pdf2image import convert_from_path
+        images = convert_from_path(str(path), dpi=300)
+    else:
+        from PIL import Image
+        images = [Image.open(str(path))]
+    # Step 2: Process each page
+    import easyocr; reader = easyocr.Reader([&#x27;en&#x27;])
+    for page_num, image in enumerate(images):
+        import numpy as np
+        ocr_results = reader.readtext(np.array(image))
+        page_text = &#x27; &#x27;.join([text for (_, text, conf) in ocr_results if conf &gt; 0.3])
+        result[&#x27;pages&#x27;].append({&#x27;page&#x27;: page_num + 1, &#x27;text&#x27;: page_text[:500]})
+    # Step 3: Extract entities from full text
+    full_text = &#x27; &#x27;.join([p[&#x27;text&#x27;] for p in result[&#x27;pages&#x27;]])
+    import re
+    result[&#x27;extracted&#x27;] = {
+        &#x27;dates&#x27;: re.findall(r&#x27;\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b&#x27;, full_text),
+        &#x27;amounts&#x27;: re.findall(r&#x27;\$[\d,]+\.?\d*&#x27;, full_text),
+        &#x27;emails&#x27;: re.findall(r&#x27;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}&#x27;, full_text),
+    }
+    return result</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Multimodal document AI. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Multimodal document AI is one of the highest-value AI applications in enterprise. Every organization processes large volumes of business documents manually — the automation opportunity is enormous. A multimodal document AI system that can process arbitrary business documents and extract structured data replaces manual data entry at scale. Building one demonstrates the full spectrum of AI engineering skills from preprocessing to deployment.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not handling document variety — a system built only for invoices will fail on contracts. Build for diversity from the start: test with at least 10 different document types and measure extraction accuracy for each.</li><li>Over-engineering for perfection — a document AI system that achieves 95% extraction accuracy and is deployed is more valuable than a 99% accurate system that is still in development. Deploy at 90% accuracy with human review for the 10% edge cases; improve from there.</li><li>Not creating a human review workflow for low-confidence extractions — no document AI system achieves 100% accuracy. Always route extractions below a confidence threshold to a human reviewer. This ensures accuracy while maintaining automation rate.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multimodal document processing system: (1) collect 20 documents across 4 types (invoice, receipt, form, report), (2) build the end-to-end pipeline: PDF → images → OCR → layout detection → entity extraction, (3) for each document, extract: all dates, monetary amounts, entity names (NER), and any key-value pairs visible in forms, (4) validate extracted data against known ground truth, measure per-field accuracy, (5) identify the 3 most common extraction failures and implement specific fixes for each, (6) deploy as an API that accepts a document URL and returns structured JSON extraction results.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -308,17 +575,56 @@
       <h2>README and case study</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>README and case study is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Projects: beginner to advanced, connect README and case study to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>A README and case study document the story of your ML project: why you built it, what approaches you tried, what worked, what didn&#x27;t, and what you learned. They transform a collection of code and notebooks into a compelling narrative that demonstrates your technical judgment to employers, collaborators, and the community.</p><p>README structure: (1) project title and one-sentence description, (2) problem statement: what problem does this solve and why does it matter?, (3) approach: what data, model, and methodology did you use?, (4) results: quantitative metrics, comparison to baseline, representative examples of outputs, (5) usage: how to install, configure, and run the project, (6) demo link: a live URL where others can try it, (7) limitations and future work.</p><p>Case study depth: a case study goes beyond the README to explain your decision-making process. Document: which approaches you tried and abandoned (and why), interesting data patterns you discovered during EDA, model iterations (v1 → v2 → v3 with metrics for each), lessons learned that would apply to similar projects. The decision process is often more valuable than the final solution.</p><p>Visual assets: screenshots of the application, confusion matrices, learning curves, feature importance plots, example predictions (both correct and incorrect). Visuals make a README memorable. A 30-second GIF of your application in action communicates more than 500 words of description.</p><p>Sharing and impact: a well-written README+case study gets shared. Add relevant hashtags if posting on <code>LinkedIn</code> (ML, <code>MachineLearning</code>, Python). Submit to r/<code>MachineLearning</code> or r/learnmachinelearning for community feedback. Post on <code>HuggingFace</code> Hub with a model card. A single viral post about an interesting project can generate thousands of <code>GitHub</code> stars and opportunities.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add README and case study to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from Projects: beginner to advanced where README and case study is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># README template
+readme_template = &#x27;&#x27;&#x27;
+# Project Name
+
+*One sentence: what it does and why it matters.*
+
+## Demo
+[Try it live](https://your-demo-url.com) | [Video walkthrough](https://youtube.com/...)
+
+## Problem
+What problem does this solve? Why is it important? Who benefits?
+
+## Approach
+- **Data**: source, size, key characteristics
+- **Model**: architecture, training approach
+- **Key decisions**: what you tried and why you chose this approach
+
+## Results
+| Metric | Baseline | Our Model |
+|--------|----------|-----------|
+| AUC | 0.72 | 0.89 |
+| F1 | 0.65 | 0.81 |
+
+**Example predictions**: [show 3 good examples and 2 failure cases]
+
+## Installation
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+## Lessons Learned
+1. [Most surprising finding]
+2. [What didn&#x27;t work]
+3. [What you&#x27;d do differently]
+
+## Future Work
+- [ ] Next improvement
+- [ ] Known limitation to address
+&#x27;&#x27;&#x27;</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add README and case study to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Your README is the first impression of your technical work. A <code>GitHub</code> repo without a README says &#x27;this is unfinished.&#x27; A README with clear problem statement, methodology, results, and usage says &#x27;this is professional quality.&#x27; For job applications, a portfolio of well-documented projects is the strongest possible signal of production readiness. Documentation is part of the engineering deliverable, not an optional add-on.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>README with only installation instructions — &#x27;pip install <code>requirements.txt</code>; python <code>main.py</code>&#x27; tells a reader how to run your code but nothing about what it does or why it&#x27;s interesting. The most important README sections are the problem statement and results.</li><li>Not including failure cases and limitations — a README that only shows cherry-picked success cases reads as incomplete. Including failure cases and limitations demonstrates intellectual honesty and deep understanding of your model&#x27;s capabilities.</li><li>Forgetting to update the README when the project evolves — a README that describes v1 of a project at v3 is misleading. Update README as a standard part of every significant project iteration.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a complete README and case study for your most recent ML project: (1) write the README following the template above, (2) add at least 3 visualizations (confusion matrix, learning curve, example predictions), (3) write a 1-page case study documenting: 3 approaches you tried, why you chose the final approach, and 3 things you&#x27;d do differently, (4) share the README with someone unfamiliar with your project — can they understand it and reproduce your results in under 30 minutes?, (5) create a 90-second demo video or GIF showing the application in action.</div>
     </div>
   </div>
 </section>

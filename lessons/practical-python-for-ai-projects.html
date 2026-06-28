@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Practical Python for AI projects | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -41,17 +42,39 @@
       <h2>File handling</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>File handling is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>File handling in Python covers reading and writing text files, binary files, and structured formats (CSV, JSON). The <code>open()</code> function opens a file: f = open(&#x27;<code>data.txt</code>&#x27;, &#x27;r&#x27;) opens for reading, &#x27;w&#x27; for writing (overwrites), &#x27;a&#x27; for appending, &#x27;rb&#x27;/&#x27;wb&#x27; for binary. Always use the context manager (with open(...) as f:) which automatically closes the file even if an exception occurs.</p><p>Reading files: <code>f.read()</code> reads the entire file as a string. <code>f.readlines()</code> returns a list of lines (with \n). for line in f: iterates line by line (memory-efficient for large files). <code>f.readline()</code> reads one line at a time. For text files: always specify encoding=&#x27;utf-8&#x27; to handle international characters.</p><p>Writing files: <code>f.write</code>(string) writes a string (no automatic newline). <code>f.writelines</code>(<code>list_of_strings</code>) writes multiple strings. For ML: save model weights, training logs, evaluation results, and configuration files. Common pattern: save results as JSON (structured) or CSV (tabular).</p><p>Pathlib: the modern, object-oriented way to handle file paths. from pathlib import Path. Path(&#x27;data/<code>train.csv</code>&#x27;).<code>exists()</code> checks if file exists. Path(&#x27;outputs&#x27;).mkdir(parents=True, <code>exist_ok</code>=True) creates directories. Path(&#x27;data/<code>train.csv</code>&#x27;).stem returns &#x27;train&#x27; (filename without extension). Path(&#x27;data/<code>train.csv</code>&#x27;).parent returns Path(&#x27;data&#x27;). Use pathlib instead of <code>os.path</code> for all file operations.</p><p>File I/O for ML workflows: save/load model config as JSON, training metrics as CSV, model weights as .pt (<code>PyTorch</code>) or .pkl (<code>sklearn</code> with joblib). Template: <code>save_dir</code> = Path(f&#x27;experiments/{<code>experiment_name</code>}&#x27;); <code>save_dir.mkdir</code>(parents=True, <code>exist_ok</code>=True). Then: <code>json.dump</code>(config, open(<code>save_dir</code>/&#x27;<code>config.json</code>&#x27;, &#x27;w&#x27;)), <code>pd.DataFrame</code>(metrics).<code>to_csv</code>(<code>save_dir</code>/&#x27;<code>metrics.csv</code>&#x27;). This creates a self-contained experiment directory.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses File handling to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where File handling is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from pathlib import Path
+import json
+# Create experiment directory
+experiment_dir = Path(f&#x27;experiments/exp_{run_id}&#x27;)
+experiment_dir.mkdir(parents=True, exist_ok=True)
+# Save config
+config = {&#x27;learning_rate&#x27;: 0.001, &#x27;n_epochs&#x27;: 100, &#x27;model&#x27;: &#x27;random_forest&#x27;}
+with open(experiment_dir / &#x27;config.json&#x27;, &#x27;w&#x27;) as f:
+    json.dump(config, f, indent=2)
+# Load config
+with open(experiment_dir / &#x27;config.json&#x27;) as f:
+    loaded_config = json.load(f)</code></pre><pre><code># Read large file line by line (memory-efficient)
+with open(&#x27;large_dataset.txt&#x27;, encoding=&#x27;utf-8&#x27;) as f:
+    for i, line in enumerate(f):
+        if i &gt;= 1000: break  # first 1000 lines
+        data = line.strip().split(&#x27;\t&#x27;)
+        # process data</code></pre><pre><code>import joblib
+from sklearn.ensemble import RandomForestClassifier
+# Save and load sklearn models
+model = RandomForestClassifier().fit(X_train, y_train)
+joblib.dump(model, &#x27;model.pkl&#x27;)
+loaded_model = joblib.load(&#x27;model.pkl&#x27;)
+print(loaded_model.score(X_test, y_test))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for File handling, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>File handling is essential for: saving trained models (persistence), loading datasets (data pipelines), writing experiment logs (reproducibility), and reading configuration files (hyperparameter management). Every ML project involves reading and writing files extensively.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not using context managers (with <code>open()</code>) — open files consume system resources. If the code crashes before <code>f.close()</code>, the file remains locked. Context managers guarantee proper cleanup.</li><li>Hardcoding absolute file paths — &#x27;/Users/john/data/<code>train.csv</code>&#x27; breaks on any other machine. Use relative paths or Path objects with configurable root directories.</li><li>Not specifying encoding when reading text — open(&#x27;<code>file.txt</code>&#x27;) uses the system default encoding (often ASCII on Windows). Text with accented characters or emoji raises <code>UnicodeDecodeError</code>. Always: open(&#x27;<code>file.txt</code>&#x27;, encoding=&#x27;utf-8&#x27;).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete experiment tracking file system: (1) design a directory structure: experiments/{<code>exp_id</code>}/{<code>config.json</code>, <code>metrics.csv</code>, <code>model.pkl</code>, <code>logs.txt</code>, plots/}, (2) write functions: <code>save_experiment</code>(config, model, metrics), <code>load_experiment</code>(<code>exp_id</code>), <code>list_experiments()</code>, (3) implement experiment comparison: load all experiments, find the one with the best validation AUC, (4) add file locking for concurrent writes (multiple training jobs writing to the same experiment log), (5) write a cleanup function that deletes experiments older than 7 days.</div>
     </div>
   </div>
 </section>
@@ -63,19 +86,40 @@
       <h2>CSV and JSON</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>CSV and JSON should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect CSV and JSON to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>CSV (Comma-Separated Values) and JSON (<code>JavaScript</code> Object Notation) are the two most common data file formats in ML. CSV stores tabular data — rows of values separated by commas (or tabs, semicolons). JSON stores structured data — nested dictionaries and lists. Understanding both formats and their Python equivalents (<code>pandas</code> for CSV, json module for JSON) is foundational for data ingestion.</p><p>Reading CSV with <code>pandas</code>: <code>pd.read_csv</code>(&#x27;<code>data.csv</code>&#x27;) loads a CSV into a <code>DataFrame</code>. Common parameters: sep=&#x27;,&#x27; (or &#x27;\t&#x27; for TSV), header=0 (row number for column names — header=None if no header), <code>index_col</code>=0 (column to use as row index), usecols=[&#x27;col1&#x27;, &#x27;col2&#x27;] (load only specific columns), dtype={&#x27;price&#x27;: float, &#x27;id&#x27;: str} (specify column types), <code>na_values</code>=[&#x27;NA&#x27;, &#x27;None&#x27;, &#x27;-&#x27;] (additional strings to treat as <code>NaN</code>).</p><p>Writing CSV: <code>df.to_csv</code>(&#x27;<code>output.csv</code>&#x27;, index=False) writes without the row index. index=False is almost always what you want. sep=&#x27;\t&#x27; writes as tab-separated. For large files: chunksize parameter in <code>read_csv</code> processes in chunks to avoid memory issues. For very large files (&gt; RAM): use <code>pd.read_csv()</code> with iterator=True or chunksize=10000 to process in batches.</p><p>JSON in Python: import json. <code>json.loads</code>(string) parses a JSON string to a Python dict/list. <code>json.dumps</code>(obj) converts a Python dict/list to a JSON string. <code>json.load</code>(file) reads from a file. <code>json.dump</code>(obj, file, indent=2) writes to a file with pretty-printing. JSON supports: strings, numbers, booleans, null, arrays, objects (nested). JSON does NOT support: <code>numpy</code> arrays (convert to list first), Python tuples (become arrays), dates (convert to ISO string).</p><p>Common data formats in ML: JSONL (JSON Lines) — one JSON object per line, common for LLM training data (easy to stream). Parquet — columnar binary format, much faster to read than CSV for analytical queries. Feather — fast binary format for <code>DataFrame</code> interchange. Pickle — Python-specific binary format (security risk for untrusted files). For ML datasets: prefer Parquet for large datasets (10GB+) over CSV for speed and compression.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses CSV and JSON to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply CSV and JSON in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+import json
+# Read CSV with common options
+df = pd.read_csv(&#x27;data.csv&#x27;, sep=&#x27;,&#x27;, header=0, index_col=None,
+    usecols=[&#x27;feature1&#x27;, &#x27;feature2&#x27;, &#x27;label&#x27;],
+    dtype={&#x27;label&#x27;: int}, na_values=[&#x27;N/A&#x27;, &#x27;nan&#x27;, &#x27;&#x27;])
+print(df.dtypes, df.shape, df.isnull().sum())</code></pre><pre><code># Write CSV without index
+df.to_csv(&#x27;processed_data.csv&#x27;, index=False)
+# Read back and verify
+df_check = pd.read_csv(&#x27;processed_data.csv&#x27;)
+assert df.shape == df_check.shape</code></pre><pre><code># JSON for configuration
+config = {&#x27;model&#x27;: &#x27;xgboost&#x27;, &#x27;n_estimators&#x27;: 500, &#x27;features&#x27;: [&#x27;age&#x27;, &#x27;income&#x27;]}
+json_string = json.dumps(config, indent=2)
+print(json_string)
+# Parsed back
+loaded = json.loads(json_string)
+print(loaded[&#x27;n_estimators&#x27;])  # 500
+
+# JSONL (one JSON per line)
+with open(&#x27;data.jsonl&#x27;, &#x27;w&#x27;) as f:
+    for item in dataset:
+        f.write(json.dumps(item) + &#x27;\n&#x27;)</code></pre>
       </div>
       <pre><code>import json
 payload = {&quot;text&quot;: &quot;hello&quot;, &quot;label&quot;: &quot;greeting&quot;}
 print(json.dumps(payload, indent=2))</code></pre>
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using CSV and JSON. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>CSV and JSON are the entry point for 90% of ML data ingestion. Almost every dataset comes as CSV (tabular data) or JSON (API responses, configuration files, model predictions). Knowing the edge cases (encoding, special characters, nested JSON, large files) prevents hours of data loading bugs.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Reading large CSV files without usecols — loading a 50-column CSV when you only need 10 columns wastes memory. Specify usecols=[&#x27;<code>needed_col1</code>&#x27;, &#x27;<code>needed_col2</code>&#x27;] to load only required columns.</li><li>Not handling JSON values that can&#x27;t be serialized by default — <code>numpy</code> arrays, datetime objects, and custom classes raise <code>TypeError</code> with <code>json.dumps</code>. Use a custom encoder: <code>json.dumps</code>(obj, default=lambda x: <code>x.tolist()</code> if hasattr(x, &#x27;tolist&#x27;) else str(x)).</li><li>Trusting CSV column dtypes — <code>pandas</code> infers dtypes from the first few rows. A column of integers may load as float (due to <code>NaN</code> values). Always verify dtypes with <code>df.dtypes</code> and cast explicitly.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a data ingestion pipeline: (1) load a CSV with 10 columns and 100K rows using different options (usecols, dtype, chunksize), compare memory usage and load time, (2) handle a CSV with inconsistent encoding (some rows have special characters), (3) parse a nested JSON API response (simulated weather data with nested location/measurements), flatten it to a <code>DataFrame</code>, (4) write the processed data to Parquet and compare file size and read speed vs CSV, (5) build a JSON config loader that validates required fields and type checks using Pydantic.</div>
     </div>
   </div>
 </section>
@@ -87,17 +131,50 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>Datetime</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Datetime is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Datetime handling is a foundational Python skill for ML practitioners working with time-series data, logs, event streams, or any dataset with temporal information. Python&#x27;s datetime module and <code>pandas</code>&#x27; datetime support handle the conversion, arithmetic, and formatting of dates and times.</p><p>Python&#x27;s datetime module: `<code>datetime.datetime</code>` represents a specific moment (year, month, day, hour, minute, second, microsecond). `<code>datetime.date</code>` represents only a date. `<code>datetime.timedelta</code>` represents a duration — the difference between two datetimes. Key operations: creating datetimes, parsing strings to datetimes (strptime), formatting datetimes as strings (strftime), and computing date arithmetic.</p><p>Common format codes for strptime/strftime: %Y=4-digit year, %m=2-digit month, %d=2-digit day, %H=24-hour, %M=minute, %S=second, %f=microseconds. Example: `<code>datetime.strptime</code>(&#x27;2024-03-15 14:30&#x27;, &#x27;%Y-%m-%d %H:%M&#x27;)` parses that string. `<code>datetime.strftime</code>(&#x27;%B %d, %Y&#x27;)` formats as &#x27;March 15, 2024&#x27;.</p><p>Pandas datetime support: `<code>pd.to_datetime()</code>` converts a column to datetime dtype. Once converted, you can access components via `.dt`: `df[&#x27;date&#x27;].<code>dt.year</code>`, `.<code>dt.month</code>`, `.<code>dt.dayofweek</code>` (0=Monday), `.<code>dt.hour</code>`, `.<code>dt.date</code>`. Date arithmetic in <code>pandas</code>: `df[&#x27;date&#x27;] + <code>pd.Timedelta</code>(days=7)` adds 7 days. `<code>pd.DateOffset</code>(months=1)` adds exactly one month (handles month-end edge cases).</p><p>Timezone handling: naive datetimes have no timezone information. Timezone-aware datetimes include UTC offset. `<code>pytz.timezone</code>(&#x27;America/<code>New_York</code>&#x27;)` creates a timezone object. `<code>datetime.now</code>(tz=<code>pytz.utc</code>)` creates a UTC-aware datetime. `<code>dt.astimezone</code>(tz)` converts between timezones. For ML features, always convert to UTC first to avoid issues with daylight saving time.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Datetime to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where Datetime is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from datetime import datetime, timedelta, date
+import pandas as pd
+# Creating and parsing datetimes
+now = datetime.now()
+print(f&#x27;Now: {now}&#x27;)  # 2024-03-15 14:30:22.123456
+# Parse from string
+dt = datetime.strptime(&#x27;2024-03-15 14:30&#x27;, &#x27;%Y-%m-%d %H:%M&#x27;)
+# Format to string
+print(dt.strftime(&#x27;%B %d, %Y&#x27;))  # March 15, 2024
+print(dt.strftime(&#x27;%Y%m%d&#x27;))     # 20240315
+# Date arithmetic
+week_later = dt + timedelta(days=7)
+print(f&#x27;One week later: {week_later.date()}&#x27;)
+diff = now - dt
+print(f&#x27;Days since: {diff.days}&#x27;)
+# Extract components
+print(f&#x27;Year: {dt.year}, Month: {dt.month}, Day: {dt.day}&#x27;)
+print(f&#x27;Hour: {dt.hour}, Minute: {dt.minute}&#x27;)
+print(f&#x27;Day of week: {dt.weekday()}&#x27;)  # 0=Monday, 6=Sunday</code></pre><pre><code>import pandas as pd
+import numpy as np
+# Pandas datetime operations
+df = pd.DataFrame({&#x27;timestamp&#x27;: [&#x27;2024-01-15 08:30&#x27;, &#x27;2024-01-15 12:00&#x27;, &#x27;2024-01-16 09:15&#x27;]})
+df[&#x27;timestamp&#x27;] = pd.to_datetime(df[&#x27;timestamp&#x27;])
+# Extract features
+df[&#x27;year&#x27;] = df[&#x27;timestamp&#x27;].dt.year
+df[&#x27;month&#x27;] = df[&#x27;timestamp&#x27;].dt.month
+df[&#x27;day_of_week&#x27;] = df[&#x27;timestamp&#x27;].dt.dayofweek   # 0=Monday
+df[&#x27;hour&#x27;] = df[&#x27;timestamp&#x27;].dt.hour
+df[&#x27;is_weekend&#x27;] = df[&#x27;timestamp&#x27;].dt.dayofweek &gt;= 5
+df[&#x27;quarter&#x27;] = df[&#x27;timestamp&#x27;].dt.quarter
+# Date difference
+df[&#x27;days_since_start&#x27;] = (df[&#x27;timestamp&#x27;] - df[&#x27;timestamp&#x27;].min()).dt.days
+# Resample by day
+df.set_index(&#x27;timestamp&#x27;).resample(&#x27;D&#x27;).size()  # events per day</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Datetime, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Datetime handling is unavoidable in data science. Transaction logs, user events, sensor readings, and financial data all have timestamps. Failing to handle timezones correctly introduces subtle bugs (events appear to happen before midnight when they actually happened after midnight in another timezone). Proper datetime feature engineering (day of week, hour of day, month) adds significant predictive power to models.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating datetime columns as strings — comparing dates as strings (&#x27;2024-10-01&#x27; &gt; &#x27;2024-09-30&#x27;) works but sorting and arithmetic don&#x27;t. Always convert to datetime dtype with <code>pd.to_datetime()</code> at the start of your pipeline.</li><li>Ignoring timezones — storing timestamps without timezone information causes bugs when users are in different timezones. Normalize all timestamps to UTC on ingestion and convert to local time only for display.</li><li>Using string format codes without testing edge cases — &#x27;%d/%m/%Y&#x27; vs &#x27;%m/%d/%Y&#x27; for &#x27;03/04/2024&#x27; is ambiguous. Always test your date parser with edge cases: single-digit days and months, year 2000, December 31.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a datetime feature engineering pipeline: (1) download a dataset with timestamps (NYC taxi rides, <code>GitHub</code> events, or similar), (2) parse the timestamp column with <code>pd.to_datetime()</code>, (3) extract features: <code>hour_of_day</code>, <code>day_of_week</code>, month, <code>is_weekend</code>, <code>is_holiday</code> (use Python&#x27;s holidays library), quarter, (4) compute: <code>time_since_first_event</code>, <code>time_until_next_event</code> (using diff), <code>events_in_last_hour</code> (using rolling windows), (5) train a model predicting a target variable with these datetime features — which features are most predictive?</div>
     </div>
   </div>
 </section>
@@ -109,17 +186,34 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>Regular expressions</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Regular expressions is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Regular expressions (regex) are patterns for matching, searching, and replacing text. In ML and data science, regex is used for: text cleaning (remove HTML tags, URLs, special characters), feature extraction (extract dates, phone numbers, prices from text), data validation (check email format, credit card format), and NLP preprocessing.</p><p>Python&#x27;s re module: <code>re.match</code>(pattern, string) matches at the START of string. <code>re.search</code>(pattern, string) finds the FIRST match anywhere in string. <code>re.findall</code>(pattern, string) returns a list of ALL matches. <code>re.sub</code>(pattern, replacement, string) replaces matches. <code>re.compile</code>(pattern) compiles a pattern for repeated use (10× faster for repeated calls).</p><p>Regex syntax essentials: . (any char), \d (digit 0-9), \w (word char: a-z, A-Z, 0-9, _), \s (whitespace: space, tab, newline), + (1 or more), * (0 or more), ? (0 or 1), {3} (exactly 3), {2,5} (2 to 5), ^ (start of string), $ (end of string), [] (character class: [aeiou] matches any vowel), [^] (negated class: [^\d] matches non-digit), () (capturing group), | (or: cat|dog).</p><p>Common ML text cleaning with regex: remove HTML tags: <code>re.sub</code>(&#x27;&lt;[^&gt;]+&gt;&#x27;, &#x27;&#x27;, text). Remove URLs: <code>re.sub</code>(r&#x27;https?://\S+&#x27;, &#x27;&#x27;, text). Extract prices: <code>re.findall</code>(r&#x27;\$[\d,.]+&#x27;, text). Remove non-alphabetic: <code>re.sub</code>(&#x27;[^a-zA-Z\s]&#x27;, &#x27;&#x27;, text). Normalize whitespace: <code>re.sub</code>(&#x27;\s+&#x27;, &#x27; &#x27;, text).<code>strip()</code>. Extract dates: <code>re.findall</code>(r&#x27;\d{1,2}[/-]\d{1,2}[/-]\d{2,4}&#x27;, text).</p><p>Named capture groups: (?P&lt;name&gt;pattern) creates a named group. <code>re.search</code>(r&#x27;(?P&lt;year&gt;\d{4})-(?P&lt;month&gt;\d{2})-(?P&lt;day&gt;\d{2})&#x27;, &#x27;2024-01-15&#x27;).group(&#x27;year&#x27;) returns &#x27;2024&#x27;. Named groups make complex extractions readable. Use in <code>pandas</code>: df[&#x27;text&#x27;].<code>str.extract</code>(r&#x27;(?P&lt;city&gt;[A-Z][a-z]+), (?P&lt;state&gt;[A-Z]{2})&#x27;) extracts city and state into separate columns.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Regular expressions to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where Regular expressions is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import re
+# Text cleaning for NLP
+def clean_text(text):
+    text = re.sub(r&#x27;&lt;[^&gt;]+&gt;&#x27;, &#x27;&#x27;, text)          # remove HTML tags
+    text = re.sub(r&#x27;https?://\S+|www\.\S+&#x27;, &#x27;&#x27;, text)  # remove URLs
+    text = re.sub(r&#x27;[^\w\s]&#x27;, &#x27;&#x27;, text)          # remove punctuation
+    text = re.sub(r&#x27;\s+&#x27;, &#x27; &#x27;, text).strip()     # normalize whitespace
+    return text.lower()
+print(clean_text(&#x27;&lt;b&gt;Hello&lt;/b&gt; World! Visit https://example.com&#x27;))</code></pre><pre><code># Extract structured data from text
+price_pattern = re.compile(r&#x27;\$([\d,]+\.?\d*)&#x27;)
+date_pattern = re.compile(r&#x27;(\d{1,2})/(\d{1,2})/(\d{4})&#x27;)
+text = &#x27;Item costs $1,299.99, order by 12/31/2024&#x27;
+prices = price_pattern.findall(text)  # [&#x27;1,299.99&#x27;]
+dates = date_pattern.findall(text)    # [(&#x27;12&#x27;, &#x27;31&#x27;, &#x27;2024&#x27;)]</code></pre><pre><code># Pandas string methods with regex
+import pandas as pd
+df[&#x27;price_clean&#x27;] = df[&#x27;price_str&#x27;].str.replace(r&#x27;[\$,]&#x27;, &#x27;&#x27;, regex=True).astype(float)
+df[&#x27;has_phone&#x27;] = df[&#x27;text&#x27;].str.contains(r&#x27;\d{3}[-.)]?\d{3}[-.)]?\d{4}&#x27;, regex=True)
+city_state = df[&#x27;location&#x27;].str.extract(r&#x27;(?P&lt;city&gt;[\w\s]+),\s*(?P&lt;state&gt;[A-Z]{2})&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Regular expressions, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Regular expressions are the fastest way to extract structured information from messy text data. Feature extraction from product descriptions, parsing addresses, cleaning HTML-laden text — all are much faster with regex than with string methods. Every data scientist who works with text needs regex skills.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not using raw strings for regex patterns — r&#x27;\d+&#x27; is a raw string. Without r, &#x27;\d+&#x27; becomes the two-character string &#x27;d+&#x27; (\d becomes just d). Always use r&#x27;&#x27; for regex patterns.</li><li>Greedy vs lazy matching — .* is greedy: it matches as much as possible. .*? is lazy: matches as little as possible. &#x27;&lt;.*&gt;&#x27; matches the entire &#x27;&lt;b&gt;text&lt;/b&gt;&#x27; string; &#x27;&lt;.*?&gt;&#x27; matches just &#x27;&lt;b&gt;&#x27;. Use .*? for HTML/XML patterns.</li><li>Using regex when string methods suffice — &#x27;,&#x27; in text is faster than <code>re.search</code>(&#x27;,&#x27;, text). Reserve regex for patterns that string methods cannot express (variable-length patterns, alternation).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a text feature extractor using regex: given a dataset of e-commerce product listings (title, description, price), extract: (1) numeric price (from strings like &#x27;$1,299.00&#x27;, &#x27;€499&#x27;, &#x27;399.99 USD&#x27;), (2) availability (detect &#x27;in stock&#x27;, &#x27;out of stock&#x27;, &#x27;ships in X days&#x27;), (3) warranty information (extract duration from &#x27;comes with 2-year warranty&#x27;, &#x27;24 month guarantee&#x27;), (4) discount percentage (from &#x27;20% off&#x27;, &#x27;save 15%&#x27;), (5) clean the description: remove HTML, normalize whitespace, remove promotional phrases. Validate: test each regex on 20 edge cases.</div>
     </div>
   </div>
 </section>
@@ -131,17 +225,60 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>APIs with requests</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>APIs with requests is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>The `requests` library is the standard Python tool for making HTTP API calls. Most AI APIs (<code>OpenAI</code>, Anthropic, <code>HuggingFace</code>, weather, financial data) are accessible via HTTP REST endpoints. `requests` handles the low-level HTTP details: building headers, encoding request bodies, handling responses, and managing sessions.</p><p>HTTP verbs and when to use them: GET retrieves data (idempotent — calling multiple times has same result). POST creates new resources or sends data. PUT replaces an existing resource. PATCH partially updates. DELETE removes. Most ML data APIs use GET (fetch data by ID) and POST (submit analysis jobs).</p><p>Authentication: most APIs require authentication. Bearer token: `headers = {&#x27;Authorization&#x27;: f&#x27;Bearer {<code>api_key</code>}&#x27;}`. API key in URL parameters: `params = {&#x27;<code>api_key</code>&#x27;: <code>api_key</code>}`. Basic auth: `<code>requests.get</code>(url, auth=(username, password))`. Never hardcode API keys in code — load from environment variables: `<code>api_key</code> = <code>os.environ</code>[&#x27;OPENAI_API_KEY&#x27;]`.</p><p>Error handling: always check the response status code. `<code>response.raise_for_status()</code>` raises an exception for 4xx/5xx codes. Implement retry logic for transient failures (network timeouts, 429 rate limit, 503 service unavailable) using exponential backoff. The `tenacity` library provides clean retry decorators.</p><p>Pagination: APIs that return many results use pagination. Common patterns: cursor-based (<code>next_cursor</code> in response, pass as parameter), offset-based (page=1, page=2, ...), and link-based (response includes next page URL in Link header). Always implement pagination loops — relying on default page size (often 20-100 items) silently truncates results.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses APIs with requests to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where APIs with requests is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import requests
+import os
+# Basic GET request
+api_key = os.environ.get(&#x27;WEATHER_API_KEY&#x27;, &#x27;demo&#x27;)
+response = requests.get(
+    &#x27;https://api.openweathermap.org/data/2.5/weather&#x27;,
+    params={&#x27;q&#x27;: &#x27;London&#x27;, &#x27;appid&#x27;: api_key, &#x27;units&#x27;: &#x27;metric&#x27;}
+)
+response.raise_for_status()  # raise HTTPError for 4xx/5xx
+data = response.json()
+print(f&#x27;Temperature: {data[&quot;main&quot;][&quot;temp&quot;]}°C&#x27;)
+# POST request with JSON body
+response = requests.post(
+    &#x27;https://api.example.com/predictions&#x27;,
+    headers={&#x27;Authorization&#x27;: f&#x27;Bearer {api_key}&#x27;, &#x27;Content-Type&#x27;: &#x27;application/json&#x27;},
+    json={&#x27;text&#x27;: &#x27;Hello world&#x27;, &#x27;model&#x27;: &#x27;sentiment-v1&#x27;}  # json= auto-encodes and sets Content-Type
+)
+print(response.status_code, response.json())</code></pre><pre><code>import time
+import requests
+# Retry with exponential backoff
+def api_call_with_retry(url, max_retries=3, **kwargs):
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, timeout=10, **kwargs)
+            if response.status_code == 429:  # rate limited
+                wait = int(response.headers.get(&#x27;Retry-After&#x27;, 2 ** attempt))
+                print(f&#x27;Rate limited. Waiting {wait}s...&#x27;); time.sleep(wait)
+                continue
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.Timeout:
+            if attempt == max_retries - 1: raise
+            time.sleep(2 ** attempt)
+    raise RuntimeError(f&#x27;Failed after {max_retries} retries&#x27;)
+# Pagination
+def fetch_all_pages(base_url, headers):
+    results, page = [], 1
+    while True:
+        data = api_call_with_retry(base_url, headers=headers, params={&#x27;page&#x27;: page, &#x27;per_page&#x27;: 100})
+        if not data: break
+        results.extend(data)
+        if len(data) &lt; 100: break  # last page
+        page += 1
+    return results</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for APIs with requests, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>ML practitioners constantly work with APIs: fetching training data, calling external ML services, and deploying models as APIs. Robust API handling — authentication, error handling, retries, pagination — determines whether your data collection pipeline runs reliably overnight or requires constant babysitting.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not handling rate limits — most APIs limit requests per minute/second. Without retry logic for 429 responses, the script fails immediately when hitting the rate limit. Always implement retry with exponential backoff.</li><li>Hardcoding API keys in code — API keys committed to git are exposed publicly. Always use environment variables: `<code>os.environ</code>[&#x27;API_KEY&#x27;]` or `.env` files with python-dotenv.</li><li>Not using sessions for multiple requests to the same host — each `<code>requests.get()</code>` opens and closes a new TCP connection. For many requests to the same server, use `<code>requests.Session()</code>` which reuses connections (connection pooling) — can be 3-10x faster.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a data collection pipeline using public APIs: (1) choose an API (<code>GitHub</code>, <code>OpenWeatherMap</code>, <code>NewsAPI</code>, or any public API), (2) implement authentication from environment variable, (3) implement a function that fetches all pages of results with retry on 429 and timeout, (4) parse the JSON response into a <code>pandas</code> <code>DataFrame</code>, (5) collect data for at least 1,000 records, (6) store in CSV/parquet with proper column types, (7) if the API has rate limits, implement a sleep-between-requests mechanism and verify you never exceed the rate limit.</div>
     </div>
   </div>
 </section>
@@ -153,17 +290,36 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>Exception handling</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Exception handling should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect Exception handling to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Exception handling with try/except/finally allows programs to gracefully respond to errors rather than crashing. In production ML systems, exceptions occur constantly: API calls time out, files are missing, model inputs have unexpected shapes, external services fail. Without handling, one bad input crashes the entire service. With handling, bad inputs are logged, and the service continues.</p><p>Python exception hierarchy: all exceptions inherit from <code>BaseException</code>. The most important subclass is Exception, the base for user-facing errors. Common exceptions: <code>ValueError</code> (wrong value type or range), <code>TypeError</code> (wrong argument type), <code>KeyError</code> (missing dict key), <code>IndexError</code> (list index out of range), <code>FileNotFoundError</code> (file doesn&#x27;t exist), <code>RuntimeError</code> (generic runtime error), <code>torch</code>.<code>cuda.OutOfMemoryError</code> (GPU OOM).</p><p>try/except/else/finally: the try block runs the code. If an exception occurs, the matching except block runs. The else block runs if no exception was raised. The finally block always runs (useful for cleanup: closing files, releasing GPU memory). Catch specific exceptions, not bare except — catching everything hides bugs and makes debugging impossible.</p><p>Raising exceptions: raise <code>ValueError</code>(f&#x27;Expected input shape (N, 784), got {<code>x.shape</code>}&#x27;). Custom exceptions: class <code>InvalidPredictionError</code>(Exception): pass. Raise with context: raise <code>RuntimeError</code>(&#x27;Training failed&#x27;) from <code>original_error</code> — this preserves the original traceback in the error chain.</p><p>Exception logging: always log exceptions with traceback, not just the error message. import logging; <code>logging.exception</code>(&#x27;Prediction failed&#x27;) logs the full traceback automatically. In a web serving context, unhandled exceptions should return HTTP 500 with a structured error response, while the full traceback goes to the server logs for debugging.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Exception handling to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Exception handling in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Basic: try:
+    model.predict(x)
+except ValueError as e:
+    print(f&#x27;Input error: {e}&#x27;)
+except torch.cuda.OutOfMemoryError:
+    torch.cuda.empty_cache()
+except Exception as e:
+    logger.exception(f&#x27;Unexpected error: {e}&#x27;)
+    raise</code></pre><pre><code>else and finally:
+try:
+    result = load_model(path)
+except FileNotFoundError:
+    print(&#x27;Model file not found&#x27;)
+else:
+    print(&#x27;Model loaded successfully&#x27;)
+finally:
+    print(&#x27;Done — cleanup here&#x27;)</code></pre><pre><code>Custom exception:
+class DataQualityError(Exception): pass
+if df.isnull().sum().sum() &gt; 0.3 * len(df):
+    raise DataQualityError(f&#x27;Too many nulls: {df.isnull().mean().max():.1%}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Exception handling. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Production ML services handle millions of requests. Even 0.01% bad inputs means thousands of exceptions per day. Proper exception handling makes services resilient, logs actionable information for debugging, and prevents cascading failures.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using bare except: — this catches everything including <code>KeyboardInterrupt</code> and <code>SystemExit</code>, making it impossible to Ctrl+C the program. Always catch specific exceptions.</li><li>Silently swallowing exceptions — except Exception: pass hides bugs. At minimum, log the exception.</li><li>Not including the original exception when re-raising — raise <code>NewError</code>(&#x27;message&#x27;) loses the original traceback. Use raise <code>NewError</code>(&#x27;message&#x27;) from <code>original_error</code>.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a production-quality prediction service function that: accepts a dict input, validates required keys, handles invalid input types (raise <code>ValueError</code> with message), handles model failures (log and re-raise), handles OOM (clear cache and retry once), and always logs prediction latency. Wrap it in a <code>FastAPI</code> endpoint that returns HTTP 400 for validation errors and HTTP 500 for model errors.</div>
     </div>
   </div>
 </section>
@@ -175,17 +331,46 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>Logging</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Logging should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect Logging to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Python&#x27;s logging module provides a production-grade logging system that is far superior to <code>print()</code> for debugging and monitoring ML code. Unlike <code>print()</code>, logging lets you: filter by severity level (DEBUG, INFO, WARNING, ERROR, CRITICAL), route logs to files and console simultaneously, include timestamps and line numbers automatically, and disable verbose logging without removing the logging calls.</p><p>Log levels: DEBUG (detailed diagnostic information — variable values, loop iterations), INFO (high-level confirmation that things are working — training started, epoch completed, model saved), WARNING (something unexpected but not fatal — missing features, class imbalance), ERROR (a serious problem — file not found, API timeout), CRITICAL (the program cannot continue — database connection failed). In production, set level to INFO or WARNING; for debugging, set to DEBUG.</p><p>Logger hierarchy: loggers are named objects. <code>logging.getLogger</code>(&#x27;<code>my_module</code>&#x27;) creates a logger named &#x27;<code>my_module</code>&#x27;. <code>logging.getLogger</code>(&#x27;<code>my_module.submodule</code>&#x27;) creates a child logger. Log levels propagate up the hierarchy. In ML projects, use a logger named after the module: logger = <code>logging.getLogger</code>(__name__). Configure the root logger once in <code>main.py</code>; all module loggers inherit the configuration.</p><p>Structured logging for ML pipelines: use structured formats (JSON) for logs that will be processed by log aggregation systems (Elasticsearch, Splunk, Datadog). Log important events as structured dictionaries: {&#x27;event&#x27;: &#x27;<code>epoch_completed</code>&#x27;, &#x27;epoch&#x27;: 5, &#x27;<code>train_loss</code>&#x27;: 0.234, &#x27;<code>val_loss</code>&#x27;: 0.267, &#x27;<code>elapsed_s</code>&#x27;: 45.2}. This enables searching and aggregating over log events.</p><p>Logging in long-running ML jobs: log at the start of each major phase (data loading, preprocessing, training, evaluation), log progress every N steps (not every step — avoid overwhelming log files), log final results and metrics, log any warnings or anomalies (<code>NaN</code> values, unexpected class distributions). Use tqdm for visual progress bars alongside logging for audit-trail logs.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Logging to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Logging in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import logging
+import json
+from datetime import datetime
+# Configure logging once at program start
+def setup_logging(log_file=&#x27;training.log&#x27;, level=logging.INFO):
+    logger = logging.getLogger()
+    logger.setLevel(level)
+    formatter = logging.Formatter(&#x27;%(asctime)s [%(levelname)s] %(name)s: %(message)s&#x27;)
+    # File handler
+    fh = logging.FileHandler(log_file)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    # Console handler
+    ch = logging.StreamHandler()
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+    return logging.getLogger(__name__)
+logger = setup_logging()
+logger.info(&#x27;Training started&#x27;)
+logger.debug(&#x27;Feature matrix shape: %s&#x27;, X_train.shape)  # %s lazy formatting
+logger.warning(&#x27;Class imbalance: positive ratio = %.3f&#x27;, y_train.mean())</code></pre><pre><code># Structured logging for ML
+class StructuredLogger:
+    def __init__(self, name):
+        self.logger = logging.getLogger(name)
+    def log_event(self, event, **kwargs):
+        entry = {&#x27;timestamp&#x27;: datetime.utcnow().isoformat(), &#x27;event&#x27;: event, **kwargs}
+        self.logger.info(json.dumps(entry))
+ml_logger = StructuredLogger(&#x27;training&#x27;)
+for epoch in range(50):
+    ml_logger.log_event(&#x27;epoch_completed&#x27;, epoch=epoch, train_loss=0.3/(epoch+1), val_loss=0.35/(epoch+1))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Logging. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Logging is the most underused debugging and monitoring tool in ML projects. When a training job runs for 12 hours and then fails, <code>print()</code> statements are gone but log files persist. When a deployed model starts returning unexpected predictions, structured logs let you trace exactly what input was processed and what the model returned.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using <code>print()</code> instead of logging in production code — <code>print()</code> has no timestamps, no levels, no filtering, and goes to stdout only. Switching from <code>print()</code> to <code>logging.info()</code> is a 2-minute change that pays dividends forever.</li><li>Logging inside tight loops at DEBUG level without checking — logging every iteration of a 1M-row preprocessing loop creates massive log files and slows execution. Check: &#x27;if <code>loop_iter</code> % 10000 == 0: <code>logger.debug</code>(...)&#x27;</li><li>Configuring logging in module files — configure logging once at the entry point (<code>main.py</code> or __main__). Configuring in module files causes duplicate handlers if the module is imported multiple times.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Add comprehensive logging to an ML training script: (1) configure both file and console logging with structured format, (2) log at INFO level: data loading (<code>n_rows</code>, <code>n_features</code>, <code>missing_pct</code>), preprocessing steps, training start/end, evaluation results, (3) log at DEBUG level: sample feature values, model parameter counts, (4) log at WARNING level: any column with &gt; 20% missing, any class with &lt; 5% representation, (5) log at ERROR level: if a training fold fails, continue with the next fold but log the failure, (6) parse the log file after training and extract all WARNING and ERROR events to a summary.</div>
     </div>
   </div>
 </section>
@@ -197,17 +382,41 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>Typing basics</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Typing basics should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Practical Python for AI projects, connect Typing basics to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Python type hints (introduced in Python 3.5+) are annotations that specify the expected types of function arguments and return values. They are optional and not enforced at runtime — Python ignores them during execution. However, type hints enable: static analysis with tools like mypy and Pylance (catch type errors before running the code), better IDE <code>IntelliSense</code> (VS Code can suggest methods for the correct type), and self-documenting code (types communicate intent as clearly as comments).</p><p>Basic type hints: def add(x: int, y: int) -&gt; int: means add takes two integers and returns an integer. def process(data: <code>pd.DataFrame</code>, <code>n_features</code>: int = 10) -&gt; <code>np.ndarray</code>: specifies more complex types. Optional[str] means the argument can be a string or None (equivalent to Union[str, None]). Use from typing import Optional, List, Dict, Tuple, Union for complex types.</p><p>Type hints for ML functions: def <code>train_model</code>(X: <code>np.ndarray</code>, y: <code>np.ndarray</code>, config: dict) -&gt; Any. For <code>sklearn</code>-like typing: def fit(self, X: &#x27;<code>ArrayLike</code>&#x27;, y: &#x27;<code>ArrayLike</code>&#x27;) -&gt; &#x27;Self&#x27;. <code>TypeVar</code> for generic functions: T = <code>TypeVar</code>(&#x27;T&#x27;); def repeat(item: T, n: int) -&gt; list[T]. Python 3.9+ allows list[int] and dict[str, float] without importing from typing.</p><p>Dataclasses with type hints: @dataclass is the most useful application of type hints for ML. from dataclasses import dataclass; @dataclass class <code>ModelConfig</code>: <code>n_estimators</code>: int = 100; <code>learning_rate</code>: float = 0.01; <code>max_depth</code>: int = 6. Creates a class with __init__, __repr__, __eq__ automatically based on the typed fields. Replacing dict configs with typed dataclasses catches mistakes (&#x27;<code>learnig_rate</code>&#x27; typo → <code>AttributeError</code> instead of silently using the wrong key).</p><p>Running mypy: mypy <code>script.py</code> runs static type checking. mypy --strict <code>script.py</code> is the strictest mode, requiring all functions to have type annotations. In practice, annotate all function signatures and the most important variables. Full type coverage is a goal for large production codebases; for scripts and notebooks, annotate only public APIs.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Typing basics to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Typing basics in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from typing import Optional, Union, List, Dict, Tuple
+import numpy as np
+import pandas as pd
+from dataclasses import dataclass, field
+# Typed function signatures
+def preprocess(df: pd.DataFrame, target_col: str, categorical_cols: Optional[List[str]] = None) -&gt; Tuple[pd.DataFrame, pd.Series]:
+    X = df.drop(columns=[target_col])
+    y = df[target_col]
+    return X, y
+# Dataclass for configuration
+@dataclass
+class TrainConfig:
+    model_type: str = &#x27;xgboost&#x27;
+    n_estimators: int = 500
+    learning_rate: float = 0.05
+    max_depth: int = 6
+    random_seed: int = 42
+    features: List[str] = field(default_factory=list)  # mutable default needs field()
+    class_weight: Optional[Dict[int, float]] = None
+config = TrainConfig(n_estimators=200, features=[&#x27;age&#x27;, &#x27;income&#x27;])
+print(config)  # TrainConfig(model_type=&#x27;xgboost&#x27;, n_estimators=200, ...)</code></pre><pre><code># Type hints catch bugs early with mypy
+def scale_features(X: np.ndarray, mean: float, std: float) -&gt; np.ndarray:
+    return (X - mean) / std
+# mypy would catch: scale_features(X, mean=&#x27;0&#x27;, std=1.0) — str instead of float
+# Runtime doesn&#x27;t catch this, but mypy will flag it before running</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Typing basics. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Type hints transform Python&#x27;s dynamic typing from a liability into an asset: you get the flexibility of dynamic typing while catching a whole class of bugs statically. For ML code that processes tensors and arrays with specific shapes and dtypes, type hints communicate constraints that are otherwise only discovered at runtime.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using Any everywhere — from typing import Any; def process(data: Any) -&gt; Any: defeats the purpose of type hints. Use specific types, even if they&#x27;re Union or Optional.</li><li>Not using <code>field()</code> for mutable default arguments in dataclasses — @dataclass with features: list = [] shares the SAME list across all instances (a Python gotcha). Use features: List[str] = field(<code>default_factory</code>=list) instead.</li><li>Conflating type hints with runtime validation — type hints are not enforced at runtime. def add(x: int, y: int): add(&#x27;a&#x27;, &#x27;b&#x27;) runs without error. For runtime validation, use <code>pydantic</code>&#x27;s <code>BaseModel</code>, which validates types when instances are created.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Add type hints to an ML codebase: (1) annotate all function signatures in a 200-line preprocessing script, (2) create a <code>ModelConfig</code> dataclass with all hyperparameters as typed fields with defaults, (3) create a <code>PipelineResult</code> dataclass: {&#x27;model&#x27;: Any, &#x27;<code>val_auc</code>&#x27;: float, &#x27;<code>feature_names</code>&#x27;: List[str], &#x27;config&#x27;: <code>ModelConfig</code>}, (4) run mypy on the annotated code — fix all type errors, (5) replace all dict-based configs in the codebase with typed dataclasses — how many typos or wrong-type configs does this catch?</div>
     </div>
   </div>
 </section>
@@ -219,17 +428,40 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>Clean code</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Clean code belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Practical Python for AI projects, treat Clean code as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>Clean code in the context of ML means code that is readable, maintainable, and testable. ML code is especially prone to becoming messy: analysis code from Jupyter notebooks gets copy-pasted into production, model training scripts grow to 500 lines without functions, and magic numbers appear everywhere. Clean code practices prevent this decay.</p><p>Functions and single responsibility: every function should do exactly one thing and be named after that thing. `<code>process_data()</code>` is a bad function name — it&#x27;s too vague. `<code>normalize_features()</code>`, `<code>encode_categorical_columns()</code>`, `<code>remove_outliers()</code>` are clear. A function longer than 20-30 lines is usually doing multiple things — split it. Functions with more than 4-5 parameters need a refactor — group related parameters into a dataclass or dict.</p><p>Naming conventions: variable names should describe their content. `df` is acceptable for a temporary variable; use `<code>customers_df</code>` or `<code>train_features_df</code>` for variables that persist. Avoid: `x`, `data`, `temp`, `result`, `output` without context. In ML: use descriptive names: `<code>X_train_scaled</code>` (not `X`), `<code>model_predictions</code>` (not `preds`), `<code>precision_at_10</code>` (not `p10`).</p><p>Don&#x27;t repeat yourself (DRY): if you write the same code twice, extract it into a function. If you preprocess train data with 15 lines of code and then repeat those 15 lines for test data, you&#x27;ve created a maintenance nightmare (changing one often forgets the other). The <code>sklearn</code> Pipeline class is the ML solution to DRY: wrap all preprocessing steps so the same transformations apply consistently to any data split.</p><p>Code reviews and tests: write tests for your core logic — not <code>test.py</code> with a single assert, but meaningful unit tests for your feature engineering functions (given this input, expect this output). In ML, test edge cases: what happens with a single sample? An empty <code>DataFrame</code>? A <code>DataFrame</code> with missing values? Tests catch regressions when you refactor.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Clean code to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Clean code and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Bad code example → clean code example
+# BAD: one massive function, magic numbers, bad names
+def process(df):
+    df2 = df.copy()
+    df2 = df2[df2[&#x27;a&#x27;] &lt; 99999]  # magic number
+    df2[&#x27;b&#x27;] = (df2[&#x27;b&#x27;] - df2[&#x27;b&#x27;].mean()) / df2[&#x27;b&#x27;].std()
+    df2[&#x27;c&#x27;] = df2[&#x27;c&#x27;].fillna(&#x27;unknown&#x27;)
+    return df2
+
+# GOOD: each step is named and documented
+MAX_SALARY = 99_999  # Named constant, not magic number
+def remove_outliers(df: &#x27;pd.DataFrame&#x27;, salary_col: str = &#x27;salary&#x27;) -&gt; &#x27;pd.DataFrame&#x27;:
+    return df[df[salary_col] &lt; MAX_SALARY].copy()
+def standardize_numerical(df: &#x27;pd.DataFrame&#x27;, col: str) -&gt; &#x27;pd.DataFrame&#x27;:
+    mean, std = df[col].mean(), df[col].std()
+    df = df.copy(); df[col] = (df[col] - mean) / std
+    return df
+def fill_categorical_missing(df: &#x27;pd.DataFrame&#x27;, col: str) -&gt; &#x27;pd.DataFrame&#x27;:
+    return df.assign(**{col: df[col].fillna(&#x27;unknown&#x27;)})
+def preprocess(df: &#x27;pd.DataFrame&#x27;) -&gt; &#x27;pd.DataFrame&#x27;:
+    df = remove_outliers(df)
+    df = standardize_numerical(df, &#x27;age&#x27;)
+    df = fill_categorical_missing(df, &#x27;department&#x27;)
+    return df</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Clean code. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Clean code in ML is not just aesthetics — it&#x27;s how you catch bugs. Messy data preprocessing code is the leading cause of training-serving skew (the model performs well in experiments but fails in production because the preprocessing was slightly different). When code is clean, each transformation is visible, testable, and consistent across environments.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Jupyter notebook code going directly to production — notebook code works great for exploration but is terrible for production: no functions, no tests, no type hints, global state everywhere. Refactor to proper Python modules before deploying.</li><li>Not using type hints — `def <code>train_model</code>(X, y, params)` gives no information about expected types. `def <code>train_model</code>(X: <code>np.ndarray</code>, y: <code>np.ndarray</code>, params: Dict[str, Any]) -&gt; <code>sklearn</code>.<code>base.BaseEstimator</code>` documents the contract. Type hints also enable static analysis with mypy.</li><li>Ignoring code style — inconsistent indentation, random spacing, and inconsistent naming make code harder to read. Use `black` for automatic formatting and `flake8` or `ruff` for linting: `pip install black ruff &amp;&amp; black . &amp;&amp; ruff check .`</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Refactor a messy ML training script: (1) take a 200-line Jupyter notebook that trains a classification model, (2) extract all preprocessing steps into named functions, (3) replace all magic numbers with named constants, (4) add type hints to all functions, (5) run black and ruff to fix style issues, (6) write 5 unit tests for the most critical preprocessing functions, (7) measure: how much shorter is each function after refactoring? How many potential bugs did the tests catch?</div>
     </div>
   </div>
 </section>
@@ -241,17 +473,39 @@ print(json.dumps(payload, indent=2))</code></pre>
       <h2>Basic time and space complexity</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Basic time and space complexity is a concept inside Practical Python for AI projects that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Time complexity describes how the execution time of an algorithm grows as input size increases. Space complexity describes how memory usage grows. Understanding these concepts explains why some ML operations are fast and others are slow — and helps you choose the right algorithm for the job.</p><p>Big-O notation: O(1) — constant time (access a dict by key, regardless of dict size). O(log n) — logarithmic (binary search: each step halves the search space). O(n) — linear (iterating over a list: double the size, double the time). O(n log n) — typical sort algorithms. O(n²) — nested loops (comparing each element to every other element). O(2^n) — exponential (brute force all subsets).</p><p>ML algorithm complexities: training linear regression — O(n × p²) where n=samples, p=features (due to matrix operations). Training K-nearest neighbors — training O(1), prediction O(n × p) per query (must check every training point). Training decision tree — O(n × p × log n). Training naive Bayes — O(n × p). Inference is typically much faster than training for neural networks but can be slow for tree ensembles with many trees.</p><p>Space complexity in ML: storing a model takes memory proportional to its number of parameters. A logistic regression on p features: O(p) weights. A decision tree with <code>n_nodes</code>: O(<code>n_nodes</code>). A neural network with L layers: O(sum of layer sizes). For inference with batch size B: O(B × <code>model_size</code>). This determines whether a model can fit on GPU VRAM.</p><p>Practical implications: <code>pandas</code> `.<code>apply()</code>` on a column is O(n) but with Python-level overhead — 10-100x slower than vectorized <code>numpy</code> operations. SQL GROUP BY is O(n log n) (sorting). A full-table scan is O(n). KNN on 1 million points takes 1 million distance computations per query — use approximate nearest neighbor (FAISS) which reduces to O(log n) with some accuracy tradeoff.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Basic time and space complexity to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Practical Python for AI projects where Basic time and space complexity is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import time
+import numpy as np
+# Demonstrate O(n) vs O(n^2)
+def linear_search(lst, target):
+    for i, x in enumerate(lst):
+        if x == target: return i
+    return -1
+def has_duplicate_n_squared(lst):
+    for i in range(len(lst)):
+        for j in range(i+1, len(lst)):
+            if lst[i] == lst[j]: return True
+    return False
+def has_duplicate_linear(lst):
+    seen = set()
+    for x in lst:
+        if x in seen: return True
+        seen.add(x)
+    return False
+# Measure performance
+for n in [1000, 10000, 100000]:
+    data = list(range(n))
+    t0 = time.time(); has_duplicate_n_squared(data[:1000]); print(f&#x27;O(n^2) n={1000}: {time.time()-t0:.4f}s&#x27;)
+    t0 = time.time(); has_duplicate_linear(data); print(f&#x27;O(n) n={n}: {time.time()-t0:.6f}s&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Basic time and space complexity, explain it in 5 to 8 lines, and connect it to Practical Python for AI projects.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Time and space complexity determine whether your algorithm can run on real data at all. A working KNN classifier that takes 10ms per query on 1,000 training examples takes 10 SECONDS per query on 1,000,000 training examples. Understanding complexity tells you when to switch from KNN to approximate nearest neighbor, from full-table scan to indexed lookup, from <code>pandas</code> to Spark.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not considering the constant factors — O(n²) in C++ can be faster than O(n) in Python for small n. The Big-O hides constant factors. Profile your actual code on real data sizes before optimizing.</li><li>Confusing training and inference complexity — random forests are fast to train relative to neural networks, but inference requires running the input through all N trees. For large N and many predictions, this matters. Know both training and inference complexities.</li><li>Using <code>pandas</code> .<code>apply()</code> when vectorized operations are available — .<code>apply()</code> is O(n) but calls Python for each row. Vectorized <code>pandas</code>/<code>numpy</code> operations do the same computation but at C speed, often 10-100x faster.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Profile and optimize a data pipeline: (1) implement four functions that count word frequencies in a document: (a) O(n²) nested loops, (b) O(n log n) with sort, (c) O(n) with dict, (d) O(n) with Counter, (2) time each on documents of size 1K, 10K, 100K, 1M words, (3) plot execution time vs input size — do the curves match the expected Big-O shapes? (4) for a KNN model on 100K training examples: measure prediction time per query, then build a FAISS index and measure again — what is the speedup?</div>
     </div>
   </div>
 </section>
