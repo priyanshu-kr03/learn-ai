@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Capstone: AI learning assistant | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -29,7 +30,7 @@
       <header class="content-head">
         <span class="eyebrow">11 Projects and Portfolio</span>
         <h1>Capstone: AI learning assistant</h1>
-        <div class="meta"><span class="pill">Advanced</span><span class="pill">3 weeks</span><span class="pill">Lesson 40</span></div>
+        <div class="meta"><span class="pill">Advanced</span><span class="pill">3 weeks</span><span class="pill">Lesson 44</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">Capstone idea</span><span class="tag">Content database</span><span class="tag">Progress tracker</span><span class="tag">RAG assistant</span><span class="tag">Quiz generation</span><span class="tag">Weak topic recommendation</span><span class="tag">Evaluation set</span><span class="tag">Deployment</span><span class="tag">GitHub Pages</span><span class="tag">Future backend</span><span class="tag">Product roadmap</span></div>
       </header>
@@ -42,17 +43,29 @@
       <h2>Capstone idea</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Capstone idea is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Capstone: AI learning assistant, connect Capstone idea to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>A capstone project is the culminating project of your AI learning journey — a substantial, end-to-end AI application that demonstrates your full range of skills. Unlike smaller exercises, a capstone project is complex enough to take 4-8 weeks, has real users or a real use case, and tells a complete story: problem → data → model → evaluation → deployment → iteration.</p><p>Criteria for a great capstone: (1) solves a real, non-trivial problem (not a textbook dataset problem). (2) uses multiple AI techniques (not just one model). (3) is deployed and publicly accessible. (4) has thorough evaluation and honest reporting of limitations. (5) is well-documented with a strong README and optional blog post.</p><p>Capstone idea categories: knowledge workers (AI document analyst, legal contract reviewer, research paper summarizer), productivity (personal email assistant, meeting summarizer, code reviewer), creative (AI story co-author, music generation, image editing), social impact (misinformation detector, accessibility tool, climate data analyzer), and professional (domain-specific: medical, financial, legal, scientific).</p><p>Scoping the capstone: resist the temptation to build everything at once. Define the MVP clearly: what is the simplest version that demonstrates the core AI capability? Ship the MVP in the first 2 weeks, get feedback, then iterate. A deployed MVP with clear next steps is better than an undeployed &#x27;complete&#x27; system.</p><p>Capstone for career: when you present your capstone to an employer, you should be able to answer: why did you choose this problem? What was the most interesting technical challenge? What would you do differently? What are the limitations of your approach? These are the questions that separate engineers who built something from those who understand what they built.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add Capstone idea to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Capstone idea is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Capstone planning template
+capstone_plan = {
+    &#x27;problem&#x27;: &#x27;Automatically extract action items and decisions from meeting transcripts, categorize by owner, and generate follow-up reminders&#x27;,
+    &#x27;why_interesting&#x27;: &#x27;Meetings consume 30% of professional time; 60% of action items are forgotten without explicit tracking&#x27;,
+    &#x27;core_ai_capabilities&#x27;: [&#x27;Speech-to-text (Whisper)&#x27;, &#x27;Speaker diarization (pyannote)&#x27;, &#x27;NER for entities&#x27;, &#x27;LLM for action item extraction&#x27;, &#x27;Classification (urgent/normal/FYI)&#x27;],
+    &#x27;data&#x27;: &#x27;50 meeting transcripts annotated with ground-truth action items&#x27;,
+    &#x27;mvp&#x27;: &#x27;Upload audio → transcription → action items as JSON (2 weeks)&#x27;,
+    &#x27;v2_features&#x27;: [&#x27;Speaker attribution&#x27;, &#x27;Calendar integration&#x27;, &#x27;Slack notifications&#x27;],
+    &#x27;evaluation&#x27;: &#x27;Precision/recall of extracted action items vs human annotations (20 test meetings)&#x27;,
+    &#x27;deployment&#x27;: &#x27;FastAPI backend + Streamlit frontend on Render&#x27;,
+    &#x27;success_metrics&#x27;: {&#x27;action_item_recall&#x27;: &#x27;&gt; 80%&#x27;, &#x27;action_item_precision&#x27;: &#x27;&gt; 75%&#x27;, &#x27;user_satisfaction&#x27;: &#x27;&gt; 4/5 in pilot&#x27;},
+}
+import json; print(json.dumps(capstone_plan, indent=2))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add Capstone idea to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>The capstone is where learning transforms into ability. All the individual skills you&#x27;ve developed — Python, ML, NLP, deployment, evaluation — come together in a single, substantial project. The capstone teaches project management (scoping, iteration, shipping) alongside technical skills. More practically: one excellent capstone project on your portfolio is worth more than twenty tutorial completions.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Choosing a capstone that requires unavailable or expensive data — a &#x27;medical diagnosis AI&#x27; that requires annotated medical scans you can&#x27;t access is stuck at the first step. Choose a problem where you can actually get data: web-scraped data, public APIs, open datasets, or data you can generate.</li><li>Overscoping the first version — planning a 10-feature system for the MVP means nothing ships in the first month. Define the MVP as the smallest possible version that demonstrates the core insight. Add features in iteration.</li><li>Not deploying publicly — a capstone that only runs locally on your laptop is invisible to employers. Always deploy to a public URL, even if it&#x27;s a free tier. A live demo link in your portfolio is 10x more impressive than a <code>GitHub</code> link.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Plan your capstone project: (1) choose a problem that: interests you personally, has accessible data, requires at least 3 different AI techniques, can be deployed publicly, (2) write the capstone plan using the template above, (3) define the MVP: what can you build and deploy in 2 weeks?, (4) identify the top 3 technical risks and their mitigations, (5) create a <code>GitHub</code> repository, add the plan as the initial README, set a 2-week deadline for the MVP, and commit to a public launch date.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -64,17 +77,43 @@
       <h2>Content database</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Content database is a concept inside Capstone: AI learning assistant that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A content database for an AI learning site stores all educational content in a structured, queryable format that enables dynamic rendering, search, progress tracking, and personalization. Instead of hardcoding content in HTML files, a content database allows: adding new content without code changes, querying content by topic or skill level, tracking which content a user has completed, and personalizing recommendations.</p><p>Schema design for learning content: Chapter (id, title, order, track, level, duration), Topic (id, <code>chapter_id</code>, title, slug, order), Content (<code>topic_id</code>, paragraphs, steps, <code>why_it_matters</code>, mistakes, practice), <code>UserProgress</code> (<code>user_id</code>, <code>topic_id</code>, completed, score, <code>last_viewed</code>).</p><p>JSON as a flat content database: for a static site, a well-structured JSON file serves as the content database. The <code>curriculum.json</code> file already contains chapter and topic metadata. Adding content entries as a dictionary (DEEP_EXPLANATIONS) creates a two-file content database that generates a static site.</p><p>Migrating to a real database: as the site grows and needs user-specific features (progress tracking, personalized recommendations), migrate to: SQLite (simple, embedded, no server), <code>PostgreSQL</code> (scalable, full SQL, cloud-hosted), or Supabase (<code>PostgreSQL</code> as a service with auth and real-time features).</p><p>Content API: expose content through a simple API. `GET /api/topics/{slug}` returns the full content for a topic. `GET /api/chapters` returns all chapters. `GET /api/search?q=transformer` returns topics matching the query. This enables both the static site and future mobile/dynamic apps to use the same content.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Capstone: AI learning assistant and needs to apply Content database. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Content database is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import json
+from pathlib import Path
+# Content database operations (JSON-based)
+class ContentDatabase:
+    def __init__(self, curriculum_path, explanations: dict):
+        with open(curriculum_path) as f:
+            self.chapters = json.load(f)
+        self.explanations = explanations
+        self._build_index()
+    def _build_index(self):
+        self.topic_index = {}
+        for ch in self.chapters:
+            for t in ch.get(&#x27;topics&#x27;, []):
+                name = t[&#x27;name&#x27;] if isinstance(t, dict) else t
+                self.topic_index[name] = {&#x27;chapter&#x27;: ch[&#x27;title&#x27;], &#x27;level&#x27;: ch.get(&#x27;level&#x27;, &#x27;beginner&#x27;), &#x27;content&#x27;: self.explanations.get(name)}
+    def get_topic(self, name: str) -&gt; dict: return self.topic_index.get(name)
+    def search(self, query: str) -&gt; list:
+        query_lower = query.lower()
+        return [name for name in self.topic_index if query_lower in name.lower()]
+    def get_by_level(self, level: str) -&gt; list:
+        return [name for name, data in self.topic_index.items() if data[&#x27;level&#x27;] == level]
+    def coverage_stats(self) -&gt; dict:
+        total = len(self.topic_index)
+        covered = sum(1 for d in self.topic_index.values() if d[&#x27;content&#x27;])
+        return {&#x27;total&#x27;: total, &#x27;covered&#x27;: covered, &#x27;fraction&#x27;: covered/total if total else 0}
+# db = ContentDatabase(&#x27;assets/curriculum.json&#x27;, DEEP_EXPLANATIONS)
+# print(db.coverage_stats())</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Content database, explain it in 5 to 8 lines, and connect it to Capstone: AI learning assistant.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A content database is what separates a static learning site from a dynamic, personalized learning platform. Once content is in a database (even a JSON file), you can: query it programmatically, add search functionality, build progress tracking, generate personalized learning paths, and create quiz questions automatically. The content database is the foundation for all higher-level learning features.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Storing content directly in HTML — when content is embedded in HTML templates, updating a single topic requires editing multiple files. A content database with a rendering layer means content changes in one place.</li><li>Not indexing for search — scanning all 486 topics on every search query is slow and unnecessary. Build an index: a dictionary mapping words to topic IDs. Update the index incrementally as content is added.</li><li>Not validating content completeness — without validation, topics may have missing paragraphs, empty practice tasks, or no code examples. Add a completeness check: ensure every topic has all required fields before rendering.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a content database API: (1) load <code>curriculum.json</code> and DEEP_EXPLANATIONS into the <code>ContentDatabase</code> class, (2) implement: <code>get_topic()</code>, <code>search()</code>, <code>get_by_level()</code>, <code>get_random_topic()</code>, (3) add coverage validation: find all topics without complete content, (4) export the content database to SQLite: create Tables for chapters, topics, and content, (5) build a simple search API: given a query string, return the top 5 matching topics with their explanations.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -86,17 +125,39 @@
       <h2>Progress tracker</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Progress tracker is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Capstone: AI learning assistant, connect Progress tracker to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>A progress tracker records which learning topics a user has completed, computes their mastery across different skill areas, and generates personalized recommendations for what to study next. For this AI learning site, a progress tracker transforms a static reading experience into an active, gamified learning journey.</p><p>Progress data model: <code>UserProgress</code> {<code>user_id</code>, <code>topic_id</code>, status: &#x27;<code>not_started</code>&#x27;|&#x27;<code>in_progress</code>&#x27;|&#x27;completed&#x27;, score: 0-100, <code>last_reviewed</code>: datetime, <code>practice_completed</code>: bool}. Progress can be stored in: localStorage (browser-based, no backend required for a static site), a backend database (for multi-device sync and analytics), or both.</p><p>Client-side progress with localStorage: for a static <code>GitHub</code> Pages site, localStorage is the simplest persistence mechanism. No server required. Store: `localStorage.setItem(&#x27;<code>progress_topic_transformer</code>&#x27;, JSON.stringify({status: &#x27;completed&#x27;, score: 80, date: <code>Date.now()</code>}))`.</p><p>Progress visualization: a circular progress chart (percentage of topics completed), a skill tree (which areas are strong vs weak), a streak tracker (days studied in a row), and a heatmap (<code>GitHub</code>-style contribution graph of study sessions). These visualizations motivate continued learning.</p><p>Adaptive learning from progress: use progress data to recommend: &#x27;you&#x27;ve completed 80% of Python topics but only 20% of statistics topics — focus on statistics next.&#x27; Or: &#x27;you struggled with transformer attention (score 40%) — here are related topics to review.&#x27;</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add Progress tracker to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Progress tracker is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>// Browser-side progress tracker (JavaScript)
+const ProgressTracker = {
+    STORAGE_KEY: &#x27;ai_learning_progress&#x27;,
+    load() { return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || &#x27;{}&#x27;); },
+    save(data) { localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data)); },
+    markCompleted(topicId, score = 100) {
+        const data = this.load();
+        data[topicId] = { status: &#x27;completed&#x27;, score, date: Date.now() };
+        this.save(data);
+    },
+    getProgress() {
+        const data = this.load();
+        const completed = Object.values(data).filter(v =&gt; v.status === &#x27;completed&#x27;).length;
+        return { completed, total: 486, percentage: (completed / 486 * 100).toFixed(1) };
+    },
+    getWeakTopics(threshold = 60) {
+        const data = this.load();
+        return Object.entries(data).filter(([, v]) =&gt; v.score &lt; threshold).map(([id]) =&gt; id);
+    }
+};
+# Python version for backend progress tracking
+def update_progress(user_id: str, topic_id: str, score: int, db_conn) -&gt; None:
+    db_conn.execute(&quot;INSERT INTO user_progress (user_id, topic_id, score, completed_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT (user_id, topic_id) DO UPDATE SET score=MAX(score, excluded.score)&quot;, (user_id, topic_id, score))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add Progress tracker to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Progress tracking transforms a static site into a personalized learning tool. When users can see that they&#x27;ve completed 150 of 486 topics (31%) and are on a 7-day learning streak, they are more motivated to continue. Progress data also enables the most valuable feature: recommendations — &#x27;based on your progress, you should study X next.&#x27; This is what differentiates a learning platform from a content repository.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not persisting progress across sessions — if progress is only in memory (<code>JavaScript</code> variables, not localStorage), closing the browser loses all progress. Always persist to localStorage for a static site or to a database for a dynamic one.</li><li>Not handling topic renames or deletions — if a topic is renamed, old progress records reference the old name. Use topic IDs (slugs) not names as the key in progress storage.</li><li>Not providing a progress reset option — users may want to restart from scratch. Always provide a &#x27;reset progress&#x27; option, with a confirmation dialog.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a progress tracker for this site: (1) add <code>JavaScript</code> to each topic page that marks the topic as read after 30 seconds of visibility, (2) implement localStorage progress storage: markRead(topicId), <code>getCompletedTopics()</code>, <code>getProgressByChapter()</code>, (3) add a progress bar to each chapter page showing X/Y topics completed, (4) add a global progress dashboard: overall %, completion by track (ML/NLP/LLMs/MLOps), recently studied topics, (5) implement weak topic detection: any topic viewed but not re-visited in 14 days is flagged for review.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -108,17 +169,39 @@
       <h2>RAG assistant</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>RAG assistant is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Capstone: AI learning assistant, test RAG assistant with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>A RAG assistant is a chatbot that answers questions grounded in a specific knowledge base rather than relying only on the LLM&#x27;s training data. For this learning site, a RAG assistant would answer questions like &#x27;what is RLHF?&#x27; or &#x27;compare BM25 and dense retrieval&#x27; by retrieving relevant sections from the site&#x27;s curriculum and generating a grounded answer.</p><p>Building the knowledge base: embed all topics (text + code steps + practice tasks) with a sentence transformer model. Store in a vector database (<code>ChromaDB</code> for local, Pinecone for production). Each chunk should be a coherent unit: one topic&#x27;s explanation, one code example, one practice task.</p><p>Query routing: some questions are simple lookups (&#x27;what does BLEU stand for?&#x27;) that can be answered with retrieval alone. Some are conceptual (&#x27;why does attention work better than RNNs?&#x27;) that require synthesis. Some are comparative (&#x27;difference between LIME and SHAP&#x27;) that require retrieving multiple topics. Route based on query type: simple → top-1 retrieval + short answer, conceptual → top-3 retrieval + synthesis, comparative → retrieve both topics + comparison generation.</p><p>Conversation memory: a multi-turn RAG assistant must maintain context. &#x27;Can you give an example?&#x27; refers to whatever the previous turn discussed. Implement: store the last N turns in a conversation buffer, prepend to each new query when retrieving: the full conversation history provides context for the retrieval query.</p><p>Evaluation: create a test set of 50 question-answer pairs from the site&#x27;s content. Measure: answer correctness (does the answer match the expected answer?), groundedness (is the answer supported by the retrieved content?), context recall (was the relevant topic retrieved?). RAGAS provides all these metrics.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Chat with PDF: split the PDF into chunks, embed them, retrieve the most relevant passages for a question, and answer only from those passages with citations.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how RAG assistant changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+import chromadb
+from sentence_transformers import SentenceTransformer
+client = anthropic.Anthropic()
+db = chromadb.PersistentClient(path=&#x27;./learn_ai_db&#x27;)
+collection = db.get_or_create_collection(&#x27;topics&#x27;)
+embedder = SentenceTransformer(&#x27;all-MiniLM-L6-v2&#x27;)
+# Add all topics to the vector DB
+def index_topics(deep_explanations: dict):
+    for name, content in deep_explanations.items():
+        text = &#x27; &#x27;.join(content.get(&#x27;paragraphs&#x27;, [])) + &#x27; &#x27; + content.get(&#x27;practice&#x27;, &#x27;&#x27;)
+        embedding = embeder.encode(text).tolist()
+        collection.upsert(ids=[name], documents=[text], embeddings=[embedding], metadatas=[{&#x27;topic&#x27;: name}])
+# RAG query
+def ask_rag(question: str, conversation_history: list = None) -&gt; str:
+    # Retrieve relevant topics
+    query_emb = embeder.encode(question).tolist()
+    results = collection.query(query_embeddings=[query_emb], n_results=3)
+    context = &#x27;\n\n&#x27;.join([f&#x27;[{results[&quot;metadatas&quot;][0][i][&quot;topic&quot;]}]\n{results[&quot;documents&quot;][0][i]}&#x27; for i in range(len(results[&#x27;documents&#x27;][0]))])
+    # Generate grounded answer
+    messages = (conversation_history or []) + [{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: f&#x27;Context from the AI learning curriculum:\n{context}\n\nQuestion: {question}\n\nAnswer based only on the provided context.&#x27;}]
+    response = client.messages.create(model=&#x27;claude-opus-4-8&#x27;, max_tokens=800, messages=messages)
+    return response.content[0].text</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around RAG assistant. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A RAG assistant for a learning site is the most practical demonstration of RAG you can build — it&#x27;s immediately useful (students can ask questions) and easily evaluatable (the correct answers are known from the curriculum). Building it teaches the full RAG stack: embedding, indexing, retrieval, grounded generation, and evaluation. It&#x27;s also a portfolio piece that shows you can build an end-to-end AI application.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not handling follow-up questions — a RAG assistant that treats each question independently loses conversational context. &#x27;What is attention?&#x27; followed by &#x27;How is it used in BERT?&#x27; requires knowing that &#x27;it&#x27; refers to attention. Always maintain conversation history.</li><li>Retrieving too many chunks — retrieving the top-10 chunks fills the context window with marginally relevant content, diluting the relevant information. Start with top-3 and increase only if retrieval recall is too low.</li><li>Not adding citations to the answer — a grounded answer without citations (&#x27;as explained in the Attention topic...&#x27;) is indistinguishable from an ungrounded answer. Always cite which topics were used in the answer.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a RAG assistant for this site: (1) embed all DEEP_EXPLANATIONS topics and store in <code>ChromaDB</code>, (2) implement a chat interface (Streamlit or HTML) with conversation history, (3) for each answer, display: the answer, the 3 retrieved topics that informed it, the confidence score, (4) evaluate on 20 questions: how often is the correct topic retrieved in top-3? How often is the answer correct?, (5) implement query rewriting: if a question is short or ambiguous, expand it before retrieval (&#x27;RLHF&#x27; → &#x27;What is RLHF (reinforcement learning from human feedback) and how does it work?&#x27;).&#x27;,</div>
     </div>
   </div>
 </section>
@@ -130,17 +213,52 @@
       <h2>Quiz generation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Quiz generation is a concept inside Capstone: AI learning assistant that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Quiz generation creates assessment questions from learning content to test understanding and identify knowledge gaps. For this AI curriculum, quiz questions test conceptual understanding (&#x27;what is the key advantage of attention over RNNs?&#x27;), implementation knowledge (&#x27;which <code>sklearn</code> class implements k-fold cross-validation?&#x27;), and mistake identification (&#x27;what is wrong with this code?&#x27;).</p><p>LLM-based quiz generation: given a topic&#x27;s content, prompt an LLM to generate multiple-choice questions with one correct answer and three plausible distractors. Include the correct answer and an explanation. Template: &#x27;Generate 3 multiple-choice questions about [topic]. For each question: one correct answer, three plausible but wrong distractors, and a one-sentence explanation. Return as JSON.&#x27;</p><p>Question quality validation: auto-generated questions can be: too easy (the answer is in the question), too ambiguous (two answers are defensible), or have non-plausible distractors (&#x27;which of: A=BERT, B=a toaster, C=a database, D=<code>JavaScript</code> is an NLP model?&#x27;). Always validate: at least one human should review generated questions before they&#x27;re used.</p><p>Adaptive quiz selection: select questions based on the learner&#x27;s progress. For topics marked &#x27;completed with score 80%&#x27;, present harder questions. For topics marked &#x27;in progress&#x27;, present foundational questions. Spaced repetition: surface questions for topics not reviewed in 14+ days.</p><p>Quiz data model: Question {id, <code>topic_id</code>, <code>question_text</code>, options: [A, B, C, D], <code>correct_option</code>, explanation, difficulty: easy|medium|hard}, <code>UserAnswer</code> {<code>user_id</code>, <code>question_id</code>, <code>selected_option</code>, <code>is_correct</code>, timestamp}. Store in localStorage for a static site or a database for a full platform.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Capstone: AI learning assistant and needs to apply Quiz generation. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Quiz generation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+import json
+client = anthropic.Anthropic()
+def generate_quiz(topic_name: str, content: str, n_questions: int = 3) -&gt; list:
+    prompt = f&quot;&quot;&quot;Generate {n_questions} multiple-choice questions about &#x27;{topic_name}&#x27;.
+Base the questions on this content:
+{content[:1500]}
+
+For each question provide:
+- question: the question text
+- options: list of 4 options [A, B, C, D]
+- correct: the correct option letter
+- explanation: one sentence explaining why it&#x27;s correct
+- difficulty: &#x27;easy&#x27;, &#x27;medium&#x27;, or &#x27;hard&#x27;
+
+Return as a JSON array.&quot;&quot;&quot;
+    response = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;, max_tokens=2000,
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: prompt}]
+    )
+    text = response.content[0].text
+    import re
+    json_match = re.search(r&#x27;\[.*?\]&#x27;, text, re.DOTALL)
+    if json_match:
+        questions = json.loads(json_match.group())
+        return questions
+    return []
+# Generate quiz for a topic
+questions = generate_quiz(
+    &#x27;Attention Mechanism&#x27;,
+    &#x27;The attention mechanism computes a weighted sum of values based on query-key similarity...&#x27;
+)
+for q in questions:
+    print(f&#x27;Q: {q[&quot;question&quot;]}&#x27;)
+    for opt in q[&#x27;options&#x27;]: print(f&#x27;  {opt}&#x27;)
+    print(f&#x27;  Answer: {q[&quot;correct&quot;]} — {q[&quot;explanation&quot;]}\n&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Quiz generation, explain it in 5 to 8 lines, and connect it to Capstone: AI learning assistant.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Quiz generation closes the learning loop: reading is passive, quizzing is active. Answering quiz questions identifies gaps that reading doesn&#x27;t reveal — you think you understand attention until you try to answer &#x27;why is QK^T scaled by sqrt(<code>d_k</code>)?&#x27;. Auto-generated quizzes at scale (486 topics × 3 questions = 1,458 questions) would be impossible to write manually but are tractable with LLM generation and human validation.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not reviewing auto-generated questions — LLMs sometimes generate questions with ambiguous correct answers, factual errors, or trivially easy questions where the answer is a word from the question text. Always review generated questions before including them in assessments.</li><li>Making all distractors obviously wrong — good multiple-choice distractors represent common misconceptions. &#x27;Which optimization algorithm is most commonly used for training neural networks? A) <code>AdaGrad</code> B) Adam C) a toaster D) K-means&#x27; — option C is not a distractor, it&#x27;s noise. Distractors should be plausible.</li><li>Not explaining wrong answers — when a learner selects the wrong answer, they need to know WHY it&#x27;s wrong, not just which was correct. Always include explanations that address why the incorrect options are wrong, not just why the correct one is right.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Generate and deploy a quiz system: (1) generate 3 questions each for 20 different topics from the curriculum, (2) store in a JSON database with all fields, (3) implement a quiz UI (HTML/<code>JavaScript</code>): show question, accept answer, reveal result + explanation, (4) track per-topic quiz performance in localStorage: what is the average score for each topic?, (5) implement adaptive selection: topics with score &lt; 70% are prioritized for re-quizzing, (6) evaluate question quality: review 30 generated questions and tag issues (ambiguous, too easy, factual error) — what fraction need manual correction?&#x27;,</div>
     </div>
   </div>
 </section>
@@ -152,17 +270,37 @@
       <h2>Weak topic recommendation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Weak topic recommendation is a concept inside Capstone: AI learning assistant that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Weak topic recommendation analyzes a learner&#x27;s quiz scores and time-on-topic data to identify areas of weakness and recommend targeted study. This closes the feedback loop: learn → quiz → identify gaps → targeted review → re-quiz. Without this loop, learners often study what they already know (comfortable) rather than what they need to know (uncomfortable but necessary).</p><p>Data for weak topic detection: quiz scores (direct measurement of understanding), time spent on topic (very short time might mean skipping, very long time might mean struggling), revisit frequency (topics revisited often are likely weak), self-assessment ratings (learner-reported confidence), and error patterns (which wrong answers were chosen — systematic errors reveal specific misconceptions).</p><p>Recommendation algorithm: weakness score = (1 - <code>quiz_score</code>) × <code>recency_weight</code> × <code>importance_weight</code>. Recency weight: topics not studied recently get higher weight (spaced repetition). Importance weight: foundational topics (linear algebra, Python basics) are more important to master than advanced topics. Sort topics by weakness score, recommend the top 3.</p><p>Spaced repetition: the optimal review schedule is based on the forgetting curve — topics are reviewed at increasing intervals. After reviewing a topic: if score &gt; 80%, schedule review in 7 days. If score 60-80%, schedule in 3 days. If score &lt; 60%, schedule in 1 day. This is the Leitner system, used by Anki.</p><p>Explanation for recommendations: always tell the learner WHY a topic is recommended. &#x27;You scored 45% on Attention Mechanism (3 days ago) — this is a foundational concept for all transformer-based models. Reviewing it now will unblock 12 related advanced topics.&#x27; This transparency motivates the recommendation.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Capstone: AI learning assistant and needs to apply Weak topic recommendation. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Weak topic recommendation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import json
+from datetime import datetime, timedelta
+# Weak topic recommendation system
+def compute_weakness_score(topic_id: str, progress_data: dict) -&gt; float:
+    if topic_id not in progress_data: return 1.0  # unvisited = maximum weakness
+    p = progress_data[topic_id]
+    score = p.get(&#x27;score&#x27;, 0) / 100.0  # normalize to 0-1
+    days_since = (datetime.now() - datetime.fromisoformat(p.get(&#x27;date&#x27;, datetime.now().isoformat()))).days
+    recency_weight = min(days_since / 14, 1.0)  # 0 if just studied, 1 if &gt; 14 days ago
+    weakness = (1 - score) * (0.5 + 0.5 * recency_weight)  # combine score and recency
+    return weakness
+def recommend_weak_topics(progress_data: dict, all_topics: list, n: int = 5) -&gt; list:
+    scores = [(topic, compute_weakness_score(topic, progress_data)) for topic in all_topics]
+    scores.sort(key=lambda x: -x[1])  # highest weakness first
+    return [{&#x27;topic&#x27;: t, &#x27;weakness_score&#x27;: f&#x27;{s:.2f}&#x27;, &#x27;reason&#x27;: f&#x27;Score: {100*(1-s):.0f}%, review needed&#x27;} for t, s in scores[:n]]
+# Example
+all_topics = [&#x27;Attention&#x27;, &#x27;BERT&#x27;, &#x27;PyTorch&#x27;, &#x27;Cross-entropy loss&#x27;, &#x27;Backpropagation&#x27;]
+progress = {&#x27;Attention&#x27;: {&#x27;score&#x27;: 45, &#x27;date&#x27;: &#x27;2024-01-10&#x27;}, &#x27;BERT&#x27;: {&#x27;score&#x27;: 80, &#x27;date&#x27;: &#x27;2024-01-20&#x27;}}
+recommendations = recommend_weak_topics(progress, all_topics, n=3)
+for rec in recommendations:
+    print(f&#x27;{rec[&quot;topic&quot;]}: weakness={rec[&quot;weakness_score&quot;]} — {rec[&quot;reason&quot;]}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Weak topic recommendation, explain it in 5 to 8 lines, and connect it to Capstone: AI learning assistant.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Weak topic recommendation is the most personalized and valuable feature of an AI learning platform. Without it, learners must self-assess their weaknesses — which they are notoriously poor at. The Dunning-Kruger effect means learners often feel most confident in areas they know least about. Data-driven weak topic detection bypasses self-assessment bias and directs study effort to where it matters most.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Only considering quiz score, not recency — a topic with a 90% score from 6 months ago is weaker today than a topic with 75% from last week. Always incorporate time-since-review in the weakness score.</li><li>Recommending too many topics at once — recommending 20 weak topics overwhelms the learner. Show 3-5 prioritized recommendations with specific action steps: &#x27;Spend 20 minutes reviewing these 3 topics today.&#x27;</li><li>Not explaining the recommendation — &#x27;recommended: Backpropagation&#x27; with no context is ignored. &#x27;You scored 40% on Backpropagation last week; this concept is required for understanding all gradient-based training algorithms — review it before moving to advanced optimization.&#x27; explains both the problem and its importance.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement and evaluate weak topic recommendations: (1) simulate 6 weeks of a learner&#x27;s study sessions: random quiz scores, varying time gaps between sessions, (2) implement the weakness scoring formula, (3) rank all 486 topics by weakness score, (4) display the top 10 recommendations with explanation, (5) simulate the spaced repetition schedule: what topics should be reviewed today, in 3 days, in 7 days?, (6) compare recommendation quality: ask a human to review the top-10 recommended topics for a given progress snapshot — do they agree with the algorithm?&#x27;,</div>
     </div>
   </div>
 </section>
@@ -174,17 +312,39 @@
       <h2>Evaluation set</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Evaluation set is a concept inside Capstone: AI learning assistant that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>An evaluation set for an AI learning site is a curated collection of test questions that measure whether learners have achieved the learning objectives. Unlike quiz questions (which test individual topics), the evaluation set measures overall skill acquisition: can the learner apply the concepts they&#x27;ve studied to new, unseen problems?</p><p>Evaluation set design principles: diverse coverage (questions from all major areas: ML theory, implementation, LLM applications, MLOps), varying difficulty (20% easy, 60% medium, 20% hard), practical focus (more &#x27;debug this code&#x27; and &#x27;when would you use X vs Y&#x27; than definitions), and no overlap with quiz questions (to measure transfer, not memorization).</p><p>Types of evaluation questions: multiple-choice (fastest to answer and grade), coding challenges (write a function that...), debugging tasks (find the bug in this code), design questions (how would you architect a system that...), and short-answer (explain in 2 sentences why...). For an AI learning site, coding challenges are the most valuable signal of actual skill.</p><p>Automated evaluation for code: run submitted code against test cases. Measure: correctness (does it pass all tests?), efficiency (time complexity), edge case handling. For Python: use pytest-based evaluation with hidden test cases. For LLM application questions: use an LLM judge to score the response on correctness, completeness, and code quality.</p><p>Benchmark tracking: the evaluation set enables measuring learning progress. At course start (baseline), at midpoint, and at course end, administer the same 20-question evaluation set. Plot score over time. This quantifies the learning gains from the curriculum — invaluable for iterating on the content.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Capstone: AI learning assistant and needs to apply Evaluation set. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Evaluation set is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Evaluation set structure
+evaluation_set = [
+    {
+        &#x27;id&#x27;: &#x27;eval_001&#x27;,
+        &#x27;type&#x27;: &#x27;multiple_choice&#x27;,
+        &#x27;topic_area&#x27;: &#x27;ML Theory&#x27;,
+        &#x27;difficulty&#x27;: &#x27;medium&#x27;,
+        &#x27;question&#x27;: &#x27;A model achieves 98% accuracy on a binary classification task. The test set has 2% positive examples. What is the most likely issue?&#x27;,
+        &#x27;options&#x27;: [&#x27;A) Overfitting&#x27;, &#x27;B) Class imbalance — the model may be predicting all negatives&#x27;, &#x27;C) Data leakage&#x27;, &#x27;D) Too many features&#x27;],
+        &#x27;correct&#x27;: &#x27;B&#x27;,
+        &#x27;explanation&#x27;: &#x27;With 2% positive class, a model predicting all negatives achieves 98% accuracy but has 0% recall on the positive class. Always check class distribution for high accuracy on imbalanced data.&#x27;
+    },
+    {
+        &#x27;id&#x27;: &#x27;eval_002&#x27;,
+        &#x27;type&#x27;: &#x27;coding_challenge&#x27;,
+        &#x27;topic_area&#x27;: &#x27;ML Implementation&#x27;,
+        &#x27;difficulty&#x27;: &#x27;hard&#x27;,
+        &#x27;question&#x27;: &#x27;Implement a function that performs 5-fold stratified cross-validation for a binary classifier, returning the mean and std of the AUC-ROC scores. Use sklearn only.&#x27;,
+        &#x27;test_code&#x27;: &#x27;from sklearn.datasets import make_classification; X,y = make_classification(n_samples=1000, weights=[0.9]); result = cross_validate_model(LogisticRegression(), X, y); assert result[&quot;mean_auc&quot;] &gt; 0.5&#x27;,
+        &#x27;solution_notes&#x27;: &#x27;Must use StratifiedKFold, roc_auc_score, and correct train/test split within each fold&#x27;
+    }
+]
+print(f&#x27;Evaluation set: {len(evaluation_set)} questions&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Evaluation set, explain it in 5 to 8 lines, and connect it to Capstone: AI learning assistant.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>An evaluation set is the measuring instrument for learning outcomes. Without it, you don&#x27;t know if the curriculum is effective — you only know if students read the content. With an evaluation set administered at multiple time points, you can measure: how much did learners improve? Which topics produce the biggest skill gains? Which topics are still weak after studying them? This data drives curriculum improvement.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Reusing quiz questions in the evaluation set — if evaluation questions overlap with quiz questions, learners will memorize the quiz answers and perform artificially well on the evaluation. The evaluation set must test transfer to novel problems.</li><li>Only testing recall, not application — &#x27;what does NDCG stand for?&#x27; tests recall. &#x27;Given this retrieval system&#x27;s ranked results, compute NDCG@5&#x27; tests application. Application questions require deeper understanding and provide more meaningful skill signals.</li><li>Not calibrating difficulty with pilot testing — question difficulty is hard to estimate without data. Run the evaluation set with 10 learners at different levels, measure per-question accuracy. Rewrite questions that are &gt; 90% correct (too easy) or &lt; 20% correct (too hard).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an evaluation set for this curriculum: (1) create 20 questions covering: 5 ML Theory, 5 Implementation, 5 LLM Applications, 5 MLOps/Production, (2) include at least 5 coding challenges, (3) for each question: specify the topic area, difficulty, and what skill it measures, (4) run the evaluation with 3 people at different experience levels — do the difficulty labels match the actual results?, (5) implement automated scoring for the multiple-choice and coding questions; use LLM judge for open-ended responses.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -196,17 +356,50 @@
       <h2>Deployment</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Deployment matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In Capstone: AI learning assistant, learn Deployment by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Deployment is the process of making an ML model accessible to users in production. A model that lives in a Jupyter notebook is a prototype; a model that is served via an API or web application with monitoring, logging, and error handling is a deployed product. Deployment bridges ML development and software engineering.</p><p>Deployment options: cloud ML platforms (AWS <code>SageMaker</code>, Google Vertex AI, Azure ML) — managed deployment with auto-scaling. Container deployment (Docker + Kubernetes) — portable, reproducible, full control. Serverless (AWS Lambda, Google Cloud Functions) — zero maintenance, scales to zero, cold start latency. Model serving frameworks (<code>FastAPI</code>, Ray Serve, <code>BentoML</code>) — Python-native deployment with API exposure.</p><p>Model serving with <code>FastAPI</code>: the simplest production deployment pattern for ML. `app = <code>FastAPI()</code>`, `@<code>app.post</code>(&#x27;/predict&#x27;)` endpoint that loads the model, processes input, and returns predictions. Add: input validation (Pydantic models), error handling, logging, and health checks. Deploy the <code>FastAPI</code> app in a Docker container.</p><p>Containerization: `docker build -t my-ml-api .` packages the model, code, and dependencies into a portable image. `docker run -p 8000:8000 my-ml-api` runs it anywhere that has Docker. A Dockerfile specifies: base image (Python 3.11), dependency installation (pip install -r <code>requirements.txt</code>), code copy, and entrypoint command.</p><p>Continuous deployment: automate deployment on code changes. <code>GitHub</code> Actions pipeline: (1) run tests, (2) build Docker image, (3) push to container registry, (4) deploy to cloud. This pipeline ensures that every merge to main automatically deploys the latest validated code. Blue-green deployment (run old and new versions simultaneously, gradually shift traffic) enables zero-downtime updates.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Deployment affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># FastAPI model serving
+from fastapi import FastAPI
+from pydantic import BaseModel
+import joblib
+import numpy as np
+# Load model at startup (not per-request)
+model = joblib.load(&#x27;model.joblib&#x27;)
+app = FastAPI(title=&#x27;ML Model API&#x27;, version=&#x27;1.0&#x27;)
+class PredictRequest(BaseModel):
+    features: list[float]
+    class Config: json_schema_extra = {&#x27;example&#x27;: {&#x27;features&#x27;: [1.0, 2.0, 3.0, 4.0, 5.0]}}
+class PredictResponse(BaseModel):
+    prediction: int; probability: float; model_version: str = &#x27;1.0&#x27;
+@app.post(&#x27;/predict&#x27;, response_model=PredictResponse)
+async def predict(request: PredictRequest):
+    features = np.array(request.features).reshape(1, -1)
+    prediction = int(model.predict(features)[0])
+    probability = float(model.predict_proba(features)[0, prediction])
+    return PredictResponse(prediction=prediction, probability=probability)
+@app.get(&#x27;/health&#x27;)
+async def health(): return {&#x27;status&#x27;: &#x27;healthy&#x27;, &#x27;model_loaded&#x27;: model is not None}</code></pre><pre><code># Dockerfile for ML API
+dockerfile_content = &#x27;&#x27;&#x27;
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD [&quot;uvicorn&quot;, &quot;main:app&quot;, &quot;--host&quot;, &quot;0.0.0.0&quot;, &quot;--port&quot;, &quot;8000&quot;]
+&#x27;&#x27;&#x27;
+# Build and run:
+# docker build -t my-ml-api .
+# docker run -p 8000:8000 my-ml-api
+# Test: curl -X POST http://localhost:8000/predict -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;features&quot;: [1.0, 2.0, 3.0]}&#x27;</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Deployment: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Deployment is where ML creates actual value. A model with 95% accuracy in a notebook that no one can use is worthless. A model with 90% accuracy deployed as an API that processes 100K requests per day is valuable. Learning to deploy models (<code>FastAPI</code>, Docker, cloud platforms) transforms you from an ML researcher who builds prototypes into an ML engineer who ships products.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Loading the model per-request instead of at startup — loading a 500MB model for every API call takes 3-10 seconds per request. Load the model once at application startup and keep it in memory. In <code>FastAPI</code>: load in the global scope or use lifespan events.</li><li>Not adding health checks — Kubernetes and load balancers use health checks to know when to send traffic. Without /health, your service may receive traffic before the model is loaded, or continue receiving traffic after it crashes. Always implement /health and /ready endpoints.</li><li>Not versioning the model with the API — your API should always report which model version it&#x27;s using. This makes debugging production issues possible: &#x27;the quality degraded at 3pm — was that when we deployed model v2.3?&#x27;</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Deploy a model from notebook to production: (1) train a scikit-learn classifier and save with joblib, (2) build a <code>FastAPI</code> service: /predict endpoint with Pydantic request/response models, /health endpoint, structured logging, (3) write a Dockerfile and build the image, (4) run locally and test with curl or Python requests, (5) deploy to a cloud platform (Render, Fly.io, or <code>HuggingFace</code> Spaces for free tier), (6) write a smoke test: a script that calls your deployed API with 5 test inputs and verifies the responses are correct.</div>
     </div>
   </div>
 </section>
@@ -218,17 +411,40 @@
       <h2>GitHub Pages</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>GitHub Pages is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Capstone: AI learning assistant, connect GitHub Pages to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p><code>GitHub</code> Pages is a free static site hosting service that deploys HTML, CSS, and <code>JavaScript</code> directly from a <code>GitHub</code> repository. It&#x27;s ideal for: ML project documentation sites, AI learning resources (like this site), portfolio pages, and any project that can be built as a static site generator output. No server, no cost, auto-deploys on commit.</p><p>Setup workflow: enable <code>GitHub</code> Pages in repository Settings → Pages → Source: <code>GitHub</code> Actions (recommended) or branch. For simple sites: push HTML files to the gh-pages branch. For generated sites: use a <code>GitHub</code> Actions workflow that runs your generator and deploys the output. For this site: `python scripts/<code>generate_site.py</code>` generates HTML files, which are then committed and pushed.</p><p>Custom domain: add a CNAME file with your domain name and configure your DNS. <code>GitHub</code> Pages supports HTTPS automatically via Let&#x27;s Encrypt. <code>GitHub</code> Actions deployment: a workflow file in `.github/workflows/<code>deploy.yml</code>` that triggers on push to main, runs the site generator, and deploys the generated files.</p><p>Jekyll integration: <code>GitHub</code> Pages natively supports Jekyll (Ruby static site generator). Create _config.yml, _posts/ for blog posts, and use Liquid templating for dynamic content. Jekyll themes are available at <code>themes.jekyllrc.org</code>. For non-Jekyll sites (like this one using Python), use <code>GitHub</code> Actions for custom build steps.</p><p>Limitations: <code>GitHub</code> Pages hosts static content only — no server-side processing, no databases, no user authentication. For dynamic ML features (live model inference), either embed a static frontend that calls an external API (<code>HuggingFace</code> Spaces, Render, Modal) or use client-side <code>JavaScript</code> models (ONNX.js, <code>TensorFlow</code>.js in the browser).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add GitHub Pages to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where GitHub Pages is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># GitHub Actions workflow for deploying a static site
+# .github/workflows/deploy.yml
+deploy_workflow = &quot;&quot;&quot;
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: &#x27;3.11&#x27;}
+      - run: pip install -r requirements.txt
+      - run: python scripts/generate_site.py  # Generate HTML
+      - uses: JamesIves/github-pages-deploy-action@v4
+        with: {folder: .}  # Deploy the current directory
+&quot;&quot;&quot;
+print(deploy_workflow)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add GitHub Pages to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br><code>GitHub</code> Pages is the simplest way to make your ML projects publicly accessible without infrastructure costs. A well-deployed portfolio site with live demos dramatically increases the impact of your projects — employers and collaborators can immediately see your work without cloning a repo and running local setup. Every ML practitioner should have a public URL they can share that demonstrates their work.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Committing large model files to the repo — <code>GitHub</code> has a 100MB file size limit and a 1GB repo size limit. Never commit model weights to a <code>GitHub</code> repo. Use <code>HuggingFace</code> Hub or a cloud storage URL for model weights referenced by a deployed demo.</li><li>Not setting the correct base URL for assets — when <code>GitHub</code> Pages serves from a subdirectory (https://<code>user.github.io</code>/repo/), relative URLs like `./<code>styles.css</code>` may break. Set the base URL correctly in your site generator or use absolute paths.</li><li>Building the site locally and committing HTML — generating HTML locally and committing it means your deployed site may be out of sync with the source code. Always use a <code>GitHub</code> Actions workflow to build and deploy automatically on push.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Deploy this AI learning site or your portfolio: (1) fork the learn-ai repository, (2) run python scripts/<code>generate_site.py</code> to verify it generates correctly, (3) create a <code>GitHub</code> Actions workflow that generates the site and deploys to <code>GitHub</code> Pages on every push to main, (4) verify deployment: the site is accessible at https://<code>yourusername.github.io</code>/learn-ai/, (5) add a custom domain if you have one: create a CNAME file and configure your DNS provider.</div>
     </div>
   </div>
 </section>
@@ -240,17 +456,42 @@
       <h2>Future backend</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Future backend is a concept inside Capstone: AI learning assistant that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A future backend for this AI learning site would add server-side features currently impossible with a static site: user accounts, cross-device progress sync, AI-powered tutoring, personalized recommendations, and community features. Planning the future backend architecture now ensures the static site is built in a way that makes migration smooth.</p><p>When to add a backend: the current static site is sufficient for: individual learners who use one device, anonymous learning without sync, and static content. A backend becomes necessary for: user accounts and authentication, progress that syncs across devices, personalized AI tutoring, community features (comments, study groups), and analytics.</p><p>Technology choices: <code>FastAPI</code> (Python backend, same language as the ML code, easy to integrate with ML models), Supabase (<code>PostgreSQL</code> + auth + real-time subscriptions — fastest path to a functional backend), Firebase (Google&#x27;s <code>BaaS</code> — easier for <code>JavaScript</code> frontend developers). For an ML-heavy site, <code>FastAPI</code> + Supabase is the recommended stack.</p><p>Migration path: the static site already has the content database structure (JSON files). Migrating to a database backend means: import <code>curriculum.json</code> into a <code>PostgreSQL</code> table, import DEEP_EXPLANATIONS into a content table, create a users table, build API endpoints that mirror the current static page structure. Frontend <code>JavaScript</code> calls the API instead of reading from embedded JSON.</p><p>API design for the future backend: /api/auth (login, register, logout), /api/progress (GET/POST user progress), /api/topics/{slug} (topic content), /api/recommend (personalized recommendations), /api/quiz/{topic} (generate or retrieve quiz), /api/chat (RAG assistant). These six endpoints cover the core features of a personalized learning platform.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Capstone: AI learning assistant and needs to apply Future backend. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Future backend is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># FastAPI backend skeleton for the learning site
+from fastapi import FastAPI, Depends, HTTPException
+from pydantic import BaseModel
+from typing import Optional
+app = FastAPI(title=&#x27;Learn AI Backend&#x27;, version=&#x27;1.0&#x27;)
+# User progress endpoints
+class ProgressUpdate(BaseModel):
+    topic_slug: str; score: int; practice_completed: bool = False
+@app.get(&#x27;/api/progress/{user_id}&#x27;)
+async def get_progress(user_id: str):
+    # TODO: query from database
+    return {&#x27;user_id&#x27;: user_id, &#x27;completed_topics&#x27;: [], &#x27;total_topics&#x27;: 486}
+@app.post(&#x27;/api/progress/{user_id}&#x27;)
+async def update_progress(user_id: str, update: ProgressUpdate):
+    # TODO: save to database
+    return {&#x27;success&#x27;: True, &#x27;topic&#x27;: update.topic_slug, &#x27;score&#x27;: update.score}
+# Content endpoint
+@app.get(&#x27;/api/topics/{slug}&#x27;)
+async def get_topic(slug: str):
+    # TODO: fetch from database
+    return {&#x27;slug&#x27;: slug, &#x27;title&#x27;: slug.replace(&#x27;-&#x27;, &#x27; &#x27;).title(), &#x27;content&#x27;: {}}
+# RAG assistant endpoint
+@app.post(&#x27;/api/chat&#x27;)
+async def chat(message: str, conversation_id: Optional[str] = None):
+    # TODO: implement RAG
+    return {&#x27;response&#x27;: f&#x27;You asked: {message}&#x27;, &#x27;sources&#x27;: []}</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Future backend, explain it in 5 to 8 lines, and connect it to Capstone: AI learning assistant.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Planning the future backend before building the static site ensures architectural compatibility. If the static site&#x27;s content structure doesn&#x27;t match what a future database would need, migration becomes a complete rewrite. By designing with the future backend in mind (consistent slugs, well-structured content), the path from static site to full platform is incremental, not disruptive.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Building the backend before there are users — a backend with auth, database, and real-time features is expensive to maintain and complicated to build before you know what users actually want. Start static, add backend only when specific user needs require it.</li><li>Choosing an overly complex stack — Kubernetes + microservices for a learning site with 100 users is engineering overkill. A single <code>FastAPI</code> server + Supabase handles 10,000 concurrent users and can be deployed in a weekend.</li><li>Not designing the API before building the frontend — the frontend and backend should share a contract (the API spec). Design the API endpoints first (<code>OpenAPI</code> spec), then build both sides in parallel. Changing the API contract after the frontend is built is expensive.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Plan the future backend migration: (1) sketch the database schema: Tables for users, topics, progress, <code>quiz_answers</code>, and recommendations, (2) design 6 API endpoints with request/response schemas, (3) implement a minimal <code>FastAPI</code> backend with 2 of the endpoints (progress GET/POST), (4) modify the site <code>JavaScript</code> to call the backend instead of using localStorage — verify that progress persists across browser sessions, (5) estimate: how many API calls per user per session? What database size would you expect after 1,000 users × 6 months?&#x27;,</div>
     </div>
   </div>
 </section>
@@ -262,17 +503,48 @@
       <h2>Product roadmap</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Product roadmap is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Capstone: AI learning assistant, connect Product roadmap to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>A product roadmap for an AI application is a forward-looking plan that describes what features will be built, in what order, and why. It translates user needs and technical constraints into a prioritized sequence of milestones. For AI projects, the roadmap must account for both product features (what users see) and ML capabilities (model performance, reliability, safety).</p><p>MVP (Minimum Viable Product): the smallest version of the product that delivers the core value to users. For an AI-powered document analysis tool, the MVP might be: upload a PDF → get a structured summary. Not: multi-document comparison, citation extraction, export to Word, Slack integration. Ship the MVP, learn from real usage, then add features.</p><p>Prioritization frameworks: RICE (Reach × Impact × Confidence / Effort) scores features. <code>MoSCoW</code> (Must have, Should have, Could have, Won&#x27;t have) categorizes requirements. For AI products: prioritize features that are high-impact and technically feasible vs features that require breakthroughs or large datasets you don&#x27;t have.</p><p>ML roadmap milestones: (1) baseline model shipped (any accuracy that demonstrates the concept works), (2) accuracy target met (the minimum accuracy for user trust), (3) latency target met (response time acceptable for the UX), (4) reliability milestone (uptime SLO met for one month), (5) cost target met (sustainable unit economics at scale). Each milestone is a step function in product viability.</p><p>Iterating based on user feedback: AI products require tight feedback loops. After each release, measure: user engagement, satisfaction scores, error rates, and qualitative feedback. The most common pattern: initial version handles 70% of use cases well, 30% produce bad outputs — version 2 targets the most common failure modes from user reports.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add Product roadmap to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from Capstone: AI learning assistant where Product roadmap is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># AI Product Roadmap template
+roadmap = {
+    &#x27;Q1&#x27;: {
+        &#x27;theme&#x27;: &#x27;MVP — core value delivery&#x27;,
+        &#x27;features&#x27;: [
+            &#x27;Basic document upload and parsing&#x27;,
+            &#x27;Extractive summarization (BERT-based)&#x27;,
+            &#x27;Simple web UI&#x27;,
+        ],
+        &#x27;ml_milestones&#x27;: [&#x27;Baseline accuracy: &gt; 70% user satisfaction&#x27;, &#x27;Latency: &lt; 5s P90&#x27;],
+        &#x27;metrics&#x27;: [&#x27;Weekly active users&#x27;, &#x27;Documents processed&#x27;, &#x27;User satisfaction score&#x27;]
+    },
+    &#x27;Q2&#x27;: {
+        &#x27;theme&#x27;: &#x27;Quality — make it work reliably&#x27;,
+        &#x27;features&#x27;: [
+            &#x27;RAG-based Q&amp;A on documents&#x27;,
+            &#x27;Citation highlighting&#x27;,
+            &#x27;Multi-document comparison&#x27;,
+        ],
+        &#x27;ml_milestones&#x27;: [&#x27;Accuracy: &gt; 85% user satisfaction&#x27;, &#x27;Latency: &lt; 2s P90&#x27;],
+        &#x27;metrics&#x27;: [&#x27;Return user rate&#x27;, &#x27;Documents per session&#x27;, &#x27;Q&amp;A accuracy&#x27;]
+    },
+    &#x27;Q3&#x27;: {
+        &#x27;theme&#x27;: &#x27;Scale — handle more users&#x27;,
+        &#x27;features&#x27;: [&#x27;API access&#x27;, &#x27;Batch processing&#x27;, &#x27;Team collaboration&#x27;],
+        &#x27;ml_milestones&#x27;: [&#x27;99.9% uptime SLO&#x27;, &#x27;Cost: &lt; $0.05 per document&#x27;],
+        &#x27;metrics&#x27;: [&#x27;API calls&#x27;, &#x27;Enterprise customers&#x27;, &#x27;Revenue per user&#x27;]
+    }
+}
+for quarter, details in roadmap.items():
+    print(f&#x27;{quarter}: {details[&quot;theme&quot;]}&#x27;)
+    for f in details[&#x27;features&#x27;]: print(f&#x27;  - {f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add Product roadmap to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A product roadmap prevents building the wrong things in the wrong order. Without a roadmap, AI projects drift — you add impressive but rarely-used features while users complain about the core functionality. A roadmap forces prioritization: given 3 months of engineering time, what matters most to users and what is technically achievable? This discipline is what separates products that ship from projects that never launch.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Over-planning too far in advance — a detailed roadmap for 12 months is fiction in a fast-moving AI space. Plan with high detail for 3 months, medium detail for 6 months, and directional goals for 12 months. Revise the roadmap monthly based on what you learn.</li><li>Not involving users in roadmap creation — building features based on what&#x27;s technically interesting rather than what users request leads to beautiful engineering that no one uses. Talk to 5-10 users before each quarterly planning cycle.</li><li>Ignoring technical debt and infrastructure work — ML roadmaps often underweight: model retraining pipelines, evaluation infrastructure, data labeling, and monitoring. These are not glamorous features but they&#x27;re what makes the product reliable. Reserve 20-30% of capacity for this work.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a product roadmap for your capstone AI project: (1) identify 3 types of potential users and their most important pain points, (2) define the MVP: what is the absolute minimum needed to test whether your idea solves the core problem?, (3) write a 3-quarter roadmap with features, ML milestones, and success metrics for each, (4) identify the top 3 technical risks (what could prevent you from delivering the ML milestone?) and mitigation plans, (5) set a launch date for the MVP — commit to it publicly (blog post, <code>GitHub</code> release, or <code>LinkedIn</code> post).</div>
     </div>
   </div>
 </section>

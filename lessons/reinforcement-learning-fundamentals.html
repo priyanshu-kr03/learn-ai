@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reinforcement learning fundamentals | AI Roadmap</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
+  <main class="wrap page">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <a href="#s1">Agent and environment</a>
+<a href="#s2">State action reward</a>
+<a href="#s3">Policy</a>
+<a href="#s4">Value function</a>
+<a href="#s5">Q-function</a>
+<a href="#s6">Exploration vs exploitation</a>
+<a href="#s7">Epsilon-greedy</a>
+<a href="#s8">Markov decision process</a>
+<a href="#s9">Discount factor</a>
+<a href="#s10">Episode and trajectory</a>
+      <div class="progressbar"><span data-progress-bar></span></div>
+      <p><b data-progress-text>0/0 completed</b></p>
+    </aside>
+    <article class="content">
+      <header class="content-head">
+        <span class="eyebrow">06 Reinforcement Learning</span>
+        <h1>Reinforcement learning fundamentals</h1>
+        <div class="meta"><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 26</span></div>
+        <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
+        <div class="tags"><span class="tag">Agent and environment</span><span class="tag">State action reward</span><span class="tag">Policy</span><span class="tag">Value function</span><span class="tag">Q-function</span><span class="tag">Exploration vs exploitation</span><span class="tag">Epsilon-greedy</span><span class="tag">Markov decision process</span><span class="tag">Discount factor</span><span class="tag">Episode and trajectory</span></div>
+      </header>
+      <div class="body">
+        
+<section class="section" id="s1">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s1" data-progress-check>
+    <div>
+      <h2>Agent and environment</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>The agent-environment interface is the fundamental abstraction of reinforcement learning. The agent is any entity that takes actions. The environment is everything the agent interacts with. The interface: the environment presents a state to the agent; the agent selects an action; the environment transitions to a new state and emits a reward. The agent&#x27;s goal is to maximize the total accumulated reward over time.</p><p>Formally (Markov Decision Process): State space S — all possible states the environment can be in. Action space A — all possible actions the agent can take. Transition function P(s&#x27;|s,a) — probability of moving to state s&#x27; when taking action a in state s. Reward function R(s,a,s&#x27;) — scalar reward received after transition from s to s&#x27; via action a. The Markov property: the next state depends only on the current state and action, not on the history of states. This allows efficient algorithms.</p><p>Examples: <code>CartPole</code> — state=(<code>cart_position</code>, <code>cart_velocity</code>, <code>pole_angle</code>, <code>pole_angular_velocity</code>), action={<code>push_left</code>, <code>push_right</code>}, reward=+1 for every timestep the pole stays upright. Atari Pong — state=84×84 pixel grid, action={stay, up, down}, reward={+1 ball passes opponent, -1 ball passes player}. Chess — state=board configuration, action=legal moves, reward={+1 win, 0 draw, -1 loss}.</p><p>Gym API: <code>OpenAI</code> Gym (now Gymnasium) provides a standard Python interface for RL environments. <code>env.reset()</code> → initial state. <code>env.step</code>(action) → (<code>next_state</code>, reward, done, truncated, info). <code>env.action_space</code> — the valid action space (Discrete for finite actions, Box for continuous). <code>env.observation_space</code> — the state space. This API is implemented by hundreds of environments: video games, robotics simulators, financial markets.</p><p>Custom environments: implement the Gymnasium API for your own problem. Define __init__ (create state variables), reset (start new episode), step (apply action, compute next state and reward), render (optional visualization). This turns any sequential decision problem into an RL environment — trading strategies, resource allocation, NLP dialog management.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import gymnasium as gym
+import numpy as np
+env = gym.make(&#x27;CartPole-v1&#x27;, render_mode=None)
+state, info = env.reset(seed=42)
+print(f&#x27;State space: {env.observation_space}&#x27;)  # Box(4,) — continuous
+print(f&#x27;Action space: {env.action_space}&#x27;)       # Discrete(2) — left or right
+# Manual episode with random policy
+total_reward = 0
+for step in range(500):
+    action = env.action_space.sample()  # random action
+    next_state, reward, done, truncated, info = env.step(action)
+    total_reward += reward
+    state = next_state
+    if done or truncated:
+        print(f&#x27;Episode ended at step {step+1}, total reward: {total_reward}&#x27;)
+        break
+env.close()</code></pre><pre><code># Custom environment skeleton
+class SimpleStockEnv(gym.Env):
+    def __init__(self, prices):
+        super().__init__()
+        self.prices = prices
+        self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(10,), dtype=np.float32)  # last 10 price returns
+        self.action_space = gym.spaces.Discrete(3)  # 0=sell, 1=hold, 2=buy
+    def reset(self, seed=None, options=None):
+        self.t = 10; self.holdings = 0; self.cash = 1000
+        return self._obs(), {}
+    def step(self, action):
+        price = self.prices[self.t]
+        if action == 2: self.holdings += 1; self.cash -= price
+        elif action == 0 and self.holdings &gt; 0: self.holdings -= 1; self.cash += price
+        self.t += 1
+        portfolio_value = self.cash + self.holdings * self.prices[self.t]
+        reward = portfolio_value - (self.cash + self.holdings * price)  # P&amp;L
+        done = self.t &gt;= len(self.prices) - 1
+        return self._obs(), reward, done, False, {}
+    def _obs(self):
+        returns = np.diff(self.prices[self.t-10:self.t+1]) / self.prices[self.t-10:self.t]
+        return returns.astype(np.float32)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>The agent-environment formulation is the universal framework for any sequential decision-making problem. Understanding it clearly separates the &#x27;what is known&#x27; (state), &#x27;what can be done&#x27; (actions), &#x27;what happened&#x27; (reward), and &#x27;where we are now&#x27; (next state). This clarity is necessary for designing RL solutions to real problems.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Designing a dense reward that is too informative — if the reward directly tells the agent the right action, the agent doesn&#x27;t need to explore. Design rewards that measure the objective (winning, profit, task completion) not the means.</li><li>Forgetting that the environment may be stochastic — P(s&#x27;|s,a) may not be deterministic. Test your environment with multiple seeds. RL algorithms must handle stochastic transitions; be explicit about whether your environment is deterministic or stochastic.</li><li>Not normalizing the observation space — RL algorithms (especially neural network-based) train much faster with normalized observations (zero mean, unit variance). Normalize observations before passing to the agent.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Design and implement a custom RL environment for inventory management: (1) state = (<code>current_inventory</code>, <code>demand_forecast_7day</code>, <code>days_until_expiry</code>, <code>current_price</code>), (2) actions = order quantities: {0, 10, 20, 50, 100} units, (3) reward = revenue from sales - ordering cost - storage cost - waste cost (expired items), (4) implement demand as a stochastic process (Poisson with weekly seasonality), (5) verify the Gymnasium API contract: reset + 100 random steps, check shapes and dtypes, (6) train a simple DQN agent and compare against a fixed order policy baseline.&#x27;,</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s2">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s2" data-progress-check>
+    <div>
+      <h2>State action reward</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>State, action, and reward are the three core primitives of reinforcement learning. Together they define the interface between the agent and the environment and encode the entire learning problem. Every RL algorithm, from simple Q-learning to complex PPO, operates over this (state, action, reward) interface.</p><p>State (observation): what the agent perceives about the environment. In <code>CartPole</code>: 4 numbers (cart position, velocity, pole angle, angular velocity). In Atari: 84×84 pixel image. In chess: board configuration (8×8 grid with piece positions). States can be: continuous (real-valued vectors), discrete (finite set of configurations), partially observable (agent sees only part of the true state — e.g., in poker, you can&#x27;t see opponent&#x27;s cards). In partially observable environments, the agent often maintains a history of recent observations.</p><p>Action: what the agent does. In <code>CartPole</code>: push left or push right (discrete, 2 actions). In robotics: torque values for each joint (continuous, high-dimensional). In text generation: which token to output next (discrete, ~50K actions for a vocabulary). Action spaces: Discrete(n) for n possible actions, Box(low, high, shape) for continuous multi-dimensional actions. Larger action spaces make learning harder — the agent must explore more.</p><p>Reward: the scalar feedback signal the agent uses to learn. The reward should reflect the true objective: +1 for every timestep the pole stays upright (<code>CartPole</code>), -penalty for each step (encourages reaching the goal quickly), +1 for winning a chess game, -1 for losing. Reward design is one of the hardest parts of RL: reward must be informative enough to guide learning but not so prescriptive that it prevents the agent from finding creative solutions.</p><p>Return (cumulative reward): at each timestep t, the return <code>G_t</code> = <code>r_t</code> + γ × r_{t+1} + γ^2 × r_{t+2} + ... = sum over k of γ^k × r_{t+k}. γ (gamma) is the discount factor (0-1). γ=0.99 means future rewards are almost as valuable as immediate rewards. γ=0: agent only cares about immediate reward (myopic). γ→1: agent values long-term outcomes equally to immediate ones. The agent&#x27;s goal is to maximize the expected return.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import gymnasium as gym
+import numpy as np
+env = gym.make(&#x27;CartPole-v1&#x27;)
+state, _ = env.reset()
+print(f&#x27;Initial state: pos={state[0]:.3f}, vel={state[1]:.3f}, angle={state[2]:.3f}, ang_vel={state[3]:.3f}&#x27;)
+# One episode
+total_reward = 0
+trajectory = []
+for t in range(500):
+    action = env.action_space.sample()  # random action
+    next_state, reward, done, truncated, info = env.step(action)
+    trajectory.append({&#x27;state&#x27;: state, &#x27;action&#x27;: action, &#x27;reward&#x27;: reward, &#x27;next_state&#x27;: next_state})
+    total_reward += reward; state = next_state
+    if done or truncated: break
+print(f&#x27;Episode length: {len(trajectory)}, Total reward: {total_reward}&#x27;)
+# Compute discounted return
+gamma = 0.99
+returns = []
+G = 0
+for t in reversed(range(len(trajectory))):
+    G = trajectory[t][&#x27;reward&#x27;] + gamma * G
+    returns.insert(0, G)
+print(f&#x27;Discounted return from start: {returns[0]:.2f}&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>State, action, and reward are the vocabulary of RL. Understanding these precisely enables designing RL solutions to real problems: &#x27;what is the state?&#x27; &#x27;what are the actions?&#x27; &#x27;what is the reward?&#x27; are the three design questions for any RL formulation. Answering them clearly is 80% of the work in applying RL to a new domain.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Including future information in the state — the state at time t must only contain information available at time t. Including the next observation, future reward, or future action in the state is data leakage that makes the problem trivial but useless in practice.</li><li>Designing reward with side effects — a robot that gets reward for reaching a goal as quickly as possible may knock over furniture. Reward that only measures the objective (goal reached) without penalizing undesired behavior produces undesired behavior. Add penalty terms for side effects.</li><li>Using sparse reward only for complex tasks — if reward is only given at the very end (e.g., win/lose at the end of a chess game), the agent must play thousands of games to get any reward signal, making learning extremely slow. Add intermediate shaping rewards where possible.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Design an RL formulation for a real-world problem: (1) choose a domain: inventory management, portfolio optimization, or game playing, (2) formally define: state space (what does the agent observe?), action space (what can the agent do?), reward function (what are you optimizing?), episode structure (when does an episode end?), (3) implement as a <code>gymnasium</code> environment (inherit from <code>gym.Env</code>), (4) verify the environment with 100 random episodes: check state/action/reward shapes and ranges, (5) implement a simple heuristic policy and measure its average return — this is the baseline your RL agent must beat.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s3">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s3" data-progress-check>
+    <div>
+      <h2>Policy</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>In reinforcement learning, a policy is the agent&#x27;s decision-making function: given a state, what action should the agent take? A policy is the core of any RL agent — everything else (value functions, reward signals, environment dynamics) exists to help learn a better policy.</p><p>Types of policies: deterministic policy π(s) = a — returns a single action for each state. Stochastic policy π(a|s) = P(A=a|S=s) — returns a probability distribution over actions. Stochastic policies are more general and necessary for exploring the environment, handling non-stationary environments, and representing uncertainty about the optimal action.</p><p>Policy representation: tabular policy — a table mapping states to actions (only feasible for small discrete state spaces). Parameterized policy — a function approximator (neural network) πθ(a|s) where θ are the learnable parameters. For discrete actions, the network outputs a probability vector (softmax over actions). For continuous actions (robot joints), the network outputs mean and variance of a Gaussian.</p><p>Policy gradient methods directly optimize the policy parameters θ to maximize expected cumulative reward. The policy gradient theorem gives: ∇J(θ) = E[∇log π_θ(a|s) × Q(s,a)] — the gradient of the log-probability of the chosen action, weighted by how good that action was (Q-value). This is the basis of REINFORCE, Actor-Critic, and PPO.</p><p>On-policy vs off-policy: on-policy methods (SARSA, PPO, A3C) learn the value of the policy being used to collect data. Off-policy methods (Q-learning, DQN, SAC) can learn from data collected by any policy (including old policies stored in a replay buffer). Off-policy methods are more sample-efficient; on-policy methods are typically more stable.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import torch
+import torch.nn as nn
+import torch.nn.functional as F
+# Stochastic policy network for discrete actions
+class PolicyNetwork(nn.Module):
+    def __init__(self, state_dim, n_actions):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(state_dim, 128), nn.ReLU(),
+            nn.Linear(128, 128), nn.ReLU(),
+            nn.Linear(128, n_actions)
+        )
+    def forward(self, state):
+        logits = self.net(state)
+        return F.softmax(logits, dim=-1)  # probability distribution over actions
+    def select_action(self, state):
+        probs = self.forward(state)
+        dist = torch.distributions.Categorical(probs)
+        action = dist.sample()                    # sample from policy
+        log_prob = dist.log_prob(action)          # needed for policy gradient
+        return action.item(), log_prob
+# Usage
+policy = PolicyNetwork(state_dim=4, n_actions=2)  # e.g., CartPole-v1
+state = torch.tensor([0.1, -0.2, 0.3, 0.05])
+action, log_prob = policy.select_action(state)
+print(f&#x27;Selected action: {action}, log_prob: {log_prob:.4f}&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>The policy is the deliverable of reinforcement learning — it&#x27;s what you deploy. Everything else (reward shaping, value function estimation, replay buffers) is infrastructure to learn a better policy. Understanding the difference between stochastic and deterministic policies, and between on-policy and off-policy learning, is foundational for understanding why different RL algorithms exist and when to use them.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using a deterministic policy in an environment that requires exploration — a greedy deterministic policy gets stuck in local optima. For environments with sparse rewards or many local optima, a stochastic policy with entropy regularization ensures continued exploration.</li><li>Not separating policy and value networks — Actor-Critic methods use two networks: actor (policy) and critic (value function). Using a single shared network for both can destabilize training. Separate networks with different learning rates (lower for actor, higher for critic) improve stability.</li><li>Using the wrong output activation — for discrete actions, use softmax (probabilities sum to 1). For continuous actions, output mean and <code>log_std</code> then sample from N(mean, std). Outputting raw logits as actions in a continuous space is a common bug.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a policy network for <code>CartPole</code>: (1) build a <code>PolicyNetwork</code> with 2 hidden layers (<code>state_dim</code>=4, <code>n_actions</code>=2), (2) implement REINFORCE: collect trajectories with the current policy, compute returns, update policy using ∇log π(a|s) × G, (3) train for 1000 episodes and plot average return over time, (4) compare: stochastic policy (sample from distribution) vs epsilon-greedy (with a deterministic policy) — which converges faster on <code>CartPole</code>?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s4">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s4" data-progress-check>
+    <div>
+      <h2>Value function</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>The value function V(s) is the expected total discounted return an agent can achieve from state s when following a specific policy π. Formally: V^π(s) = E_π[Σ_{t=0}^{∞} γ^t r_{t+k+1} | <code>s_t</code> = s]. The optimal value function V*(s) is the maximum V over all possible policies. Knowing V*(s) for every state immediately gives the optimal policy: from any state s, take the action that leads to the state with the highest V*(s&#x27;) + immediate reward.</p><p>Value functions answer the question: &#x27;How good is it to be in this state?&#x27; A state near the goal in a maze has high value; a state leading to a dead end has low value. Unlike the reward function (which only gives immediate feedback), the value function looks ahead — it encodes expected cumulative future reward. This is why a chess engine evaluates positions (V(position)) rather than just counting immediate material gains.</p><p>The Bellman equation for the state value function under policy π is: V^π(s) = Σ_a π(a|s) Σ_{s&#x27;} P(s&#x27;|s,a) [R(s,a,s&#x27;) + γ V^π(s&#x27;)]. This is a system of linear equations (one per state) that can be solved exactly for finite MDPs. For large state spaces, V is approximated with a neural network (the critic in actor-critic algorithms).</p><p>State-value function V(s) vs action-value function Q(s,a): V(s) asks &#x27;how good is this state?&#x27;; Q(s,a) asks &#x27;how good is it to take action a from state s?&#x27;. The relationship: V(s) = Σ_a π(a|s) Q(s,a) (the value of a state is the expected value of its actions under the current policy). Q-learning estimates Q; actor-critic uses V as the baseline for computing the advantage A(s,a) = Q(s,a) - V(s).</p><p>Monte Carlo estimation of V: run many complete episodes from state s following policy π. Average the total returns observed: V(s) ≈ (1/N) Σ returns. This is unbiased but high variance. Temporal Difference (TD) learning estimates V using bootstrapping: V(s) ← V(s) + α[r + γV(s&#x27;) - V(s)]. TD(0) is one-step bootstrapping; TD(n) uses n-step returns. TD(0) has low variance but high bias; Monte Carlo has low bias but high variance.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>GridWorld example: 4×4 grid, goal at (3,3) with V=0, all other states start V=0.</code></pre><pre><code>Policy evaluation (iterative): for s in all states: V_new(s) = Σ_a π(a|s) Σ_{s&#x27;} P(s&#x27;|s,a)[R + γV(s&#x27;)]. Repeat until max|V_new - V| &lt; 0.001.</code></pre><pre><code>Value function table:
+V = np.zeros(16)  # 16 states
+for _ in range(1000):
+    for s in range(16):
+        V[s] = sum(policy[s][a] * sum(P[s][a][s_next] * (R[s][a][s_next] + gamma*V[s_next]) for s_next in range(16)) for a in range(4))</code></pre><pre><code>Neural network V (critic):
+class ValueNetwork(nn.Module):
+    def __init__(self): super().__init__(); self.net = nn.Sequential(nn.Linear(state_dim, 64), nn.ReLU(), nn.Linear(64,1))
+    def forward(self, s): return self.net(s).squeeze(-1)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>The value function is the central object in dynamic programming and most RL algorithms. Understanding V(s) and the Bellman equation is prerequisite to understanding Q-learning, actor-critic, PPO, and every other value-based or hybrid RL algorithm.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing V(s) with Q(s,a) — V is a function of state only; Q is a function of both state and action. They are related but distinct.</li><li>Computing V with too high a discount factor γ=1 in infinite-horizon problems — this can cause V values to diverge. Use γ &lt; 1 (typically 0.99).</li><li>Not computing the value function separately from the policy — conflating &#x27;what to do&#x27; (policy) and &#x27;how good it is&#x27; (value function) leads to conceptual confusion when implementing algorithms.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement policy evaluation for the 4×4 <code>FrozenLake</code> MDP. Using the random policy (uniform over all 4 actions), compute V^π(s) for all 16 states using iterative policy evaluation until convergence. Visualize the value function as a 4×4 heatmap. Verify that states adjacent to the goal have higher value than states far from the goal. Then implement policy improvement and policy iteration.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s5">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s5" data-progress-check>
+    <div>
+      <h2>Q-function</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>The Q-function (action-value function) Q(s, a) represents the expected cumulative discounted reward from taking action a in state s and then following the optimal policy. While the value function V(s) = <code>max_a</code> Q(s, a) gives the expected return from the best action, Q(s, a) gives the return for a specific action. Having Q-values for all actions lets the agent choose the best action: π*(s) = <code>argmax_a</code> Q(s, a).</p><p>Bellman optimality equation for Q: Q*(s, a) = E_{s&#x27;} [R(s, a, s&#x27;) + γ max_{a&#x27;} Q*(s&#x27;, a&#x27;)]. This is the key equation in Q-learning. The optimal Q-function satisfies this self-consistency: the Q-value of taking action a in state s equals the immediate reward plus the discounted maximum Q-value in the next state. Q-learning updates Q toward this target.</p><p>Q-learning update rule: Q(s, a) ← Q(s, a) + α [r + γ max_{a&#x27;} Q(s&#x27;, a&#x27;) - Q(s, a)]. Here α is the learning rate, r is the immediate reward, γ is the discount factor, and [r + γ max_{a&#x27;} Q(s&#x27;, a&#x27;) - Q(s, a)] is the TD error (temporal difference error). The algorithm updates the current Q estimate toward the target (r + γ max Q(s&#x27;, a&#x27;)).</p><p>Deep Q-Network (DQN): for large or continuous state spaces (like Atari game screens), we cannot store Q(s, a) in a table. DQN approximates Q(s, a) with a neural network: Q(s, a; θ). The network takes the state (e.g., 4 stacked Atari frames) and outputs Q-values for all actions. Training minimizes: L(θ) = E[(r + γ max_{a&#x27;} Q(s&#x27;, a&#x27;; θ⁻) - Q(s, a; θ))²] where θ⁻ is a target network (slow-moving copy of θ for stability).</p><p>DQN innovations: (1) experience replay — store transitions (s, a, r, s&#x27;) in a replay buffer; sample random mini-batches for training (breaks temporal correlations, allows reuse of experiences), (2) target network — separate network θ⁻ for computing targets, updated every C steps (prevents instability from chasing a moving target), (3) dueling networks — decompose Q(s,a) = V(s) + A(s,a) where A is the advantage (how much better action a is vs the average action). These innovations made DQN stable and practical.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Tabular Q-learning on a simple environment
+import numpy as np
+import gym
+env = gym.make(&#x27;FrozenLake-v1&#x27;, is_slippery=False)
+Q = np.zeros((env.observation_space.n, env.action_space.n))
+alpha, gamma, epsilon = 0.1, 0.99, 0.1
+for episode in range(10000):
+    s, _ = env.reset()
+    done = False
+    while not done:
+        a = env.action_space.sample() if np.random.rand() &lt; epsilon else Q[s].argmax()
+        s_, r, done, _, _ = env.step(a)
+        Q[s, a] += alpha * (r + gamma * Q[s_].max() - Q[s, a])
+        s = s_</code></pre><pre><code># DQN with stable-baselines3
+from stable_baselines3 import DQN
+env = gym.make(&#x27;CartPole-v1&#x27;)
+model = DQN(&#x27;MlpPolicy&#x27;, env, verbose=1, buffer_size=50000, learning_starts=1000)
+model.learn(total_timesteps=100000)
+mean_reward = np.mean([env.step(model.predict(env.reset()[0])[0])[1] for _ in range(100)])</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>The Q-function is the central concept in model-free value-based RL. Understanding Q-learning explains DQN, Double DQN, Dueling DQN, Rainbow, and all their descendants. It is the foundation for understanding RL agents in game playing, robotics, recommendation, and trading systems.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not using a replay buffer in DQN — without experience replay, consecutive transitions are highly correlated, causing unstable training. The replay buffer breaks these correlations by sampling random mini-batches.</li><li>Not using a target network — without a separate slow-moving target network, both the prediction and the target update simultaneously, creating a moving target that destabilizes training.</li><li>Setting <code>learning_rate</code> too high — Q-learning with high alpha (&gt;0.5) oscillates and may not converge. Start with alpha=0.1 and decay it during training.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement DQN from scratch for <code>CartPole</code>: (1) build a neural network Q-function (2 hidden layers, 64 neurons), (2) implement experience replay buffer with deque, (3) implement the training loop with epsilon-greedy exploration, (4) implement target network with soft updates every 100 steps, (5) plot training reward curve, (6) ablate: remove replay buffer (consecutive sampling), remove target network — show how each innovation affects training stability. Compare final performance to stable-baselines3 DQN.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s6">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s6" data-progress-check>
+    <div>
+      <h2>Exploration vs exploitation</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>The exploration-exploitation tradeoff is the fundamental dilemma in reinforcement learning: should the agent exploit its current best-known action (greedy), or explore potentially better actions it hasn&#x27;t tried enough? Exploiting means choosing the action with the highest current estimated value — maximizing immediate performance. Exploring means choosing actions with uncertain value — gathering information that may enable better long-term decisions.</p><p>A pure exploitation agent gets stuck: it takes the first action it found to be good and never discovers that another action is even better. A pure exploration agent never benefits from what it learned — it randomly tries actions forever and never exploits its knowledge. The optimal tradeoff depends on how long the agent will operate: short horizon → exploit early; infinite horizon → explore systematically.</p><p>Epsilon-greedy is the simplest tradeoff strategy: with probability ε, take a random action (explore); with probability 1-ε, take the greedy action (exploit). Start with ε=1.0 (pure exploration) and decay linearly or exponentially to ε=0.01 or 0.05 (mostly exploitation) over the course of training. This gives the agent time to discover the state space before committing to a policy.</p><p>UCB (Upper Confidence Bound) exploration is more principled: select the action that maximizes Q(s,a) + c*sqrt(ln(t)/N(s,a)) where N(s,a) is the number of times action a was taken in state s and t is the total steps. The second term (exploration bonus) decreases as an action is taken more. UCB provably achieves near-optimal regret in bandits without manual ε decay.</p><p>Thompson Sampling maintains a probability distribution over Q-values for each action. At each step, sample one Q-value from each action&#x27;s distribution and take the action with the highest sample. As an action is taken and observed, its distribution narrows. This is principled Bayesian exploration that naturally balances exploration and exploitation without hyperparameter tuning.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Epsilon-greedy action selection:
+def select_action(Q, state, epsilon):
+    if random.random() &lt; epsilon:
+        return random.randint(0, n_actions-1)  # explore
+    return np.argmax(Q[state])  # exploit</code></pre><pre><code>Decay schedule: epsilon = max(0.01, 1.0 - step / 10000) — linear decay over 10,000 steps.</code></pre><pre><code>UCB: ucb_values = Q[state] + c * np.sqrt(np.log(total_steps + 1) / (visit_counts[state] + 1e-8))
+action = np.argmax(ucb_values)</code></pre><pre><code>Track exploration: plot average Q-value for the top action over training. It should rise as the agent learns the optimal policy.</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>The exploration-exploitation tradeoff is the central challenge that distinguishes RL from supervised learning. Solving it correctly determines how quickly an agent finds the optimal policy. Understanding it explains why ε-greedy training with proper decay is necessary and why random policies alone are insufficient.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not decaying epsilon — staying at ε=0.5 throughout training means the agent explores 50% of actions even after learning a near-optimal policy, degrading performance.</li><li>Setting ε too small too early — with ε=0.01 after 100 steps in a complex environment, the agent has barely explored but commits to greedy exploitation, missing better actions.</li><li>Confusing training epsilon with evaluation epsilon — during training, use ε&gt;0 for exploration. During evaluation, use ε=0 (pure greedy) to measure true policy performance.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement the multi-armed bandit problem: 10 slot machines with different true win probabilities (unknown to the agent). Compare: (1) pure exploitation (always choose machine with highest average), (2) pure exploration (random choice), (3) epsilon-greedy (ε=0.1), (4) epsilon-greedy with decay, (5) UCB1. Run each for 1000 steps. Plot cumulative regret (optimal reward - actual reward) over time. Report which strategy has lowest final regret.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s7">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s7" data-progress-check>
+    <div>
+      <h2>Epsilon-greedy</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>Epsilon-greedy is the most widely used exploration strategy in reinforcement learning. At each timestep, with probability ε (epsilon), the agent takes a random action (exploration — trying something new to learn about the environment); with probability 1-ε, the agent takes the greedy action (exploitation — choosing the best known action based on current Q-values).</p><p>Why exploration is necessary: a reinforcement learning agent starts with no knowledge. Without exploration, it takes the first action it tries and sticks with it forever (if it happened to get a reward from it). With exploration, it discovers that other actions might yield higher rewards. The classic &#x27;multi-armed bandit&#x27; problem: which slot machine (arm) has the highest expected payout? Without trying all of them, you can never be sure you&#x27;ve found the best.</p><p>Epsilon annealing: a fixed ε=0.1 is suboptimal. Early in training, the agent knows very little — high ε is appropriate (explore a lot). Late in training, the agent has learned good policies — low ε is appropriate (exploit what was learned). Annealing: start with ε=1.0 (fully random), decay to ε=0.01 (mostly greedy) over the first 50-80% of training. Linear decay: ε = ε_start - (ε_start - ε_end) × (step / <code>exploration_fraction</code> × <code>total_steps</code>).</p><p>Epsilon values in practice: ε_start=1.0, ε_end=0.05, <code>exploration_fraction</code>=0.1 (explore for 10% of total training steps, then keep at 5%). This is the default in DQN. The optimal decay schedule is environment-dependent — environments that require more initial exploration may benefit from longer exploration phases.</p><p>Alternatives to epsilon-greedy: Boltzmann exploration (softmax over Q-values with temperature) — more nuanced than binary explore/exploit. Upper Confidence Bound (UCB) — explore actions that have been tried less often (episodic uncertainty). Thompson sampling — sample from a Bayesian posterior over the reward distribution. For neural network-based RL, ε-greedy remains the simplest and most widely used despite these alternatives.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+# Epsilon-greedy action selection
+def epsilon_greedy(Q_values, epsilon):
+    if np.random.rand() &lt; epsilon:
+        return np.random.randint(len(Q_values))  # random action
+    else:
+        return np.argmax(Q_values)              # greedy action
+# Epsilon annealing schedule
+def get_epsilon(step, total_steps, eps_start=1.0, eps_end=0.05, exploration_fraction=0.1):
+    exploration_steps = int(total_steps * exploration_fraction)
+    if step &lt; exploration_steps:
+        return eps_start - (eps_start - eps_end) * (step / exploration_steps)
+    return eps_end
+# Demonstration
+total_steps = 100000
+for step in [0, 10000, 50000, 100000]:
+    eps = get_epsilon(step, total_steps)
+    print(f&#x27;Step {step}: epsilon = {eps:.3f}&#x27;)</code></pre><pre><code># Multi-armed bandit with epsilon-greedy vs UCB
+class EpsilonGreedyBandit:
+    def __init__(self, n_arms, epsilon=0.1):
+        self.epsilon = epsilon; self.Q = np.zeros(n_arms); self.N = np.zeros(n_arms)
+    def select_action(self):
+        return np.random.randint(len(self.Q)) if np.random.rand() &lt; self.epsilon else np.argmax(self.Q)
+    def update(self, arm, reward):
+        self.N[arm] += 1; self.Q[arm] += (reward - self.Q[arm]) / self.N[arm]
+# Simulate
+true_rewards = np.array([0.3, 0.5, 0.7, 0.2, 0.6])  # true probabilities
+agent = EpsilonGreedyBandit(5, epsilon=0.1)
+cumulative_reward = 0
+for t in range(1000):
+    arm = agent.select_action()
+    reward = np.random.binomial(1, true_rewards[arm])
+    agent.update(arm, reward); cumulative_reward += reward
+print(f&#x27;Cumulative reward: {cumulative_reward}/1000&#x27;)
+print(f&#x27;Estimated Q: {agent.Q.round(3)}&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Epsilon-greedy is the fundamental solution to the exploration-exploitation dilemma in RL. Every practical RL agent uses some form of epsilon-greedy (or a more sophisticated variant). Understanding why exploration is necessary and how to schedule it is a core RL concept that applies from simple Q-learning to DQN to PPO.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not decaying epsilon during training — a fixed ε=0.1 means 10% random actions even when the agent has learned a near-optimal policy. This permanently limits performance. Always decay epsilon to a small final value (0.01-0.05).</li><li>Decaying epsilon too fast — if epsilon reaches 0.01 after only 1% of training, the agent stops exploring before learning about large parts of the state space. Spend at least 10% of total training steps in the high-exploration phase.</li><li>Using epsilon-greedy with continuous action spaces — epsilon-greedy randomly selects a DISCRETE action with probability ε. For continuous action spaces (robot joints), use instead: Gaussian noise (add N(0, σ) to the greedy action) or parameter noise (perturb network parameters rather than actions).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement epsilon-greedy exploration on a multi-armed bandit: (1) create a 10-armed bandit where each arm has a fixed but unknown reward probability, (2) implement epsilon-greedy with ε=0.1 (fixed) and compare with annealed epsilon (1.0 → 0.01 over 5000 steps), (3) implement UCB (Upper Confidence Bound) as an alternative, (4) run each strategy 100 times for 5000 steps and plot: average cumulative reward, regret (optimal reward - actual reward), fraction of time the best arm is selected, (5) vary the epsilon decay schedule (linear vs exponential) — which converges to optimal arm selection faster?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s8">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s8" data-progress-check>
+    <div>
+      <h2>Markov decision process</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>A Markov Decision Process (MDP) is the mathematical framework underlying reinforcement learning. An MDP is defined by the tuple (S, A, P, R, γ): S = state space (all possible states the agent can be in), A = action space (all possible actions), P(s&#x27;|s, a) = transition probability (probability of reaching state s&#x27; after taking action a in state s), R(s, a, s&#x27;) = reward function (immediate reward for the transition), γ = discount factor (0 ≤ γ &lt; 1, how much future rewards are discounted).</p><p>The Markov property: the future depends only on the current state, not on the history: P(s_{t+1} | <code>s_t</code>, <code>a_t</code>, s_{t-1}, a_{t-1}, ...) = P(s_{t+1} | <code>s_t</code>, <code>a_t</code>). This &#x27;memoryless&#x27; property is what makes MDPs tractable — the agent doesn&#x27;t need to remember all past states, just the current one. When the Markov property is violated (partial observability), we have a POMDP (Partially Observable MDP).</p><p>Policy π: a policy maps states to actions (or state to probability distribution over actions for stochastic policies). π(s) = a (deterministic) or π(a|s) = P(action a | state s) (stochastic). The goal of RL: find the optimal policy π* that maximizes expected cumulative discounted reward: E[Σ γᵗ rₜ]. Value function V^π(s) = E[Σ γᵗ rₜ | starting in state s, following policy π].</p><p>Bellman equations: the foundation of RL. V^π(s) = Σ_a π(a|s) Σ_{s&#x27;} P(s&#x27;|s,a) [R(s,a,s&#x27;) + γ V^π(s&#x27;)]. This is recursive — the value of a state equals the expected immediate reward plus the discounted value of the next state. Solving the Bellman equation gives the optimal value function and policy. Dynamic programming (value iteration, policy iteration) solves MDPs with known P and R. RL solves MDPs when P and R are unknown.</p><p>Examples of MDPs in practice: chess (state = board position, actions = legal moves, reward = +1 for win, -1 for loss, 0 otherwise, deterministic transitions), robotic control (state = joint angles and velocities, actions = torques, reward = distance to goal, stochastic transitions), recommendation system (state = user history, actions = items to recommend, reward = click or purchase, transitions = user state update).</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Simple gridworld MDP
+import numpy as np
+# States: 0-8 in 3x3 grid, action: 0=up,1=down,2=left,3=right
+# Define transition probabilities and reward
+def step(state, action, grid_size=3):
+    row, col = state // grid_size, state % grid_size
+    dr, dc = {0:(-1,0), 1:(1,0), 2:(0,-1), 3:(0,1)}[action]
+    new_row = max(0, min(grid_size-1, row + dr))
+    new_col = max(0, min(grid_size-1, col + dc))
+    return new_row * grid_size + new_col</code></pre><pre><code># Value iteration to find optimal policy
+gamma = 0.9; n_states = 9; n_actions = 4
+reward = np.zeros(n_states); reward[8] = 1.0  # goal at state 8
+V = np.zeros(n_states)
+for _ in range(1000):
+    V_new = reward + gamma * np.max([[V[step(s,a)] for a in range(n_actions)] for s in range(n_states)], axis=1)
+    if np.max(np.abs(V_new - V)) &lt; 1e-6: break
+    V = V_new
+print(&#x27;Optimal values:&#x27;, V.reshape(3,3))</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>The MDP framework is the mathematical foundation of all reinforcement learning. Understanding MDPs makes RL algorithms (Q-learning, policy gradients, actor-critic) comprehensible — they are all methods for solving MDPs when the transition dynamics and reward function are unknown.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing state and observation — in many real problems (partial observability), the agent does not observe the full state. The game screen in Atari is an observation, not the full state (velocity, acceleration are not directly visible). This violates the Markov property and requires different algorithms (POMDPs, recurrent policies).</li><li>Forgetting the discount factor γ — without discounting (γ=1), infinite episodes have infinite reward. The discount factor ensures convergence and models preference for near-term rewards.</li><li>Designing a reward function that&#x27;s too sparse — a reward only at the end of an episode (chess: +1 for win) makes learning very slow. Dense reward shaping (reward at intermediate milestones) speeds up learning but can create unintended behaviors.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement value iteration from scratch on a gridworld MDP: (1) create a 5×5 grid with obstacles and a terminal goal state, (2) define P(s&#x27;|s,a) including wall collisions, (3) implement the value iteration algorithm, (4) plot the value function as a heatmap after each 10 iterations until convergence, (5) extract the optimal policy from the final value function (greedy action selection), (6) simulate an episode following the optimal policy from the start state — does it reach the goal efficiently?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s9">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s9" data-progress-check>
+    <div>
+      <h2>Discount factor</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>The discount factor γ (gamma) controls how much the agent values future rewards relative to immediate rewards. Return <code>G_t</code> = <code>r_t</code> + γ × r_{t+1} + γ^2 × r_{t+2} + ... A reward k steps in the future is worth γ^k times an immediate reward. γ=0: agent only values immediate rewards (completely myopic). γ=0.99: a reward 100 steps in the future is worth 0.99^100 ≈ 0.37 times an immediate reward. γ=1: all future rewards are valued equally (no discounting).</p><p>Why discounting is necessary: practical reasons — for infinite-horizon problems, the sum of undiscounted rewards may diverge. Mathematical guarantee: with 0 ≤ γ &lt; 1, the return <code>G_t</code> is bounded by |<code>r_max</code>| / (1-γ). Interpretive reasons — future rewards are genuinely less certain than immediate rewards (the agent might not survive to collect them). γ represents how much the agent &#x27;trusts&#x27; that it will still be operating k steps from now.</p><p>γ and planning horizon: γ = 0.99 → effective planning horizon ≈ 1/(1-γ) = 100 steps. γ = 0.9 → horizon ≈ 10 steps. γ = 0.999 → horizon ≈ 1000 steps. A game with rewards only at the end (win/lose) requires γ close to 1 (so the win reward propagates back through 1000+ steps). A task with immediate rewards per step can use lower γ.</p><p>GAE lambda (λ): Generalized Advantage Estimation uses a different discount λ for the advantage estimate. A(<code>s_t</code>, <code>a_t</code>) = sum over k of (γλ)^k × δ_{t+k} where δ_t = <code>r_t</code> + γV(s_{t+1}) - V(<code>s_t</code>) is the TD error. λ=0: TD(0) advantage (low variance, high bias). λ=1: Monte Carlo advantage (high variance, no bias). λ=0.95 is the typical default — balanced bias-variance trade-off.</p><p>Setting γ in practice: for episodic tasks with episode length ~200: γ=0.99 is standard. For long episodes (chess: 100+ moves): γ=0.99 or γ=0.999. For tasks with immediate dense rewards: γ=0.9 may work and trains faster. If the agent ignores long-term consequences, try increasing γ. If training is unstable, try decreasing γ to reduce the magnitude of returns.</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import numpy as np
+# Discount factor effect on return
+gamma_values = [0.5, 0.9, 0.99, 0.999]
+rewards = [0] * 99 + [1.0]  # reward only at the final step (step 100)
+for gamma in gamma_values:
+    G = 0
+    for r in reversed(rewards):
+        G = r + gamma * G
+    print(f&#x27;gamma={gamma}: discounted return = {G:.4f} (undiscounted = {sum(rewards):.1f})&#x27;)
+# Output:
+# gamma=0.5: 7.6e-31 (reward barely propagates back 100 steps)
+# gamma=0.99: 0.37 (reward propagates back with some weight)
+# gamma=0.999: 0.90 (reward propagates back with high weight)</code></pre><pre><code># GAE computation
+def gae(rewards, values, gamma=0.99, lam=0.95):
+    advantages = []
+    gae_val = 0
+    for t in reversed(range(len(rewards))):
+        delta = rewards[t] + gamma * values[t+1] - values[t]
+        gae_val = delta + gamma * lam * gae_val
+        advantages.insert(0, gae_val)
+    returns = [adv + val for adv, val in zip(advantages, values[:-1])]
+    return advantages, returns</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>The discount factor is a hyperparameter that fundamentally changes the agent&#x27;s behavior: a myopic agent (low γ) ignores consequences beyond a few steps, while a far-sighted agent (high γ) plans for long-term outcomes. Choosing γ appropriately for your problem&#x27;s time horizon is as important as choosing the right algorithm.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using γ=0.99 for all problems without considering the episode length — for very short episodes (10 steps), γ=0.99 means rewards barely discount at all (0.99^10 ≈ 0.9). For very long episodes (10,000 steps), γ=0.99 means a reward 10,000 steps in the future is worth 2×10^-44, essentially zero. Adjust γ to match the episode structure.</li><li>Using γ=1 (no discount) for non-episodic tasks — without discounting, the infinite-horizon return diverges. Only use γ=1 for finite episodic tasks where you are certain the episode ends.</li><li>Forgetting to account for terminal states in the discount — at the end of an episode (done=True), there is no next state. The target for the last transition is just r (not r + γV(s&#x27;)). Add (1-done) multiplier: target = r + γ × V(s&#x27;) × (1 - done).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Investigate discount factor effects: (1) train Q-learning on a simple 10×10 grid world with a reward of +10 at the goal (100 steps away in the worst case), (2) train with γ ∈ {0.5, 0.9, 0.95, 0.99, 0.999} — for each: plot the learned V-function (should show gradient toward the goal), (3) for which γ values does the agent successfully learn to reach the goal in &lt; 50 steps?, (4) implement GAE with λ ∈ {0, 0.5, 0.95, 1.0} in a simple Actor-Critic — how does λ affect training stability and sample efficiency?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="s10">
+  <div class="checkrow">
+    <input type="checkbox" id="reinforcement-learning-fundamentals-s10" data-progress-check>
+    <div>
+      <h2>Episode and trajectory</h2>
+      <div class="deep-dive">
+        <h3>Detailed explanation</h3>
+        <p>An episode is one complete run of an agent in an environment, from the initial state to a terminal state (winning, losing, or timeout). A trajectory (or rollout) is the sequence of states, actions, and rewards collected during an episode: τ = (<code>s_0</code>, <code>a_0</code>, <code>r_1</code>, <code>s_1</code>, <code>a_1</code>, <code>r_2</code>, ..., <code>s_T</code>). The trajectory is the fundamental data structure in RL — all learning algorithms process trajectories.</p><p>Episodic vs continuous environments: episodic environments have a clear end (game over, task completed, maximum time steps reached). Continuous (non-episodic) environments run indefinitely — the agent must learn while the environment continues. Episodic environments are simpler to reason about because the episode provides a natural unit of learning.</p><p>Return and discounted return: the return <code>G_t</code> = Σ γ^k × r_{t+k} is the total (discounted) reward from time t to the end of the episode. γ (gamma) is the discount factor (0 to 1). γ=1.0 treats future and current rewards equally. γ=0.9 means a reward 10 steps later is worth 0.9^10 ≈ 0.35 of an immediate reward. The discounting reflects that earlier rewards are more certain (the agent might die before reaching future rewards).</p><p>Trajectory-based learning (on-policy): collect a batch of trajectories (episodes) using the current policy, compute returns for each state-action pair, update the policy to increase the probability of high-return actions. REINFORCE is the simplest trajectory-based method. PPO improves on REINFORCE with clipping and multiple gradient updates per batch of trajectories.</p><p>Experience replay (off-policy): instead of learning from fresh trajectories, store (s, a, r, s&#x27;) transitions in a replay buffer and sample random minibatches for learning. This breaks the temporal correlation between consecutive transitions (which would bias gradient estimates) and allows reusing data from many past trajectories. The replay buffer size trades off between data efficiency (larger buffer = more data) and staleness (older data from a different policy).</p>
+      </div>
+      <div class="example box">
+        <b>Worked example</b>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import gymnasium as gym
+import numpy as np
+# Collect a single episode (trajectory)
+def collect_episode(env, policy_fn, max_steps=1000):
+    trajectory = {&#x27;states&#x27;: [], &#x27;actions&#x27;: [], &#x27;rewards&#x27;: [], &#x27;dones&#x27;: []}
+    state, _ = env.reset()
+    for t in range(max_steps):
+        action = policy_fn(state)  # any policy: random, trained, etc.
+        next_state, reward, terminated, truncated, _ = env.step(action)
+        trajectory[&#x27;states&#x27;].append(state)
+        trajectory[&#x27;actions&#x27;].append(action)
+        trajectory[&#x27;rewards&#x27;].append(reward)
+        trajectory[&#x27;dones&#x27;].append(terminated or truncated)
+        state = next_state
+        if terminated or truncated: break
+    return trajectory
+# Compute returns for the trajectory
+def compute_returns(rewards, gamma=0.99):
+    returns = np.zeros(len(rewards))
+    G = 0
+    for t in reversed(range(len(rewards))):
+        G = rewards[t] + gamma * G
+        returns[t] = G
+    return returns
+# Demo with CartPole
+env = gym.make(&#x27;CartPole-v1&#x27;)
+trajectory = collect_episode(env, lambda s: env.action_space.sample())
+returns = compute_returns(trajectory[&#x27;rewards&#x27;])
+print(f&#x27;Episode length: {len(trajectory[&quot;rewards&quot;])}&#x27;)
+print(f&#x27;Total reward: {sum(trajectory[&quot;rewards&quot;])}&#x27;)
+print(f&#x27;Return at t=0: {returns[0]:.2f}&#x27;)</code></pre>
+      </div>
+      
+      <div class="good box"><b>Why this matters in AI</b><br>Episodes and trajectories are the data structures that RL algorithms process. Understanding what a trajectory contains (states, actions, rewards) and how to compute returns (discounted cumulative rewards) is the prerequisite for implementing any RL algorithm from scratch. Every policy gradient method, Q-learning variant, and actor-critic algorithm manipulates trajectories.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not resetting the environment between episodes — `<code>env.reset()</code>` must be called at the start of each episode. Failing to do so means the agent starts from the terminal state of the previous episode, which is undefined behavior.</li><li>Using the same trajectory for multiple gradient updates without PPO&#x27;s clipping — in REINFORCE, each trajectory is used for exactly one gradient update and discarded. Reusing trajectories violates the on-policy assumption. PPO&#x27;s clip objective allows multiple updates on the same trajectory by preventing the updated policy from deviating too far from the collection policy.</li><li>Computing returns without discounting for long episodes — for an episode of 10,000 steps with γ=1.0, the return at step 0 is the sum of all future rewards. This very large return (could be 10,000+) causes gradient explosion. Always use γ &lt; 1 for long episodes.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement trajectory collection and return computation: (1) create a <code>CartPole</code>-v1 environment, (2) collect 100 episodes using a random policy, (3) compute discounted returns for each episode with γ=0.99, (4) plot: episode length histogram, return distribution, return at t=0 vs episode length, (5) implement a simple Monte Carlo policy gradient update using the collected trajectories, (6) run 500 episodes of training and plot the learning curve — does the agent learn to balance the pole longer over time?</div>
+    </div>
+  </div>
+</section>
+        
+<div class="good box">
+  <h3>Chapter project</h3>
+  <p>Build a small notebook or mini-app for <b>Reinforcement learning fundamentals</b>. Include a short README with the problem, dataset or input, approach, example output, mistakes found, evaluation method, and what you would improve next.</p>
+</div>
+      </div>
+      <nav class="nextprev"><a class="btn" href="sequence-models-and-transformers.html">Previous</a><a class="btn primary" href="rl-algorithms-and-applications.html">Next</a></nav>
+    </article>
+  </main>
+  <footer class="footer"><div class="wrap">Static website. Progress saves in browser only.</div></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

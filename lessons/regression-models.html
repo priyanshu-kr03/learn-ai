@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Regression models | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -47,7 +48,7 @@
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Use area as x and house price as y. Example rows: 1000 sq ft -&gt; 150k, 1500 sq ft -&gt; 210k, 2000 sq ft -&gt; 270k.</li><li>A reasonable line is price = 30,000 + 120 * area.</li><li>For 1800 sq ft, prediction = 30,000 + 120 * 1800 = 246,000.</li><li>If the real price is 255,000, the residual is 9,000. The model was low by 9,000.</li><li>Repeat this across all training rows and choose the line with the smallest overall error.</li></ol>
+        <pre><code>Use area as x and house price as y. Example rows: 1000 sq ft -&gt; 150k, 1500 sq ft -&gt; 210k, 2000 sq ft -&gt; 270k.</code></pre><pre><code>A reasonable line is price = 30,000 + 120 * area.</code></pre><pre><code>For 1800 sq ft, prediction = 30,000 + 120 * 1800 = 246,000.</code></pre><pre><code>If the real price is 255,000, the residual is 9,000. The model was low by 9,000.</code></pre><pre><code>Repeat this across all training rows and choose the line with the smallest overall error.</code></pre>
       </div>
       <pre><code>from sklearn.linear_model import LinearRegression
 model = LinearRegression()
@@ -71,7 +72,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Use features: area = 1800, bedrooms = 3, house_age = 10.</li><li>Suppose the model learned: price = 50,000 + 100*area + 15,000*bedrooms - 1,000*house_age.</li><li>Prediction = 50,000 + 100*1800 + 15,000*3 - 1,000*10.</li><li>Prediction = 50,000 + 180,000 + 45,000 - 10,000 = 265,000.</li><li>Interpretation: area and bedrooms increase predicted price; older age decreases it in this learned model.</li></ol>
+        <pre><code>Use features: area = 1800, bedrooms = 3, house_age = 10.</code></pre><pre><code>Suppose the model learned: price = 50,000 + 100*area + 15,000*bedrooms - 1,000*house_age.</code></pre><pre><code>Prediction = 50,000 + 100*1800 + 15,000*3 - 1,000*10.</code></pre><pre><code>Prediction = 50,000 + 180,000 + 45,000 - 10,000 = 265,000.</code></pre><pre><code>Interpretation: area and bedrooms increase predicted price; older age decreases it in this learned model.</code></pre>
       </div>
       <pre><code>from sklearn.linear_model import LinearRegression
 model = LinearRegression()
@@ -95,7 +96,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Start with one feature: years_experience.</li><li>Create a new feature: years_experience_squared = years_experience * years_experience.</li><li>Train a linear model using both years_experience and years_experience_squared.</li><li>The model can now learn a curve instead of one straight line.</li><li>Check validation error to ensure the curve generalizes.</li></ol>
+        <pre><code>Start with one feature: years_experience.</code></pre><pre><code>Create a new feature: years_experience_squared = years_experience * years_experience.</code></pre><pre><code>Train a linear model using both years_experience and years_experience_squared.</code></pre><pre><code>The model can now learn a curve instead of one straight line.</code></pre><pre><code>Check validation error to ensure the curve generalizes.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Polynomial regression shows how linear models can represent curves by transforming features. It is a bridge between simple lines and more flexible models.</div>
@@ -117,7 +118,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Train normal linear regression and notice some coefficients are very large.</li><li>Train Ridge with a small alpha, such as 1.0.</li><li>Compare validation error and coefficient sizes.</li><li>Increase alpha if overfitting remains; decrease alpha if the model underfits.</li><li>Choose the alpha that performs best on validation data, not training data.</li></ol>
+        <pre><code>Train normal linear regression and notice some coefficients are very large.</code></pre><pre><code>Train Ridge with a small alpha, such as 1.0.</code></pre><pre><code>Compare validation error and coefficient sizes.</code></pre><pre><code>Increase alpha if overfitting remains; decrease alpha if the model underfits.</code></pre><pre><code>Choose the alpha that performs best on validation data, not training data.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Ridge is important when linear regression becomes unstable. It reduces overfitting by shrinking coefficients, especially when features overlap or the dataset is small.</div>
@@ -139,7 +140,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Train a linear model with many features.</li><li>Apply Lasso with a chosen alpha value.</li><li>Inspect coefficients: some will become exactly zero.</li><li>Keep the non-zero features as the model&#x27;s selected predictors.</li><li>Check validation performance to confirm that feature selection did not remove useful signal.</li></ol>
+        <pre><code>Train a linear model with many features.</code></pre><pre><code>Apply Lasso with a chosen alpha value.</code></pre><pre><code>Inspect coefficients: some will become exactly zero.</code></pre><pre><code>Keep the non-zero features as the model&#x27;s selected predictors.</code></pre><pre><code>Check validation performance to confirm that feature selection did not remove useful signal.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Lasso is useful because it can perform feature selection by pushing some coefficients to zero. This helps when there are many possible predictors.</div>
@@ -156,17 +157,17 @@ model.fit(X_train, y_train)</code></pre>
       <h2>ElasticNet</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>ElasticNet combines Ridge and Lasso. It uses both L1 and L2 regularization, so it can shrink coefficients like Ridge and also set some coefficients to zero like Lasso.</p><p>This is useful when you have many correlated features. Lasso alone may choose one feature from a correlated group and ignore the rest. Ridge tends to keep all of them but shrink them. ElasticNet gives a middle path.</p><p>ElasticNet has two main controls. Alpha controls the total strength of regularization. The l1_ratio controls the mix between Lasso-like behavior and Ridge-like behavior. A higher l1_ratio behaves more like Lasso; a lower l1_ratio behaves more like Ridge.</p><p>Because it has more tuning choices, ElasticNet should be selected with cross-validation. Do not guess alpha and l1_ratio once and assume the result is best.</p><p>ElasticNet is a good practical option when linear regression overfits, features are many, and you want both stability and some feature selection.</p>
+        <p><code>ElasticNet</code> combines Ridge and Lasso. It uses both L1 and L2 regularization, so it can shrink coefficients like Ridge and also set some coefficients to zero like Lasso.</p><p>This is useful when you have many correlated features. Lasso alone may choose one feature from a correlated group and ignore the rest. Ridge tends to keep all of them but shrink them. <code>ElasticNet</code> gives a middle path.</p><p><code>ElasticNet</code> has two main controls. Alpha controls the total strength of regularization. The <code>l1_ratio</code> controls the mix between Lasso-like behavior and Ridge-like behavior. A higher <code>l1_ratio</code> behaves more like Lasso; a lower <code>l1_ratio</code> behaves more like Ridge.</p><p>Because it has more tuning choices, <code>ElasticNet</code> should be selected with cross-validation. Do not guess alpha and <code>l1_ratio</code> once and assume the result is best.</p><p><code>ElasticNet</code> is a good practical option when linear regression overfits, features are many, and you want both stability and some feature selection.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Start with a dataset containing many correlated features, such as multiple spending columns.</li><li>Train ElasticNet with several alpha values and l1_ratio values.</li><li>Compare validation error for each combination.</li><li>Inspect coefficients to see which features were shrunk and which became zero.</li><li>Choose the simplest model that keeps validation performance strong.</li></ol>
+        <pre><code>Start with a dataset containing many correlated features, such as multiple spending columns.</code></pre><pre><code>Train ElasticNet with several alpha values and l1_ratio values.</code></pre><pre><code>Compare validation error for each combination.</code></pre><pre><code>Inspect coefficients to see which features were shrunk and which became zero.</code></pre><pre><code>Choose the simplest model that keeps validation performance strong.</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>ElasticNet is useful when you want Ridge-like stability and Lasso-like feature selection. It is especially helpful with many correlated features.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Tuning only alpha and ignoring l1_ratio.</li><li>Using it as a black box without inspecting coefficients.</li><li>Skipping cross-validation even though the model has multiple regularization choices.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Compare Ridge, Lasso, and ElasticNet on the same feature set. Note which coefficients shrink, which become zero, and which model gives the clearest tradeoff.</div>
+      <div class="good box"><b>Why this matters in AI</b><br><code>ElasticNet</code> is useful when you want Ridge-like stability and Lasso-like feature selection. It is especially helpful with many correlated features.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Tuning only alpha and ignoring <code>l1_ratio</code>.</li><li>Using it as a black box without inspecting coefficients.</li><li>Skipping cross-validation even though the model has multiple regularization choices.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare Ridge, Lasso, and <code>ElasticNet</code> on the same feature set. Note which coefficients shrink, which become zero, and which model gives the clearest tradeoff.</div>
     </div>
   </div>
 </section>
@@ -183,7 +184,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Actual values: [100, 200, 300]. Predictions: [110, 180, 330].</li><li>Errors: [10, -20, 30].</li><li>Absolute errors: [10, 20, 30].</li><li>MAE = (10 + 20 + 30) / 3 = 20.</li><li>Interpretation: the model is off by 20 units on average.</li></ol>
+        <pre><code>Actual values: [100, 200, 300]. Predictions: [110, 180, 330].</code></pre><pre><code>Errors: [10, -20, 30].</code></pre><pre><code>Absolute errors: [10, 20, 30].</code></pre><pre><code>MAE = (10 + 20 + 30) / 3 = 20.</code></pre><pre><code>Interpretation: the model is off by 20 units on average.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>MAE is the easiest regression metric to explain to non-technical users because it is in the same unit as the target.</div>
@@ -205,7 +206,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Actual values: [100, 200, 300]. Predictions: [110, 180, 330].</li><li>Errors: [10, -20, 30].</li><li>Squared errors: [100, 400, 900].</li><li>MSE = (100 + 400 + 900) / 3 = 466.67.</li><li>Interpretation: larger errors dominate the score because of squaring.</li></ol>
+        <pre><code>Actual values: [100, 200, 300]. Predictions: [110, 180, 330].</code></pre><pre><code>Errors: [10, -20, 30].</code></pre><pre><code>Squared errors: [100, 400, 900].</code></pre><pre><code>MSE = (100 + 400 + 900) / 3 = 466.67.</code></pre><pre><code>Interpretation: larger errors dominate the score because of squaring.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>MSE is useful for optimization and for problems where large errors should be punished much more strongly than small errors.</div>
@@ -227,7 +228,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Use the previous MSE example where MSE = 466.67.</li><li>RMSE = square root of 466.67.</li><li>RMSE is about 21.6.</li><li>Compare with MAE = 20.</li><li>Since RMSE is only slightly higher, there are not huge outlier errors in this tiny example.</li></ol>
+        <pre><code>Use the previous MSE example where MSE = 466.67.</code></pre><pre><code>RMSE = square root of 466.67.</code></pre><pre><code>RMSE is about 21.6.</code></pre><pre><code>Compare with MAE = 20.</code></pre><pre><code>Since RMSE is only slightly higher, there are not huge outlier errors in this tiny example.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>RMSE keeps the large-error penalty of MSE while returning to the original target unit, which makes it easier to communicate.</div>
@@ -249,7 +250,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Baseline model predicts the average target for every row.</li><li>Your regression model predicts using features.</li><li>R2 compares your model&#x27;s squared error with the baseline&#x27;s squared error.</li><li>If your model reduces error a lot, R2 approaches 1.</li><li>If your model does not beat the average baseline, R2 is 0 or negative.</li></ol>
+        <pre><code>Baseline model predicts the average target for every row.</code></pre><pre><code>Your regression model predicts using features.</code></pre><pre><code>R2 compares your model&#x27;s squared error with the baseline&#x27;s squared error.</code></pre><pre><code>If your model reduces error a lot, R2 approaches 1.</code></pre><pre><code>If your model does not beat the average baseline, R2 is 0 or negative.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>R2 tells whether the model explains more variation than a mean-only baseline, but it must be paired with actual error metrics.</div>
@@ -271,7 +272,7 @@ model.fit(X_train, y_train)</code></pre>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>For each row, compute residual = actual - predicted.</li><li>Sort rows by largest absolute residual.</li><li>Inspect the worst predictions manually.</li><li>Plot residuals against predicted values or important features.</li><li>Look for patterns: curves, widening spread, biased groups, or extreme outliers.</li></ol>
+        <pre><code>For each row, compute residual = actual - predicted.</code></pre><pre><code>Sort rows by largest absolute residual.</code></pre><pre><code>Inspect the worst predictions manually.</code></pre><pre><code>Plot residuals against predicted values or important features.</code></pre><pre><code>Look for patterns: curves, widening spread, biased groups, or extreme outliers.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Residual analysis is how you find where the model is wrong. It turns a single score into actionable debugging information.</div>

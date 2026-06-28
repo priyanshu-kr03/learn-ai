@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Multimodal AI | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -33,7 +34,7 @@
       <header class="content-head">
         <span class="eyebrow">08 Generative AI and LLMs</span>
         <h1>Multimodal AI</h1>
-        <div class="meta"><span class="pill">Advanced</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 33</span></div>
+        <div class="meta"><span class="pill">Advanced</span><span class="pill">1.5 weeks</span><span class="pill">Lesson 37</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">Multimodal AI</span><span class="tag">Vision-language models</span><span class="tag">Image captioning</span><span class="tag">OCR</span><span class="tag">Document AI</span><span class="tag">PDF parsing</span><span class="tag">Layout understanding</span><span class="tag">Speech-to-text</span><span class="tag">Text-to-speech</span><span class="tag">Speaker diarization</span><span class="tag">Audio classification</span><span class="tag">Image generation</span><span class="tag">Diffusion models</span><span class="tag">Video understanding</span><span class="tag">Multimodal RAG</span></div>
       </header>
@@ -46,17 +47,38 @@
       <h2>Multimodal AI</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Multimodal AI is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Multimodal AI, test Multimodal AI with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Multimodal AI processes and generates content across multiple modalities — text, images, audio, video, and structured data. Humans communicate multimodally: we read (text), look at pictures (images), listen (audio), and watch videos (video + audio). Early AI was unimodal: separate models for text, image, audio. Modern multimodal AI unifies these into single models that can understand and generate across all modalities within the same context.</p><p>Vision-language models (VLMs): combine computer vision and NLP. They can describe images (image captioning), answer questions about images (VQA — visual question answering), reason about scenes (&#x27;Is there a dog in this image and what is it doing?&#x27;), perform optical character recognition (OCR), and ground text references to image regions. Models: GPT-4V, Claude 3, Gemini 1.5, LLaVA (open-source), <code>PaliGemma</code>.</p><p>Architecture of VLMs: (1) vision encoder (CLIP <code>ViT</code>, <code>SigLIP</code>) converts the image to a sequence of visual tokens, (2) a projector layer maps visual tokens to the LLM&#x27;s embedding space, (3) the LLM processes interleaved text and visual tokens. The LLM sees visual tokens as if they were word tokens — the architecture is identical to the text-only LLM except the input now includes image-derived tokens.</p><p>Audio-language models: Whisper (<code>OpenAI</code>) converts speech to text (ASR — automatic speech recognition). Audio-language models go further: understanding tone, detecting speaker identity (speaker diarization), performing audio captioning (&#x27;A piano is playing in a crowded restaurant&#x27;). GPT-4o processes audio natively, including real-time speech-to-speech conversation.</p><p>Multimodal RAG: retrieval-augmented generation with multiple modalities. A user uploads a PDF with text and charts. The system extracts: text chunks (for text RAG), images of charts (for visual RAG), and table data (for structured RAG). The retriever finds relevant context across all modalities. The VLM generates answers grounded in the combined text + image context. This enables &#x27;chat with your documents&#x27; applications for complex technical documents, medical reports, and scientific papers.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to Multimodal AI, the response, and one failure case.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Multimodal AI changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from anthropic import Anthropic
+import base64
+client = Anthropic()
+# Encode image to base64
+with open(&#x27;image.jpg&#x27;, &#x27;rb&#x27;) as f:
+    image_data = base64.b64encode(f.read()).decode()
+response = client.messages.create(
+    model=&#x27;claude-opus-4-8&#x27;, max_tokens=1000,
+    messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: [
+        {&#x27;type&#x27;: &#x27;image&#x27;, &#x27;source&#x27;: {&#x27;type&#x27;: &#x27;base64&#x27;, &#x27;media_type&#x27;: &#x27;image/jpeg&#x27;, &#x27;data&#x27;: image_data}},
+        {&#x27;type&#x27;: &#x27;text&#x27;, &#x27;text&#x27;: &#x27;Describe this image in detail and extract any text visible.&#x27;}
+    ]}])
+print(response.content[0].text)</code></pre><pre><code># LLaVA open-source VLM
+from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
+from PIL import Image
+processor = LlavaNextProcessor.from_pretrained(&#x27;llava-hf/llava-v1.6-mistral-7b-hf&#x27;)
+model = LlavaNextForConditionalGeneration.from_pretrained(&#x27;llava-hf/llava-v1.6-mistral-7b-hf&#x27;)
+image = Image.open(&#x27;chart.png&#x27;)
+prompt = &#x27;[INST] &lt;image&gt;\nWhat trend does this chart show? [/INST]&#x27;
+inputs = processor(prompt, image, return_tensors=&#x27;pt&#x27;)
+output = model.generate(**inputs, max_new_tokens=200)
+print(processor.decode(output[0], skip_special_tokens=True))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Multimodal AI. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Multimodal AI is the next frontier in AI applications. Enterprise documents, medical reports, e-commerce product listings, and social media are inherently multimodal. Building applications that can understand and generate content across text, image, and audio — rather than just text — dramatically expands the scope of what AI can do.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Resizing images too aggressively before passing to VLMs — GPT-4V and Claude 3 have optimal resolutions. Very small images (&lt; 512×512) lose critical detail (text, small objects). Check the model&#x27;s recommended image size.</li><li>Not chunking large documents before multimodal RAG — VLMs have context limits. A 100-page PDF needs intelligent chunking (by page, by section) before processing. Passing the entire PDF as one context window is not feasible.</li><li>Treating VLM image descriptions as ground truth — VLMs can hallucinate image details, especially for small text, complex charts, and unusual objects. Validate VLM outputs for factual claims.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multimodal document Q&amp;A system: (1) take a technical PDF with text, tables, and charts, (2) extract pages as images, (3) for each page: use a VLM to generate a text description, extract any visible text with OCR, extract table data, (4) index all extracted content in a vector database, (5) implement a RAG pipeline: retrieve relevant pages/sections, include the original images in the VLM context, (6) evaluate: ask 10 questions about the document and compare VLM answers to manually verified answers.</div>
     </div>
   </div>
 </section>
@@ -68,17 +90,33 @@
       <h2>Vision-language models</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Vision-language models belongs to deep learning, where models learn layered representations from data. A beginner should not treat it as a magic block. Track what enters, what operation happens, what shape comes out, and how the loss tells the model to improve.</p><p>In Multimodal AI, understand Vision-language models through the training loop: input batch, forward pass, loss calculation, backward pass, optimizer step, and validation. Every deep learning concept touches one or more of these stages.</p><p>Tensor shape is central. Many deep learning errors happen because the model expects data in one shape but receives another. For images, shape may include batch, channels, height, and width. For text, shape may include batch, sequence length, and embedding dimension.</p><p>A practical example is image classification. Pixels become tensors, tensors pass through layers, the model outputs class scores, the loss compares scores with labels, and gradients update weights. The topic should be placed somewhere in that chain.</p><p>To learn deeply, run a tiny model and overfit a tiny batch first. If the model cannot memorize a few examples, something is wrong with data, labels, architecture, or training code. After that, use validation data to test generalization.</p>
+        <p>Vision-language models (VLMs) are neural networks that process both images and text as unified input. The key innovation: learning joint representations where image and text features occupy the same embedding space. CLIP (Contrastive Language-Image Pre-training, <code>OpenAI</code>) first demonstrated this at scale — trained on 400 million image-text pairs from the web to align image and text embeddings via contrastive learning.</p><p>CLIP architecture: a vision encoder (<code>ViT</code> — Vision Transformer, or <code>ResNet</code>) produces image embeddings. A text encoder (Transformer) produces text embeddings. Both are projected to the same d-dimensional space. Training: for a batch of (image, text) pairs, maximize similarity between matching pairs and minimize similarity between non-matching pairs (<code>InfoNCE</code> contrastive loss). This forces the model to learn that &#x27;a photo of a cat&#x27; has an embedding close to an actual cat photo.</p><p>Zero-shot classification with CLIP: without any task-specific fine-tuning, CLIP can classify images by comparing the image embedding to text embeddings of class descriptions. For CIFAR-10: compute text embeddings for [&#x27;a photo of a airplane&#x27;, &#x27;a photo of a automobile&#x27;, ..., &#x27;a photo of a truck&#x27;], compare the image embedding to all 10, predict the closest class. This achieves ~76% accuracy on CIFAR-10 with NO training examples — zero-shot learning.</p><p>LLaVA (Large Language and Vision Assistant): extends VLMs to conversational question-answering. Architecture: CLIP <code>ViT</code> vision encoder → MLP projection → LLaMA/Mistral/Vicuna LLM. The projection maps visual tokens to the LLM&#x27;s token embedding space — the LLM then processes interleaved image and text tokens. Training: instruction-following data pairs like (&#x27;Describe this image&#x27;, image) fine-tune the model for instruction-following behavior.</p><p>Applications: image captioning (auto-generate alt text for accessibility), visual question answering (chatbots that can analyze product photos), chart understanding (extract data from graphs), document processing (understand invoices, receipts, forms), medical imaging (assist radiologists in analyzing X-rays and MRIs), robot perception (describe the scene for a robot arm to pick objects).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
-        <ol><li>Create a minimal tensor or batch and write down its shape.</li><li>Show where Vision-language models appears in the model or training loop.</li><li>Run one forward pass and record the output shape or loss.</li><li>Explain one failure mode such as wrong shape, overfitting, or unstable loss.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import CLIPProcessor, CLIPModel
+import torch
+model = CLIPModel.from_pretrained(&#x27;openai/clip-vit-base-patch32&#x27;)
+processor = CLIPProcessor.from_pretrained(&#x27;openai/clip-vit-base-patch32&#x27;)
+from PIL import Image
+image = Image.open(&#x27;cat.jpg&#x27;)
+# Zero-shot classification
+labels = [&#x27;a cat&#x27;, &#x27;a dog&#x27;, &#x27;a horse&#x27;, &#x27;a car&#x27;]
+inputs = processor(text=labels, images=image, return_tensors=&#x27;pt&#x27;, padding=True)
+logits = model(**inputs).logits_per_image
+probabilities = logits.softmax(dim=1)
+print({label: f&#x27;{prob:.3f}&#x27; for label, prob in zip(labels, probabilities[0])})</code></pre><pre><code># Image similarity search with CLIP
+image_features = model.get_image_features(**processor(images=images, return_tensors=&#x27;pt&#x27;))
+text_features = model.get_text_features(**processor(text=queries, return_tensors=&#x27;pt&#x27;))
+image_features /= image_features.norm(dim=-1, keepdim=True)
+text_features /= text_features.norm(dim=-1, keepdim=True)
+similarity = (text_features @ image_features.T)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Deep learning models are powerful but easy to misuse. Understanding this topic helps you control shapes, training stability, compute cost, and generalization.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring tensor shapes and hoping the framework error explains everything.</li><li>Training longer when the real issue is data quality or labels.</li><li>Using a large model without a validation plan or compute budget.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Sketch the tensor shapes or model flow for Vision-language models. Then run a minimal PyTorch or notebook example and record one thing that failed initially.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>VLMs are enabling a new generation of AI applications that understand the visual world as naturally as they understand text. Product search by image description, automated accessibility captioning, medical imaging analysis, and autonomous navigation all rely on VLMs. CLIP embeddings are widely used for multimodal RAG systems.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using CLIP for detailed image understanding — CLIP produces a single embedding per image (global representation). It cannot answer &#x27;What is in the top-left corner?&#x27; For spatial/detailed questions, use a VLM like LLaVA or GPT-4V.</li><li>Not normalizing CLIP embeddings before similarity search — cosine similarity requires unit-norm vectors. Always normalize: embeddings /= <code>embeddings.norm</code>(dim=-1, keepdim=True).</li><li>Training a VLM from scratch — large VLMs require millions of GPU hours to train. Always start from a pre-trained model (CLIP, LLaVA) and fine-tune on your domain data.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a product search engine using CLIP: (1) take a catalog of 1000 product images, (2) compute CLIP image embeddings for all images, (3) store in FAISS or <code>numpy</code>, (4) implement text-to-image search: given &#x27;red leather handbag&#x27;, find top 5 most similar products, (5) implement image-to-image search: given a product photo, find visually similar items, (6) compare: CLIP similarity search vs keyword-based search for 20 test queries. Which handles ambiguous queries better?</div>
     </div>
   </div>
 </section>
@@ -90,17 +128,35 @@
       <h2>Image captioning</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Image captioning is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Image captioning generates natural language descriptions of images. A caption model takes an image as input and outputs a sentence like &#x27;A golden retriever runs through a field of yellow flowers.&#x27; This requires both visual understanding (what is in the image) and language generation (how to describe it naturally).</p><p>Encoder-decoder architecture: image encoder (CNN or Vision Transformer) extracts visual features → cross-attention mechanism attends to visual features while generating text → text decoder (language model) generates captions token by token. BLIP-2 and LLaVA use a more powerful approach: align a visual encoder with a frozen LLM via a lightweight adapter (Q-Former or MLP projection).</p><p>BLIP-2: Bootstrapping Language-Image Pre-training. Uses a Q-Former (Querying Transformer) that connects a frozen image encoder (EVA-CLIP) to a frozen LLM (Flan-T5 or OPT). The Q-Former learns to extract the most language-relevant features from the image. Fine-tuning only the Q-Former while keeping both the vision encoder and LLM frozen is extremely efficient.</p><p>Evaluation metrics: BLEU, METEOR, ROUGE measure n-gram overlap between generated and reference captions. CIDEr (Consensus-based Image Description Evaluation) specifically designed for captions — measures TF-IDF weighted n-gram similarity, highly correlated with human judgment. CLIP score measures semantic alignment between image and generated caption using CLIP embeddings.</p><p>Practical applications: image search (index images by their captions), accessibility (describe images for visually impaired users), content moderation (describe what&#x27;s in a flagged image for human review), e-commerce (auto-generate product descriptions from product images).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Image captioning is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import BlipProcessor, BlipForConditionalGeneration
+from PIL import Image
+import requests
+# BLIP for image captioning
+processor = BlipProcessor.from_pretrained(&#x27;Salesforce/blip-image-captioning-base&#x27;)
+model = BlipForConditionalGeneration.from_pretrained(&#x27;Salesforce/blip-image-captioning-base&#x27;)
+# Load image
+img_url = &#x27;https://storage.googleapis.com/sfr-vision-language-research/BLIP/demo.jpg&#x27;
+raw_image = Image.open(requests.get(img_url, stream=True).raw).convert(&#x27;RGB&#x27;)
+# Unconditional captioning
+inputs = processor(raw_image, return_tensors=&#x27;pt&#x27;)
+out = model.generate(**inputs, max_new_tokens=50)
+caption = processor.decode(out[0], skip_special_tokens=True)
+print(f&#x27;Caption: {caption}&#x27;)
+# Conditional captioning (describe specific aspect)
+cond_text = &#x27;a photography of&#x27;
+inputs = processor(raw_image, cond_text, return_tensors=&#x27;pt&#x27;)
+out = model.generate(**inputs, max_new_tokens=50)
+print(f&#x27;Conditional: {processor.decode(out[0], skip_special_tokens=True)}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Image captioning, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Image captioning is the bridge between visual and language understanding. It enables: image search without manual tagging, auto-generated alt text for accessibility (legal requirement in many jurisdictions), and is the foundation of visual Q&amp;A, image-to-story generation, and multimodal document processing. BLIP-2&#x27;s efficient adapter training approach is also a template for other multimodal fusion tasks.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not evaluating with CLIP score in addition to n-gram metrics — BLEU/ROUGE measure surface similarity to reference captions. A correct but differently phrased caption (&#x27;a dog runs&#x27; vs &#x27;a canine is running&#x27;) scores low on BLEU. CLIP score measures semantic alignment between image and caption regardless of exact phrasing.</li><li>Using the base model for domain-specific captioning — BLIP captioning models are trained on general images. For medical images (X-rays, pathology), fine-tune on domain-specific caption pairs for accurate technical descriptions.</li><li>Not handling image preprocessing — low-resolution images, very dark images, or unusual aspect ratios can degrade caption quality. Preprocess: resize to the model&#x27;s expected resolution, enhance contrast for dark images.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an image captioning and search system: (1) collect 500 images from a specific domain (products, nature, architecture), (2) generate captions for all images with BLIP, (3) add captions to a text search index (TF-IDF or dense), (4) implement semantic image search: given a text query, retrieve the most relevant images by searching their captions, (5) evaluate: for 20 test queries with known relevant images, compute recall@5, (6) compare BLIP captioning vs CLIP embeddings for image search — which retrieves more accurate results?</div>
     </div>
   </div>
 </section>
@@ -112,17 +168,47 @@
       <h2>OCR</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>OCR is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>OCR (Optical Character Recognition) converts images containing text into machine-readable text. Modern OCR combines deep learning for text detection (locating where text is in the image) and text recognition (reading the text at each location). OCR is a prerequisite for Document AI: processing scanned documents, PDFs, receipts, and forms.</p><p>Tesseract: the most widely used open-source OCR engine (maintained by Google). Works well for high-quality scanned text with clear fonts. pytesseract provides a Python wrapper. Best performance requires preprocessing: convert to grayscale, apply adaptive thresholding, deskew (correct rotation). Struggles with: handwritten text, complex layouts, low-resolution images, tables.</p><p><code>EasyOCR</code>: a Python library supporting 80+ languages. Better than Tesseract on many real-world documents. Uses CRAFT (text detection) + CRNN (text recognition). `reader = <code>easyocr.Reader</code>([&#x27;en&#x27;, &#x27;fr&#x27;]); results = <code>reader.readtext</code>(<code>image_path</code>)` returns a list of (<code>bounding_box</code>, text, confidence) tuples.</p><p><code>PaddleOCR</code>: the state-of-the-art open-source OCR from Baidu. PP-OCR v4 is extremely accurate on complex document layouts, mixed languages, and rotated text. Pipeline: text detection (DBNet) → text direction classification → text recognition (SVTR). Significantly outperforms Tesseract and <code>EasyOCR</code> on challenging documents.</p><p>Cloud OCR: Google Cloud Vision API, AWS Textract, and Azure Computer Vision provide managed OCR. Textract additionally extracts structured data from forms and tables (key-value pairs, table cells) with high accuracy on standard business documents. Use cloud OCR for production when: high accuracy is required, documents have complex layouts, or you need structured extraction (forms, invoices) with minimal custom training.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where OCR is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import easyocr
+from PIL import Image
+import numpy as np
+# EasyOCR - easiest to get started
+reader = easyocr.Reader([&#x27;en&#x27;], gpu=False)  # gpu=True if CUDA available
+results = reader.readtext(&#x27;invoice.jpg&#x27;)
+for (bbox, text, confidence) in results:
+    print(f&#x27;Text: {text:30s} | Confidence: {confidence:.3f}&#x27;)
+    # bbox = [[x1,y1], [x2,y2], [x3,y3], [x4,y4]] (four corners)
+# Extract all text as a string
+full_text = &#x27; &#x27;.join([text for (_, text, _) in results])
+print(&#x27;Full document text:&#x27;, full_text[:200])</code></pre><pre><code># Tesseract with preprocessing
+import pytesseract
+import cv2
+img = cv2.imread(&#x27;document.png&#x27;)
+# Preprocessing for better OCR accuracy
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Adaptive thresholding (handles uneven lighting)
+thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+# Deskew (straighten tilted scans)
+def deskew(image):
+    coords = np.column_stack(np.where(image &gt; 0))
+    angle = cv2.minAreaRect(coords)[-1]
+    if angle &lt; -45: angle = 90 + angle
+    (h, w) = image.shape[:2]
+    M = cv2.getRotationMatrix2D((w//2, h//2), -angle, 1.0)
+    return cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC)
+deskewed = deskew(thresh)
+# OCR
+text = pytesseract.image_to_string(deskewed, config=&#x27;--psm 6&#x27;)  # psm 6: uniform block of text
+print(text)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for OCR, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>OCR is the entry point for processing the vast majority of business documents — contracts, invoices, medical records, and reports exist as scanned PDFs or images. A Document AI pipeline that can OCR any document and extract structured information from it can automate enormous amounts of manual data entry. Understanding the OCR pipeline from preprocessing to structured extraction is a high-value practical skill.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not preprocessing images before OCR — contrast enhancement, thresholding, and deskewing improve OCR accuracy significantly on real-world documents. Don&#x27;t send a raw low-contrast scan to OCR and expect good results.</li><li>Using Tesseract on complex layouts — Tesseract assumes a uniform text layout. For documents with columns, tables, and mixed text+graphics, use <code>PaddleOCR</code> or a cloud OCR service that handles complex layouts.</li><li>Not validating OCR output — OCR always makes some errors. For production pipelines, validate extracted values against expected formats (dates, amounts, IDs) and flag low-confidence extractions for human review.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a document digitization pipeline: (1) collect 5 different types of documents (receipt, invoice, form, contract, handwritten note), (2) apply <code>EasyOCR</code> and Tesseract to each — compare accuracy (count word errors manually), (3) for the receipt: extract total amount, date, and vendor name using regex on the OCR output, (4) visualize: draw bounding boxes on the original image for all detected text regions, (5) test <code>PaddleOCR</code> on the same documents — does it significantly outperform the others?</div>
     </div>
   </div>
 </section>
@@ -134,17 +220,31 @@
       <h2>Document AI</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Document AI is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Document AI (intelligent document processing) extracts structured information from unstructured documents: invoices, contracts, medical records, forms, and reports. It combines OCR (text extraction), layout understanding (where is the text on the page?), and NLP (what does the text mean?) to convert document images or PDFs into structured data.</p><p>Document types and their challenges: structured forms (tax forms, medical intake forms) have fixed layouts — field extraction is straightforward with template matching. Semi-structured documents (invoices, receipts) have variable layouts but consistent entities (vendor, date, total). Unstructured documents (contracts, research papers) require deep NLP to extract entities and relationships.</p><p>Layout-aware models: standard NLP models treat text as a sequence of tokens without positional information. Layout-aware models (<code>LayoutLM</code>, <code>LayoutLMv2</code>, <code>LayoutLMv3</code>) incorporate the 2D position of each token (its bounding box coordinates) as additional input. This allows the model to understand: &#x27;the number to the right of the label TOTAL is the total amount.&#x27;</p><p><code>LayoutLMv3</code> architecture: combines text embeddings, image patches (from the document image), and layout positions (normalized bounding box coordinates). Pre-trained on large document datasets. Fine-tuned on specific document types (invoices: extract vendor/date/amount; contracts: extract parties/dates/key clauses). State-of-the-art for form understanding (FUNSD benchmark) and document classification.</p><p>AWS Textract and Google Document AI: managed cloud services for Document AI. Textract extracts: text, tables (as structured CSV-like data), and forms (key-value pairs). Google Document AI provides specialized processors: invoice processor, W-2 form processor, identity document processor. These cloud services are often the fastest path to production for standard document types.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Multimodal AI and needs to apply Document AI. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Document AI is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import LayoutLMv3Processor, LayoutLMv3ForTokenClassification
+from PIL import Image
+import torch
+# LayoutLMv3 for form understanding
+processor = LayoutLMv3Processor.from_pretrained(&#x27;microsoft/layoutlmv3-base&#x27;)
+model = LayoutLMv3ForTokenClassification.from_pretrained(&#x27;microsoft/layoutlmv3-base&#x27;, num_labels=9)  # 9 NER labels for FUNSD
+# Process document
+image = Image.open(&#x27;invoice.png&#x27;).convert(&#x27;RGB&#x27;)
+# Normally you&#x27;d provide word+bbox from OCR; here showing the API
+encoding = processor(image, return_tensors=&#x27;pt&#x27;)
+with torch.no_grad():
+    outputs = model(**encoding)
+token_predictions = outputs.logits.argmax(-1).squeeze().tolist()
+# The predictions are BIO tags for each word: B-HEADER, I-HEADER, B-QUESTION, B-ANSWER, etc.
+print(f&#x27;Predictions for {len(token_predictions)} tokens&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Document AI, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Document AI is one of the highest-value real-world AI applications. Enterprises process millions of invoices, contracts, and forms manually — automating even 80% of this with accurate extraction saves enormous labor costs and reduces errors. Understanding the full Document AI pipeline (OCR → layout parsing → entity extraction → structured output) positions you for applied ML work in finance, healthcare, legal, and logistics.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using a text-only NLP model for documents with complex layouts — BERT sees the text of an invoice without knowing which numbers are totals vs quantities vs prices. <code>LayoutLM</code> understands that a number directly to the right of a label &#x27;Total Due:&#x27; is the total amount. Always use layout-aware models for document information extraction.</li><li>Skipping document quality assessment — <code>LayoutLM</code> and OCR performance degrades dramatically on low-resolution scans (&lt; 150 DPI), tilted documents, and documents with poor contrast. Add a quality check step: reject documents below a quality threshold and request a better scan.</li><li>Over-relying on template matching — invoices from different vendors have different layouts. A template matcher trained on Vendor A&#x27;s invoices fails completely on Vendor B&#x27;s. Use layout-aware models that generalize across layouts, not template matching that only works for one specific layout.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an invoice extraction pipeline: (1) collect 20 invoice images from different vendors (or generate synthetic ones), (2) run OCR with <code>EasyOCR</code> to extract text + bounding boxes, (3) extract key fields with regex: total amount, date, invoice number, vendor name, (4) compare to <code>LayoutLMv3</code>: fine-tune on a small labeled dataset (10 invoices with labeled fields), evaluate on 10 test invoices, (5) measure: what fraction of invoices have correctly extracted all 4 fields? What is the most common extraction failure?</div>
     </div>
   </div>
 </section>
@@ -156,17 +256,51 @@
       <h2>PDF parsing</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>PDF parsing is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>PDF parsing extracts text, tables, images, and metadata from PDF files. PDFs come in two types: text-based (PDF with embedded text fonts — easy to parse) and image-based (scanned documents stored as images — requires OCR). A production document processing pipeline must handle both.</p><p>pdfplumber: the best Python library for extracting text AND tables from text-based PDFs. It exposes each page&#x27;s text, bounding boxes, and table structure. `<code>page.extract_text()</code>` gets plain text. `<code>page.extract_table()</code>` extracts a table as a list of rows. `<code>page.extract_tables()</code>` extracts all tables on the page. Preserves reading order better than <code>PyPDF2</code>.</p><p><code>PyPDF2</code> / pypdf: simpler library for basic text extraction. `<code>PdfReader</code>(file).pages[i].<code>extract_text()</code>`. Good for text-only PDFs without complex layouts. Fails on: two-column layouts (interleaves columns incorrectly), text in textboxes overlaid on images, and scanned PDFs.</p><p>Camelot: specialized for table extraction from text-based PDFs. Two modes: lattice (detects tables by cell borders — accurate for PDF tables with visible borders), stream (infers table structure from whitespace — for borderless tables). Better than pdfplumber for complex tables.</p><p>Handling scanned PDFs: if `<code>page.extract_text()</code>` returns empty or garbled text, the PDF is image-based. Use Pillow to convert each page to an image (`<code>pdf2image.convert_from_path()</code>`), then run OCR (<code>EasyOCR</code>, Tesseract, <code>PaddleOCR</code>) on each page image. The result is a text representation that can be processed by NLP models.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Multimodal AI and needs to apply PDF parsing. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where PDF parsing is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pdfplumber
+from pathlib import Path
+# Extract text and tables from a PDF
+def extract_pdf_content(pdf_path: str) -&gt; dict:
+    result = {&#x27;pages&#x27;: [], &#x27;tables&#x27;: []}
+    with pdfplumber.open(pdf_path) as pdf:
+        for page_num, page in enumerate(pdf.pages, 1):
+            text = page.extract_text()
+            tables = page.extract_tables()
+            result[&#x27;pages&#x27;].append({&#x27;page&#x27;: page_num, &#x27;text&#x27;: text, &#x27;n_chars&#x27;: len(text or &#x27;&#x27;)})
+            for table in tables:
+                result[&#x27;tables&#x27;].append({&#x27;page&#x27;: page_num, &#x27;rows&#x27;: len(table), &#x27;cols&#x27;: len(table[0]) if table else 0, &#x27;data&#x27;: table})
+    return result
+content = extract_pdf_content(&#x27;annual_report.pdf&#x27;)
+print(f&#x27;Pages: {len(content[&quot;pages&quot;])}&#x27;)
+print(f&#x27;Tables: {len(content[&quot;tables&quot;])}&#x27;)
+# Check if text was extracted (vs scanned PDF)
+for page in content[&#x27;pages&#x27;][:3]:
+    print(f&#x27;Page {page[&quot;page&quot;]}: {page[&quot;n_chars&quot;]} chars&#x27;)
+    if page[&#x27;n_chars&#x27;] &lt; 50: print(&#x27;  WARNING: possibly scanned — run OCR&#x27;)</code></pre><pre><code># Convert scanned PDF pages to images for OCR
+from pdf2image import convert_from_path
+import easyocr
+def extract_scanned_pdf(pdf_path: str) -&gt; list:
+    images = convert_from_path(pdf_path, dpi=300)  # 300 DPI for good OCR quality
+    reader = easyocr.Reader([&#x27;en&#x27;])
+    all_text = []
+    for i, image in enumerate(images):
+        # Convert PIL Image to numpy array for easyocr
+        import numpy as np
+        img_array = np.array(image)
+        results = reader.readtext(img_array)
+        page_text = &#x27; &#x27;.join([text for (_, text, conf) in results if conf &gt; 0.3])
+        all_text.append({&#x27;page&#x27;: i+1, &#x27;text&#x27;: page_text})
+        print(f&#x27;Page {i+1}: {len(page_text)} chars extracted&#x27;)
+    return all_text</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for PDF parsing, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>PDF parsing is a foundational skill for any Document AI or RAG application. Most enterprise knowledge lives in PDFs: contracts, financial reports, research papers, technical documentation. A RAG system that only handles plain text misses the majority of enterprise documents. Knowing how to extract text and tables from both text-based and scanned PDFs unlocks the ability to process almost any document type.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not detecting whether a PDF is text-based or scanned before parsing — <code>pdfplumber.extract_text()</code> returns None or an empty string for scanned PDFs. Check the character count per page; if it&#x27;s &lt; 50 for a non-empty page, run OCR.</li><li>Not preserving page structure for RAG chunking — extracting one long string from a 100-page PDF and then chunking it loses page boundaries. Chunk by page, preserving page numbers in metadata so retrieved chunks can be cited correctly.</li><li>Not handling multi-column layouts — pdfplumber reads text in page order (left-to-right, top-to-bottom within the page). In two-column layouts, it interleaves left and right column content. Use `<code>page.extract_text</code>(<code>x_tolerance</code>=3)` or column detection to handle multi-column PDFs correctly.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a PDF extraction pipeline: (1) collect 5 PDFs of different types: research paper (two-column), financial report (tables + text), scanned invoice, form, and a contract, (2) detect whether each is text-based or scanned (check extracted text length), (3) for text-based: extract text with pdfplumber, extract tables with camelot, (4) for scanned: convert to images, run <code>EasyOCR</code>, (5) chunk each PDF by page with metadata (filename, page number), add to a <code>ChromaDB</code> collection, (6) test retrieval: can you find specific information (a table value, a clause number, a financial figure) using semantic search?</div>
     </div>
   </div>
 </section>
@@ -178,17 +312,38 @@
       <h2>Layout understanding</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Layout understanding is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Layout understanding is the ability to interpret the spatial structure of a document — not just the text content, but where that text is on the page and what its position means. A table cell in row 3 column 2 has different semantics from the same text in a paragraph. A label to the left of a field tells you the field&#x27;s name. A bold heading signals a section boundary.</p><p>Why layout matters: the same word &#x27;Total&#x27; can mean different things based on its position on a page. In an invoice, &#x27;Total&#x27; in the bottom-right, followed by a dollar amount, signals the total invoice amount. In a contract, &#x27;Total&#x27; may be part of a legal clause. Layout-aware models (<code>LayoutLM</code>, <code>LayoutLMv3</code>) incorporate bounding box coordinates alongside text to disambiguate.</p><p>Document layout analysis: before extracting text, analyze the page structure. Identify: text regions (paragraphs, headings), table regions (rows and columns), figure regions (charts, images), and form fields (label-value pairs). Tools: Detectron2 with the <code>DocLayNet</code> dataset (trained to segment documents into these regions), <code>PaddlePaddle</code>&#x27;s PP-Structure.</p><p>Table structure recognition: detecting that a table exists is step one. Recognizing its structure (number of rows/columns, which cells are headers, which cells span multiple rows/columns) is harder. TATR (Table Transformer) from Microsoft is the state-of-the-art model for table structure recognition. After structure recognition, populate a 2D array with the cell text and export as CSV/<code>DataFrame</code>.</p><p>Form understanding: forms have a regular structure: label → value pairs. &#x27;First Name: John&#x27;, &#x27;Date of Birth: 1990-01-15&#x27;. <code>LayoutLMv3</code> fine-tuned on FUNSD (Form Understanding in Noisy Scanned Documents) achieves near-human accuracy on linking form labels to their values. This enables automated form processing: extract all fields from any form regardless of its specific layout.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Multimodal AI and needs to apply Layout understanding. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Layout understanding is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from transformers import LayoutLMv3Processor, LayoutLMv3ForSequenceClassification
+from PIL import Image
+import torch
+# LayoutLMv3 for document classification (classify document type)
+processor = LayoutLMv3Processor.from_pretrained(&#x27;microsoft/layoutlmv3-base&#x27;)
+model = LayoutLMv3ForSequenceClassification.from_pretrained(
+    &#x27;microsoft/layoutlmv3-base&#x27;,
+    num_labels=16,  # e.g., invoice, contract, receipt, letter...
+)
+# Process a document page
+image = Image.open(&#x27;document.png&#x27;).convert(&#x27;RGB&#x27;)
+encoding = processor(image, return_tensors=&#x27;pt&#x27;, truncation=True, max_length=512)
+with torch.no_grad():
+    outputs = model(**encoding)
+doc_type = outputs.logits.argmax(-1).item()
+print(f&#x27;Document type: {doc_type}&#x27;)
+# For table extraction: use Microsoft Table Transformer
+from transformers import TableTransformerForObjectDetection
+table_model = TableTransformerForObjectDetection.from_pretrained(&#x27;microsoft/table-transformer-detection&#x27;)
+# Detect tables in the image
+det_outputs = table_model(processor(images=image, return_tensors=&#x27;pt&#x27;)[&#x27;pixel_values&#x27;])
+print(f&#x27;Tables detected: {len(det_outputs.pred_boxes[0])}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Layout understanding, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Layout understanding unlocks processing of the most valuable business documents — financial statements, medical records, and legal contracts — which are structured documents where position on the page is semantically meaningful. A system that treats these as plain text misses 30-50% of the information. Layout-aware models that understand table structure, form fields, and section hierarchy can accurately extract structured data that text-only models miss.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating all PDFs as plain text and ignoring layout — for a two-column academic paper, text extraction without layout gives interleaved columns. For a financial table, extraction without structure gives numbers without their row/column context. Always analyze layout before extracting content from structured documents.</li><li>Not handling multi-page tables — tables can span multiple pages in PDFs. A naive approach treats each page independently and misses table continuity. Detect tables that end at the page boundary and continue their extraction on the next page.</li><li>Using layout models on low-resolution images — <code>LayoutLM</code> expects 224×224 or larger images. Low-resolution scans (&lt; 150 DPI) produce blurry images where token bounding boxes are inaccurate. Always use 300 DPI or higher for document processing.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a table extraction pipeline: (1) collect 10 documents with tables (financial reports, scientific papers), (2) use Table Transformer to detect table regions, (3) use TATR to recognize table structure (rows, columns, headers), (4) extract cell contents using OCR (<code>EasyOCR</code>), (5) assemble into a <code>pandas</code> <code>DataFrame</code>, (6) validate: check that numeric values sum correctly within rows/columns, (7) compare to manually extracted tables — what fraction of cells are correctly extracted?</div>
     </div>
   </div>
 </section>
@@ -200,17 +355,29 @@
       <h2>Speech-to-text</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Speech-to-text is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Speech-to-text (STT), also called automatic speech recognition (ASR), converts audio waveforms to text. The audio signal is a time series of pressure values. STT systems preprocess this into spectrograms (frequency-time representations), extract acoustic features (Mel-frequency cepstral coefficients, filterbank features), and use a sequence model to decode the most likely text sequence.</p><p>Modern STT: Whisper (<code>OpenAI</code>) is a Transformer-based sequence-to-sequence model trained on 680,000 hours of multilingual audio from the web. It takes mel-spectrogram patches as input and outputs text tokens autoregressively. Whisper achieves near-human accuracy on English transcription and works in 99 languages. It handles accents, background noise, and technical terminology surprisingly well. Whisper is open-source (Apache 2.0), runs locally, and is the current standard for high-quality STT.</p><p>The mel spectrogram: raw audio is first divided into 25ms frames with 10ms hop. Each frame is converted to a frequency spectrum (FFT). Frequency bins are mapped to mel scale (logarithmic, matching human hearing) — 80 mel bins for Whisper. Time is the x-axis, mel frequency is the y-axis, and color intensity is energy at that frequency/time. The spectrogram captures the &#x27;shape&#x27; of audio in a form amenable to CNNs and Transformers.</p><p>Challenges: code-switching (speaker switches languages mid-sentence), background noise, overlapping speakers (diarization problem), domain-specific vocabulary (medical, legal terminology), strong accents, and low-resource languages. Whisper handles many of these with its large training data. For highly specialized vocabulary, Whisper can be fine-tuned on domain-specific audio data using the <code>HuggingFace</code> <code>transformers</code> library.</p><p>Speaker diarization (who spoke when?) is a separate problem from transcription. It identifies speech segments and attributes each to a speaker identity. Tools: <code>pyannote.audio</code> provides state-of-the-art diarization. Combining Whisper (what was said) + pyannote (who said it) gives a speaker-attributed transcript — used for meeting notes, call center analysis, and interview processing.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Multimodal AI and needs to apply Speech-to-text. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Speech-to-text is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>pip install openai-whisper
+import whisper
+model = whisper.load_model(&#x27;base&#x27;)  # or &#x27;small&#x27;, &#x27;medium&#x27;, &#x27;large-v3&#x27;
+result = model.transcribe(&#x27;audio.mp3&#x27;)
+print(result[&#x27;text&#x27;])
+print(result[&#x27;segments&#x27;])  # timestamps and per-segment text</code></pre><pre><code>OpenAI API: from openai import OpenAI
+client = OpenAI()
+with open(&#x27;audio.mp3&#x27;, &#x27;rb&#x27;) as f:
+    transcription = client.audio.transcriptions.create(model=&#x27;whisper-1&#x27;, file=f)
+print(transcription.text)</code></pre><pre><code>Mel spectrogram: import librosa; import matplotlib.pyplot as plt
+y, sr = librosa.load(&#x27;audio.mp3&#x27;)
+mel = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=80)
+librosa.display.specshow(librosa.power_to_db(mel), x_axis=&#x27;time&#x27;, y_axis=&#x27;mel&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Speech-to-text, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Speech-to-text is the interface between the physical world and AI systems. Voice assistants, meeting transcription, accessibility tools, call center analytics, and podcast indexing all depend on STT. Understanding how it works enables building voice-powered applications and debugging transcription failures.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using the large Whisper model when the small model suffices — whisper-small achieves near-large accuracy on clear English audio at 6× the speed.</li><li>Not resampling audio to 16kHz before Whisper — Whisper expects 16kHz audio. <code>librosa.load</code>(path, sr=16000) resamples automatically.</li><li>Expecting perfect results on noisy or accented audio — Whisper is excellent but not perfect. Always build a review/correction interface for production STT systems.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an interview transcription tool using Whisper: (1) record or download a 5-minute interview audio, (2) transcribe with whisper-base and whisper-large-v3, (3) compare accuracy on 10 manually selected sentences, (4) add speaker diarization with <code>pyannote.audio</code>, (5) combine into a speaker-attributed transcript: &#x27;Speaker 1 [0:00–0:15]: Hello, my name is...&#x27; Report the word error rate (WER) and processing time for both model sizes.</div>
     </div>
   </div>
 </section>
@@ -222,17 +389,30 @@
       <h2>Text-to-speech</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Text-to-speech is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Text-to-speech (TTS) converts written text to spoken audio. Modern neural TTS (Tacotron 2, VITS, Bark, Parler-TTS) produces natural-sounding speech indistinguishable from human voice in many cases. TTS is used in: voice assistants, audiobook generation, accessibility tools, and any application that needs to speak to users.</p><p>TTS pipeline: text normalization (convert &#x27;2024&#x27; → &#x27;two thousand twenty-four&#x27;, &#x27;$5.99&#x27; → &#x27;five dollars and ninety-nine cents&#x27;) → phoneme conversion (text → phoneme sequence) → acoustic model (phonemes → mel spectrogram) → vocoder (mel spectrogram → audio waveform). End-to-end models (VITS) combine these stages into a single model.</p><p>gTTS and pyttsx3: the simplest Python TTS libraries. gTTS uses Google Translate&#x27;s TTS API (requires internet, good quality). pyttsx3 uses the operating system&#x27;s built-in TTS (offline, lower quality). For quick prototyping, `from gtts import gTTS; tts = gTTS(&#x27;Hello world&#x27;); <code>tts.save</code>(&#x27;<code>output.mp3</code>&#x27;)` works in 3 lines.</p><p>Coqui TTS (XTTS): open-source, high-quality, offline TTS. Supports 17 languages, voice cloning (provide a 6-second audio sample → TTS in that voice), and fine-tuning for custom voices. `from TTS.api import TTS; tts = TTS(&#x27;<code>tts_models</code>/multilingual/multi-dataset/<code>xtts_v2</code>&#x27;); <code>tts.tts_to_file</code>(&#x27;Hello world&#x27;, <code>speaker_wav</code>=&#x27;<code>reference.wav</code>&#x27;, <code>file_path</code>=&#x27;<code>out.wav</code>&#x27;)`.</p><p>Streaming TTS: for voice interfaces, latency matters. Don&#x27;t generate the full audio before speaking — stream audio as it&#x27;s generated. Eleven Labs, Play.ht, and the Cartesia API support streaming TTS via <code>WebSocket</code> or Server-Sent Events. First chunk latency (time to first audio) is the key metric for voice interfaces, not total generation time.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Multimodal AI and needs to apply Text-to-speech. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Text-to-speech is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Simple TTS with gTTS
+from gtts import gTTS
+import os
+tts = gTTS(text=&#x27;Hello, this is a text-to-speech demonstration.&#x27;, lang=&#x27;en&#x27;, slow=False)
+tts.save(&#x27;output.mp3&#x27;)
+os.system(&#x27;afplay output.mp3&#x27;)  # Mac; &#x27;mpg123 output.mp3&#x27; on Linux
+# Advanced: Coqui TTS (offline, higher quality)
+# pip install TTS
+from TTS.api import TTS
+tts = TTS(model_name=&#x27;tts_models/en/ljspeech/tacotron2-DDC&#x27;, progress_bar=False)
+tts.tts_to_file(text=&#x27;The quick brown fox jumps over the lazy dog.&#x27;, file_path=&#x27;output.wav&#x27;)
+# High quality + multilingual: XTTS
+# tts = TTS(&#x27;tts_models/multilingual/multi-dataset/xtts_v2&#x27;)
+# tts.tts_to_file(&#x27;Bonjour le monde!&#x27;, language=&#x27;fr&#x27;, file_path=&#x27;french_output.wav&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Text-to-speech, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>TTS is a critical component of voice-first AI applications. As LLMs become core to interfaces (voice assistants, automated phone systems, real-time translation), TTS becomes the voice of AI. Understanding TTS quality tradeoffs (gTTS for prototyping, Coqui for offline high-quality, Eleven Labs for premium voice cloning) helps you choose the right tool for each application&#x27;s quality, cost, and latency requirements.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not normalizing text before TTS — TTS models don&#x27;t know how to pronounce &#x27;$5.99&#x27;, &#x27;3pm&#x27;, &#x27;Dr.&#x27;, or &#x27;<code>www.example.com</code>&#x27;. Pre-process text: expand abbreviations, spell out numbers and symbols, add punctuation for correct prosody.</li><li>Ignoring voice naturalness evaluation — TTS can sound robotic even with good models. Use Mean Opinion Score (MOS) surveys or character error rate on ASR transcription of the TTS output to evaluate quality. Don&#x27;t only evaluate by listening to one sentence.</li><li>Using online TTS APIs for sensitive data — if TTS is applied to medical or financial text, sending it to an external API raises privacy concerns. Use offline TTS (Coqui) for sensitive applications.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a TTS pipeline: (1) take a 500-word article, (2) pre-process: expand abbreviations, spell out numbers, add appropriate pauses using SSML markup, (3) generate audio with gTTS and Coqui TTS, (4) compare quality: which sounds more natural? More expressive?, (5) measure generation speed: characters/second for each, (6) implement streaming TTS: chunk the text by sentence, generate each sentence separately, play them sequentially — what is the first-chunk latency?</div>
     </div>
   </div>
 </section>
@@ -244,17 +424,36 @@
       <h2>Speaker diarization</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Speaker diarization is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Speaker diarization answers the question: &#x27;who spoke when?&#x27; Given a multi-speaker audio file, diarization segments the audio by speaker identity and assigns each segment a speaker label (SPEAKER_00, SPEAKER_01, ...). This is a prerequisite for meeting transcription, interview analysis, and call center recording processing.</p><p>Diarization pipeline: voice activity detection (VAD) → speaker segmentation (find where speakers change) → speaker embedding extraction (embed each segment into a speaker representation space) → clustering (group segments by speaker identity). <code>pyannote.audio</code> is the state-of-the-art Python library for this pipeline.</p><p><code>pyannote.audio</code>: a comprehensive audio analysis library. `Pipeline.<code>from_pretrained</code>(&#x27;pyannote/speaker-diarization-3.1&#x27;)` provides an end-to-end diarization pipeline. Input: an audio file. Output: an annotation object with speaker labels and time segments. When combined with Whisper transcription: each transcript segment can be attributed to a specific speaker.</p><p>Challenges: overlapping speech (two speakers talking simultaneously — diarization typically assigns to the dominant speaker), similar-sounding speakers (hard to distinguish), short speaker segments (insufficient audio to identify the speaker), and varying audio quality (background noise, compression artifacts).</p><p>Evaluation: Diarization Error Rate (DER) is the standard metric. DER = (missed speech + false alarm + speaker confusion) / total speech duration. Lower is better. State-of-the-art systems achieve DER &lt; 5% on clean two-speaker conversations and DER 10-20% on noisy multi-speaker meetings.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Multimodal AI and needs to apply Speaker diarization. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Speaker diarization is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># pip install pyannote.audio
+from pyannote.audio import Pipeline
+from pyannote.audio.pipelines.utils.hook import ProgressHook
+# Requires HuggingFace token + accept usage terms at pyannote models
+pipeline = Pipeline.from_pretrained(
+    &#x27;pyannote/speaker-diarization-3.1&#x27;,
+    use_auth_token=&#x27;your-hf-token&#x27;
+)
+# Run diarization
+with ProgressHook() as hook:
+    diarization = pipeline(&#x27;audio.wav&#x27;, num_speakers=2, hook=hook)  # num_speakers if known
+# Print segments
+for turn, _, speaker in diarization.itertracks(yield_label=True):
+    print(f&#x27;{speaker}: {turn.start:.1f}s - {turn.end:.1f}s ({turn.end - turn.start:.1f}s)&#x27;)
+# Combine with Whisper transcription
+import whisper
+whisper_model = whisper.load_model(&#x27;base&#x27;)
+transcript = whisper_model.transcribe(&#x27;audio.wav&#x27;, word_timestamps=True)
+# Match transcript words to diarization segments
+# Each word has a start and end time; find which speaker was speaking at that time</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Speaker diarization, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Speaker diarization makes meeting recordings actionable. A 1-hour meeting transcription is useful; a 1-hour meeting transcription where each statement is attributed to its speaker is transformative for follow-up, accountability, and action item extraction. Call centers use diarization to analyze agent vs customer speech patterns, flag compliance issues, and measure customer satisfaction from voice tone and content.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not specifying <code>num_speakers</code> when known — if you know the conversation has 2 speakers (an interview), providing <code>num_speakers</code>=2 significantly improves diarization accuracy. Without this hint, the model must estimate the number of speakers, which adds error.</li><li>Not handling audio preprocessing — pyannote expects single-channel (mono) audio at 16kHz. Convert stereo to mono and resample before processing: `ffmpeg -i <code>input.mp3</code> -ac 1 -ar 16000 <code>output.wav</code>`.</li><li>Expecting perfect accuracy on noisy recordings — DER of 20-30% on noisy conference calls is common. For downstream use cases (meeting minutes), post-process the output: manually correct speaker assignments for the first few turns of each speaker to establish speaker identity.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a meeting transcription system with speaker labels: (1) record or download a 10-minute multi-speaker audio (podcast, interview), (2) run pyannote diarization to identify speaker segments, (3) run Whisper transcription to get text with word-level timestamps, (4) combine: for each word, find which speaker was speaking based on the diarization timeline, (5) produce a formatted transcript: SPEAKER_00: &#x27;text...&#x27; SPEAKER_01: &#x27;text...&#x27;, (6) compute DER if ground truth labels are available.</div>
     </div>
   </div>
 </section>
@@ -266,17 +465,34 @@
       <h2>Audio classification</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Audio classification is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Multimodal AI, study Audio classification by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+        <p>Audio classification categorizes audio clips into predefined classes. Examples: environmental sound classification (bird, car, music, speech), music genre classification, speech command recognition (yes/no/stop/go), emotion recognition from voice, and acoustic event detection. The input is a raw audio waveform; the output is a class label.</p><p>Audio representations: raw waveform (1D time series, processed by <code>WaveNet</code>-style models), mel spectrogram (2D image of frequency vs time, processed by CNNs), and Mel-frequency cepstral coefficients (MFCCs, traditional feature extraction for classical ML). Modern approaches: fine-tune audio <code>transformers</code> (Wav2Vec2, Whisper, <code>HuBERT</code>) on the classification task.</p><p>Wav2Vec2 for audio classification: a transformer pretrained on raw audio with self-supervised learning (similar to BERT for text). Fine-tuning on a classification dataset with ~1,000 labeled examples achieves strong performance. <code>HuggingFace</code> pipeline: `pipe = pipeline(&#x27;audio-classification&#x27;, model=&#x27;ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition&#x27;)`.</p><p>Librosa for feature extraction: the standard Python library for audio analysis. `<code>librosa.load</code>(file, sr=22050)` loads audio as a <code>numpy</code> array. `<code>librosa.feature.mfcc</code>(y, sr)` computes 20 MFCC features per frame. `<code>librosa.feature.melspectrogram</code>(y, sr)` computes the mel spectrogram. These features are inputs to classical ML classifiers or lightweight CNNs.</p><p>Data augmentation for audio: time stretching (speed up/slow down), pitch shifting (raise/lower pitch without changing duration), adding background noise, room impulse response convolution (simulate different acoustic environments). `audiomentations` library handles all of these: `augment = Compose([<code>AddGaussianNoise</code>(p=0.5), <code>TimeStretch</code>(p=0.5), <code>PitchShift</code>(p=0.5)])`.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Spam detection: the model predicts spam or not spam. Accuracy alone can hide mistakes, so inspect false positives, false negatives, precision, recall, and the decision threshold.</p>
-        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Audio classification to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import librosa
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+# MFCC-based audio classification
+def extract_features(audio_path, sr=22050, n_mfcc=40):
+    y, sr = librosa.load(audio_path, sr=sr)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)  # [40, time_frames]
+    mfccs_mean = mfccs.mean(axis=1)  # [40]
+    mfccs_std = mfccs.std(axis=1)    # [40]
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr).mean(axis=1)  # [12]
+    mel = librosa.feature.melspectrogram(y=y, sr=sr).mean(axis=1)[:32]  # [32]
+    return np.concatenate([mfccs_mean, mfccs_std, chroma, mel])  # 124 features
+# Transformer-based (HuggingFace)
+from transformers import pipeline
+import torchaudio
+pipe = pipeline(&#x27;audio-classification&#x27;, model=&#x27;superb/wav2vec2-base-superb-ic&#x27;)  # intent classification
+result = pipe(&#x27;audio_sample.wav&#x27;)
+for r in result[:3]: print(f&#x27;{r[&quot;label&quot;]}: {r[&quot;score&quot;]:.3f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Audio classification affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Audio classification enables: automated content moderation for podcast platforms (detect offensive speech), industrial equipment monitoring (classify machine sounds to detect faults), smart home devices (recognize keywords and environmental sounds), and healthcare (classify breathing patterns for respiratory disease detection). These are high-value applications that require understanding the full audio ML pipeline.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not normalizing audio amplitude before feature extraction — audio files can have very different volume levels. Normalize amplitude: `y = <code>librosa.util.normalize</code>(y)` before extracting features. Large amplitude differences cause inconsistent feature scales.</li><li>Using variable-length audio without padding/truncation — classifiers expect fixed-size inputs. For MFCC features: zero-pad or truncate to a fixed number of time frames. For transformer models: use the processor&#x27;s padding mechanism.</li><li>Not accounting for background noise — models trained on clean audio fail on noisy real-world audio. Include noise-augmented examples in training and test on noisy audio to measure robustness.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an environmental sound classifier: (1) download the ESC-50 dataset (50 environmental sound categories), (2) extract MFCC features (mean + std of 40 coefficients), (3) train a Random Forest classifier — what accuracy do you achieve?, (4) fine-tune wav2vec2-base on the same dataset, (5) compare accuracy, confusion matrix, and inference time for both approaches, (6) implement data augmentation (noise, pitch shift) and measure the accuracy improvement.</div>
     </div>
   </div>
 </section>
@@ -288,17 +504,24 @@
       <h2>Image generation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Image generation is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Image generation models synthesize new images from text descriptions or other images. The current state-of-the-art uses diffusion models — a class of generative models that learn to denoise images. During training, clean images are progressively noised (a forward process adding Gaussian noise over T steps until the image is pure noise). The model learns to reverse this process — predict the clean image from a noisy version (a reverse denoising process). At inference, start from pure noise and iteratively denoise to generate a new image.</p><p>Stable Diffusion is an open-source latent diffusion model. The key insight: instead of diffusing in pixel space (expensive for 512×512 images — 786,432 dimensions), Stable Diffusion encodes images into a compressed latent space (64×64 with 4 channels — 16,384 dimensions) using a VAE, performs diffusion in this latent space (64× cheaper), then decodes back to pixel space. This enables running on consumer GPUs.</p><p>Text conditioning: to guide generation from a text prompt, the model uses CLIP (Contrastive Language-Image Pretraining) to encode the text prompt into an embedding. At each denoising step, the model conditions on this text embedding via cross-attention. The text embedding steers denoising toward images matching the description. Classifier-free guidance (CFG) scales the influence of the text condition — higher CFG scale (7–15) makes the output more faithful to the prompt but less diverse.</p><p><code>ControlNet</code> adds fine-grained spatial control to diffusion models by conditioning on structural inputs: pose estimation (generate an image of a person in a specific pose), edge maps (generate a photo from a sketch), depth maps (maintain scene structure), or segmentation masks (maintain object layouts). This is used for: photo editing (keep composition, change style), product visualization (place a product in different scenes), and design ideation.</p><p>DALL-E 3, Midjourney, and Imagen are proprietary image generation models with higher aesthetic quality than open-source models but less flexibility. For applications requiring commercial use, data privacy, or fine-tuning on custom styles, Stable Diffusion (SDXL, Stable Diffusion 3) is the appropriate choice. Fine-tuning techniques: <code>DreamBooth</code> (personalize a model to generate a specific subject from 3–20 images), <code>LoRA</code> (fine-tune a new style efficiently).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Image classifier: resize product photos, feed pixel tensors into a model, and predict categories such as shoe, bag, or shirt while checking mistakes on blurry images.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Image generation is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>pip install diffusers transformers accelerate
+from diffusers import StableDiffusionPipeline
+pipe = StableDiffusionPipeline.from_pretrained(&#x27;runwayml/stable-diffusion-v1-5&#x27;, torch_dtype=torch.float16)
+pipe = pipe.to(&#x27;cuda&#x27;)
+image = pipe(&#x27;A golden retriever wearing a graduation cap, photorealistic&#x27;, guidance_scale=7.5, num_inference_steps=50).images[0]
+image.save(&#x27;output.png&#x27;)</code></pre><pre><code>Multiple outputs: images = pipe(prompt, num_images_per_prompt=4, ...).images; grid = make_image_grid(images, 2, 2)</code></pre><pre><code>Img2img: from diffusers import StableDiffusionImg2ImgPipeline
+pipe = StableDiffusionImg2ImgPipeline.from_pretrained(&#x27;...&#x27;)
+result = pipe(prompt=&#x27;oil painting&#x27;, image=init_image, strength=0.75).images[0]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Image generation, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Image generation enables: product mockups without photography, visual content at scale, art direction tools for designers, synthetic training data for computer vision, and personalized visual experiences. Understanding diffusion models is increasingly important as they expand into video, 3D, and audio generation.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using low <code>num_inference_steps</code> for complex prompts — 20 steps produces fast but low-quality results. Use 30–50 steps for high-quality outputs.</li><li>Not using negative prompts to eliminate unwanted features — <code>negative_prompt</code>=&#x27;blurry, low quality, distorted, watermark&#x27; significantly improves output quality.</li><li>Expecting photorealism from the base Stable Diffusion model — for photorealistic results, use SDXL with a realistic <code>LoRA</code> or a specialized checkpoint like Realistic Vision.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a product visualization tool using Stable Diffusion: given a product name and background description, generate 4 product photos in different settings. Use <code>ControlNet</code> with depth map conditioning to maintain a consistent product pose across settings. Compare results with and without negative prompts. Implement a simple Gradio UI with: text input for product + setting, a slider for CFG scale, and a button to generate 4 variations.</div>
     </div>
   </div>
 </section>
@@ -310,17 +533,36 @@
       <h2>Diffusion models</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Diffusion models is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Multimodal AI, test Diffusion models with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Diffusion models are a class of generative models that learn to generate images by learning to reverse a noise-addition process. The forward process gradually adds Gaussian noise to an image over T steps until it becomes pure noise. The reverse process (denoising) learns to predict the noise added at each step, allowing recovery of the original image. By starting with pure noise and reversively denoising, the model generates new images.</p><p>DDPM (Denoising Diffusion Probabilistic Models): the noise schedule adds small amounts of Gaussian noise at each of T=1000 timesteps. The forward process: <code>x_t</code> = sqrt(αt) × x_{t-1} + sqrt(1-αt) × ε where ε ~ N(0, I). The reverse process: a U-Net neural network ε_θ(<code>x_t</code>, t) predicts the noise at each timestep. Training: minimize E[||ε - ε_θ(<code>x_t</code>, t)||²] — predict the added noise. Inference: start from <code>x_T</code> ~ N(0, I), run the U-Net T times to generate <code>x_0</code>.</p><p>Stable Diffusion: the dominant open-source text-to-image model. Key innovation: latent diffusion — instead of operating in pixel space (expensive: 512×512×3 = 786K dimensions), Stable Diffusion operates in a compressed latent space (64×64×4 = 16K dimensions). A VAE encodes/decodes between pixel and latent space. CLIP encodes the text prompt. The U-Net denoises in latent space conditioned on CLIP text embeddings. Much faster than pixel-space diffusion.</p><p>Classifier-free guidance (CFG): during training, the text conditioning is randomly dropped (replaced with empty text). The U-Net learns both conditional and unconditional score estimates. During inference, guidance scale g controls how strongly the text prompt influences generation: ε_final = ε_unconditional + g × (ε_conditional - ε_unconditional). Higher g (7–15) produces images more aligned with the prompt but less diverse. Lower g produces more varied but less prompt-adherent images.</p><p><code>ControlNet</code>: an extension that adds spatial conditioning to Stable Diffusion. Instead of just a text prompt, <code>ControlNet</code> accepts additional control signals: edge maps (generate an image matching the edge structure), depth maps (generate an image matching depth), human pose skeletons, segmentation masks. This enables precise control over image composition — a person&#x27;s pose is preserved while generating a completely different style.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to Diffusion models, the response, and one failure case.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Diffusion models changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from diffusers import StableDiffusionPipeline
+import torch
+pipe = StableDiffusionPipeline.from_pretrained(
+    &#x27;runwayml/stable-diffusion-v1-5&#x27;, torch_dtype=torch.float16)
+pipe = pipe.to(&#x27;cuda&#x27;)  # or &#x27;mps&#x27; on Apple Silicon
+image = pipe(
+    prompt=&#x27;A photorealistic landscape of mountains at sunset, golden hour lighting&#x27;,
+    negative_prompt=&#x27;blurry, ugly, distorted, watermark&#x27;,
+    num_inference_steps=50, guidance_scale=7.5,
+    height=512, width=512
+).images[0]
+image.save(&#x27;output.png&#x27;)</code></pre><pre><code># img2img — modify an existing image
+from diffusers import StableDiffusionImg2ImgPipeline
+pipe_img2img = StableDiffusionImg2ImgPipeline.from_pretrained(
+    &#x27;runwayml/stable-diffusion-v1-5&#x27;, torch_dtype=torch.float16).to(&#x27;cuda&#x27;)
+init_image = Image.open(&#x27;input.jpg&#x27;).resize((512, 512))
+result = pipe_img2img(
+    prompt=&#x27;Oil painting in the style of Van Gogh&#x27;,
+    image=init_image, strength=0.75  # 0=no change, 1=pure generation
+).images[0]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Diffusion models. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Diffusion models have surpassed GANs as the dominant generative image model. Stable Diffusion, DALL-E 3, and Midjourney are all diffusion models. Understanding how they work explains the role of prompts (CLIP text conditioning), negative prompts (guidance away from undesired attributes), CFG scale, and why more inference steps improve image quality.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using low <code>num_inference_steps</code> — steps=10 is fast but produces blurry results. Steps=50 is standard; for high quality use 100. DDIM sampler allows fewer steps than DDPM with comparable quality.</li><li>Not using negative prompts — negative prompts guide the model away from common failure modes (&#x27;blurry, ugly, distorted, watermark, low quality&#x27;). Always use negative prompts for better results.</li><li>Not specifying a random seed — for reproducibility and comparison, set generator=<code>torch</code>.<code>manual_seed</code>(42). This ensures the same noise initialization and allows you to compare different prompts/settings fairly.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Explore Stable Diffusion systematically: (1) generate the same prompt with CFG scale 1, 3, 7, 12, 20 — show how higher guidance increases prompt adherence but reduces diversity, (2) img2img: start from a real photo and apply increasing strength (0.2, 0.5, 0.8) — show the tradeoff between preserving original and following the prompt, (3) implement a prompt comparison tool: given 10 prompt variations, generate 4 images each and arrange in a grid, (4) fine-tune Stable Diffusion on 10 photos of yourself using <code>DreamBooth</code> (COLAB with free GPU) — generate images of yourself in different styles.</div>
     </div>
   </div>
 </section>
@@ -332,17 +574,42 @@
       <h2>Video understanding</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Video understanding is a concept inside Multimodal AI that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Video understanding involves extracting information from video: action recognition, video captioning, temporal localization (when does an event occur?), and video question answering. Video extends image understanding with a temporal dimension — the sequence of frames carries information about motion, causation, and storyline.</p><p>Key challenges: computational cost (a 1-minute video at 30fps = 1,800 frames), temporal modeling (understanding that frame 200 depends on frame 1), long-range dependencies (an action that starts in the first 10 seconds completes in the last 10 seconds), and audio-visual alignment (speech and visual action should be synchronized).</p><p>Frame sampling strategies: processing every frame is expensive and redundant. Uniform sampling (every Nth frame), key frame extraction (frames where scene changes), and scene detection (segment video by scene). <code>PySceneDetect</code> detects scene changes. Dense optical flow captures motion between consecutive frames — a compact representation of motion without needing all frames.</p><p>Video <code>transformers</code>: <code>TimeSformer</code> (divided space-time attention), <code>VideoMAE</code> (masked video autoencoder), and <code>InternVideo</code> 2 are the state-of-the-art for video understanding. These models extend image <code>transformers</code> to process sequences of frames. The <code>HuggingFace</code> video-text models (<code>VideoLLM</code>, Video-LLaMA) support video Q&amp;A.</p><p>Practical applications: sports analytics (detecting player actions, tracking ball position), security surveillance (detecting unusual events), content moderation (flagging violent or inappropriate video content), and e-learning (automatically generating summaries and chapters from lecture videos).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Multimodal AI and needs to apply Video understanding. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Multimodal AI where Video understanding is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import cv2
+import numpy as np
+# Frame extraction from video
+def extract_frames(video_path: str, n_frames: int = 8) -&gt; list:
+    cap = cv2.VideoCapture(video_path)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    duration = total_frames / fps
+    print(f&#x27;Video: {total_frames} frames, {fps:.1f} fps, {duration:.1f}s&#x27;)
+    # Uniform sampling
+    frame_indices = np.linspace(0, total_frames-1, n_frames, dtype=int)
+    frames = []
+    for idx in frame_indices:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+        ret, frame = cap.read()
+        if ret: frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    cap.release()
+    return frames
+# Video captioning with transformers
+from transformers import pipeline
+video_captioner = pipeline(&#x27;image-to-text&#x27;, model=&#x27;nlpconnect/vit-gpt2-image-captioning&#x27;)
+frames = extract_frames(&#x27;video.mp4&#x27;, n_frames=4)
+for i, frame in enumerate(frames):
+    from PIL import Image
+    caption = video_captioner(Image.fromarray(frame))[0][&#x27;generated_text&#x27;]
+    print(f&#x27;Frame {i}: {caption}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Video understanding, explain it in 5 to 8 lines, and connect it to Multimodal AI.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Video is the dominant form of content on the internet — <code>YouTube</code> has 500 hours of video uploaded every minute. Video understanding systems that can automatically: generate captions, detect key moments, extract action information, and answer questions about video content are transforming media, security, healthcare, and sports industries. Understanding the pipeline from frame sampling to temporal modeling is essential for any practitioner in this space.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Processing every frame of a high-FPS video — 60fps × 60 seconds = 3,600 frames, each taking 50ms to process = 3 minutes of inference for 1 minute of video. Sample uniformly (8-16 frames per video) or use scene detection to find the most informative frames.</li><li>Ignoring audio in video understanding — audio provides critical context (speech tells you what&#x27;s happening, sound effects signal events). Use a multimodal model that processes both audio and video, or separately transcribe audio with Whisper and fuse the text with video features.</li><li>Not considering memory constraints for long videos — loading an entire 10-minute video into GPU memory is infeasible. Process videos in sliding windows (30s clips with 10s overlap), extract features per clip, and aggregate temporal representations.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a video summarization tool: (1) extract 16 uniformly sampled frames from a 5-minute video, (2) generate captions for each frame with BLIP, (3) cluster visually similar frames and keep one representative per cluster, (4) summarize the unique captions with an LLM: &#x27;Given these video frame descriptions, write a 2-sentence summary&#x27;, (5) compare to manual summary — does the automated summary capture the main events?, (6) extend to a search tool: given a query, find the video segment most relevant to the query.</div>
     </div>
   </div>
 </section>
@@ -354,17 +621,42 @@
       <h2>Multimodal RAG</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Multimodal RAG is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Multimodal AI, test Multimodal RAG with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Multimodal RAG (Retrieval Augmented Generation) extends standard text-based RAG to retrieve and reason over multiple modalities: text, images, tables, charts, and PDFs. Instead of only querying a text corpus, multimodal RAG can retrieve: a relevant image, a specific table from a PDF, a chart from a financial report, and text paragraphs — then feed all of these to a multimodal LLM for grounded response generation.</p><p>Architecture options: (1) late fusion — embed text and images with separate encoders, store in the same vector database, query returns mixed-modality chunks. (2) caption-based — convert all non-text content to text (OCR tables, BLIP-caption images, <code>pandas</code>-table CSV) and use standard text RAG. (3) CLIP-based — use CLIP embeddings for both text queries and image retrieval (shared embedding space).</p><p>Multimodal document processing: for a PDF with tables and figures: extract text with pdfplumber, extract tables with camelot and convert to markdown/CSV, detect figure regions with <code>LayoutLM</code> and caption with BLIP. Each chunk is stored with its type (text, table, image) and source metadata.</p><p>LLaVA and GPT-4V for multimodal generation: once relevant chunks (including images) are retrieved, pass them to a multimodal LLM. GPT-4V and Claude Vision can process images directly. LLaVA (Large Language and Vision Assistant) is the open-source alternative. The model receives: the text query, retrieved text passages, and retrieved images — and generates a grounded response.</p><p>Evaluation: multimodal RAG evaluation requires checking both retrieval (did we retrieve the relevant image/table?) and generation (is the answer grounded in the retrieved visual content?). RAGAS extensions for multimodal RAG: <code>visual_faithfulness</code> (does the answer match the retrieved image?), <code>visual_context_recall</code> (did we retrieve the relevant visual content?).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Chat with PDF: split the PDF into chunks, embed them, retrieve the most relevant passages for a question, and answer only from those passages with citations.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Multimodal RAG changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+from pathlib import Path
+import base64
+client = anthropic.Anthropic()
+# Multimodal RAG with image context
+def answer_with_image_context(question: str, text_context: str, image_paths: list) -&gt; str:
+    # Build message with text + images
+    content = [{&#x27;type&#x27;: &#x27;text&#x27;, &#x27;text&#x27;: f&#x27;Question: {question}\n\nText context:\n{text_context}\n\nAlso consider the images provided. Answer based only on the provided context.&#x27;}]
+    # Add images
+    for img_path in image_paths[:4]:  # Claude accepts up to 20 images
+        with open(img_path, &#x27;rb&#x27;) as f:
+            img_data = base64.standard_b64encode(f.read()).decode(&#x27;utf-8&#x27;)
+        media_type = &#x27;image/png&#x27; if img_path.endswith(&#x27;.png&#x27;) else &#x27;image/jpeg&#x27;
+        content.append({&#x27;type&#x27;: &#x27;image&#x27;, &#x27;source&#x27;: {&#x27;type&#x27;: &#x27;base64&#x27;, &#x27;media_type&#x27;: media_type, &#x27;data&#x27;: img_data}})
+    response = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;, max_tokens=1024,
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: content}]
+    )
+    return response.content[0].text
+# CLIP-based image retrieval
+from transformers import CLIPProcessor, CLIPModel
+import torch
+clip_model = CLIPModel.from_pretrained(&#x27;openai/clip-vit-base-patch32&#x27;)
+clip_processor = CLIPProcessor.from_pretrained(&#x27;openai/clip-vit-base-patch32&#x27;)
+def embed_image_for_retrieval(image): return clip_model.get_image_features(**clip_processor(images=image, return_tensors=&#x27;pt&#x27;)).detach().numpy()
+def embed_text_for_retrieval(text): return clip_model.get_text_features(**clip_processor(text=[text], return_tensors=&#x27;pt&#x27;)).detach().numpy()</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Multimodal RAG. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Multimodal RAG is necessary for processing real-world business documents. A financial report has text, tables, and charts; a medical report has text and scan images; a technical manual has text and diagrams. A text-only RAG system retrieves the surrounding text but misses the information encoded in the table or chart. Multimodal RAG retrieves and reasons over all content types.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Caption-only approach loses visual precision — a chart showing a 40% revenue drop is better described as an image than by its auto-generated caption (&#x27;a bar chart with blue bars&#x27;). For high-precision use cases, pass images directly to a multimodal model rather than relying on captions.</li><li>Not chunking tables correctly for retrieval — a 50-row table as a single chunk may retrieve only one row&#x27;s context. Split large tables by column group (related columns together) or mark each row as its own chunk with table metadata for more precise retrieval.</li><li>Not labeling the type of each retrieved chunk — if the model receives text+image chunks without knowing which is which, it can&#x27;t use them appropriately. Always tag chunks with their type and source: {type: &#x27;table&#x27;, source: &#x27;<code>Q3_report</code>.pdf:page5&#x27;, content: &#x27;...&#x27;}.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multimodal document Q&amp;A system: (1) collect 5 PDF documents with both text and figures/tables (annual reports, research papers), (2) extract text with pdfplumber, extract and caption figures with BLIP, extract tables with camelot, (3) embed all chunks (text + image captions) with all-<code>MiniLM</code>-L6-v2, store in <code>ChromaDB</code> with type metadata, (4) implement query → retrieve top-5 (mixed types) → generate answer with Claude Vision, (5) test 10 questions that require: text-only, table-only, image-only, and combined text+image information.</div>
     </div>
   </div>
 </section>

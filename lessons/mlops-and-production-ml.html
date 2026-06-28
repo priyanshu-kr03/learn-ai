@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>MLOps and production ML | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -33,7 +34,7 @@
       <header class="content-head">
         <span class="eyebrow">09 Data Engineering for AI</span>
         <h1>MLOps and production ML</h1>
-        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 35</span></div>
+        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 39</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">Experiment tracking</span><span class="tag">Model registry</span><span class="tag">Model serving</span><span class="tag">Batch inference</span><span class="tag">Online inference</span><span class="tag">FastAPI</span><span class="tag">Docker</span><span class="tag">CI/CD</span><span class="tag">Monitoring</span><span class="tag">Data drift</span><span class="tag">Concept drift</span><span class="tag">A/B testing</span><span class="tag">Canary deployment</span><span class="tag">Rollback</span><span class="tag">Cost monitoring</span></div>
       </header>
@@ -46,17 +47,25 @@
       <h2>Experiment tracking</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Experiment tracking is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Experiment tracking is the practice of recording the details of every ML training run — hyperparameters, metrics, code version, dataset version, and artifacts — so you can compare runs, reproduce results, and share findings with teammates. Without tracking, ML experiments are ephemeral: you try 20 model configurations and forget which achieved the best validation F1 three weeks later.</p><p>MLflow is the most popular open-source experiment tracking tool. You instrument your training code with <code>mlflow.log_param()</code> for hyperparameters, <code>mlflow.log_metric()</code> for metrics per step/epoch, <code>mlflow.log_artifact()</code> for model files and plots, and <code>mlflow.sklearn.log_model()</code> for the model itself. All runs are stored in a structured database and viewable in a web UI.</p><p>Weights &amp; Biases (<code>wandb</code>) is the most popular cloud-based tracking tool. It auto-logs GPU metrics, system stats, and provides real-time dashboards, model comparison tables, and sweep (hyperparameter search) integration. import <code>wandb</code>; <code>wandb</code>.init(project=&#x27;my-project&#x27;); <code>wandb</code>.log({&#x27;<code>train_loss</code>&#x27;: loss}) is all you need to start. The free tier is sufficient for individual projects.</p><p>What to track in every experiment: (1) all hyperparameters, (2) train/val/test metrics per epoch, (3) model checkpoint of the best validation epoch, (4) training data version (git hash of data preprocessing script), (5) code version (git commit hash), (6) hardware (GPU type, batch size), (7) training duration. This information is the minimum needed to reproduce the experiment.</p><p>Model registry is the next step beyond experiment tracking. After identifying the best experiment, you register the model to a registry (MLflow Model Registry, <code>HuggingFace</code> Hub) with a version number and metadata. The registry provides lifecycle management: a model can be in &#x27;staging&#x27; (being evaluated), &#x27;production&#x27; (serving live traffic), or &#x27;archived&#x27; (replaced by a newer version). This enables controlled, auditable model promotion.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply Experiment tracking. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from MLOps and production ML where Experiment tracking is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>pip install mlflow
+import mlflow; mlflow.set_experiment(&#x27;loan-default-prediction&#x27;)</code></pre><pre><code>with mlflow.start_run():
+    mlflow.log_params({&#x27;lr&#x27;: 0.01, &#x27;n_estimators&#x27;: 200, &#x27;max_depth&#x27;: 5})
+    model.fit(X_train, y_train)
+    for epoch, val_auc in enumerate(val_aucs):
+        mlflow.log_metric(&#x27;val_auc&#x27;, val_auc, step=epoch)
+    mlflow.sklearn.log_model(model, &#x27;model&#x27;)
+    mlflow.log_artifact(&#x27;confusion_matrix.png&#x27;)</code></pre><pre><code>View: mlflow ui  # starts local web server at localhost:5000</code></pre><pre><code>wandb: import wandb; wandb.init(project=&#x27;my-project&#x27;, config={&#x27;lr&#x27;:0.01})
+wandb.log({&#x27;train_loss&#x27;: 0.5, &#x27;val_loss&#x27;: 0.6})  # inside training loop</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Experiment tracking, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Without experiment tracking, ML development is chaos. You cannot reproduce your best result, cannot tell a teammate how you achieved it, and cannot safely improve upon it. Experiment tracking is the minimum viable infrastructure for any serious ML project.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not tracking dataset version alongside model version — if the dataset changes and you retrain, the model version should increment. Without dataset versioning, you cannot reproduce historical experiments.</li><li>Only logging final metrics and not per-epoch curves — per-step metrics reveal whether training converged, diverged, or overfitted. Final metrics alone hide the training dynamics.</li><li>Not logging random seeds — an unreproducible &#x27;best result&#x27; is useless. Always log: <code>random_seed</code>, <code>numpy_seed</code>, <code>torch_seed</code>.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Take any ML training script you have written. Instrument it with MLflow or Weights &amp; Biases. Run 5 experiments with different hyperparameters. Use the UI to: identify the best experiment, compare validation curves across all 5, download the best model&#x27;s checkpoint. Write a README explaining how a new team member would reproduce your best result.</div>
     </div>
   </div>
 </section>
@@ -68,17 +77,31 @@
       <h2>Model registry</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Model registry is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In MLOps and production ML, study Model registry by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+        <p>A model registry is a centralized repository for managing ML model versions. It stores model artifacts (weights, code, configs), metadata (training metrics, hyperparameters, dataset versions), and lifecycle state (staging, production, archived). Think of it as Git for ML models — it tracks what was trained, when, on what data, with what performance, and which version is currently deployed.</p><p>MLflow Model Registry: the most widely used open-source model registry. Core concepts: registered model (a named model with multiple versions), model version (a specific trained artifact with metadata), stage (None → Staging → Production → Archived), tags (key-value metadata: <code>dataset_version</code>, <code>training_date</code>, owner). MLflow tracks experiments (training runs) and lets you promote the best run&#x27;s model to the registry.</p><p>Benefits of a model registry: (1) reproducibility — know exactly which model version is in production and how to recreate it, (2) auditability — track who deployed what model and when (required for regulated industries like healthcare, finance), (3) rollback — if a new model degrades performance, instantly revert to the previous production version, (4) collaboration — data scientists share models; engineers deploy directly from the registry.</p><p>Model versioning strategy: version each significant change. Semantic versioning (<code>major.minor.patch</code>): major = breaking change in API or data format, minor = improvement in accuracy, patch = bug fix. Each version should include: model artifact, training code (git commit hash), dataset hash, evaluation metrics, inference requirements (Python version, dependencies). This makes every version independently reproducible.</p><p>Registry in production: cloud providers offer managed model registries: MLflow on Databricks, AWS <code>SageMaker</code> Model Registry, GCP Vertex AI Model Registry, Azure ML Model Registry. These integrate with CI/CD pipelines: a new model is automatically registered after successful training, validation gates ensure only models that meet quality thresholds are promoted to production, canary deployments route 5% of traffic to the new model before full rollout.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how Model registry changes the prediction, score, or interpretation.</p>
-        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Model registry to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import mlflow
+mlflow.set_tracking_uri(&#x27;sqlite:///mlflow.db&#x27;)
+mlflow.set_experiment(&#x27;fraud-detection&#x27;)
+with mlflow.start_run():
+    mlflow.log_params({&#x27;n_estimators&#x27;: 200, &#x27;max_depth&#x27;: 8})
+    mlflow.log_metric(&#x27;val_auc&#x27;, 0.923)
+    mlflow.sklearn.log_model(model, &#x27;model&#x27;, registered_model_name=&#x27;fraud-detector&#x27;)</code></pre><pre><code># Promote model to production
+from mlflow.tracking import MlflowClient
+client = MlflowClient()
+client.transition_model_version_stage(
+    name=&#x27;fraud-detector&#x27;, version=3, stage=&#x27;Production&#x27;,
+    archive_existing_versions=True)
+print(&#x27;Model promoted to production&#x27;)</code></pre><pre><code># Load production model for inference
+model_uri = &#x27;models:/fraud-detector/Production&#x27;
+production_model = mlflow.sklearn.load_model(model_uri)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Model registry affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A model registry is the foundation of production MLOps. Without it, deploying ML models becomes ad hoc and risky — you don&#x27;t know which model is in production, can&#x27;t roll back, and can&#x27;t reproduce results. It is a non-negotiable component of any production ML system.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Logging models without logging the training data version — if the model is retrained on different data, the registry entry must record which dataset version it was trained on. Without this, you can&#x27;t reproduce the model.</li><li>Not setting up model validation gates — automatically promoting any new model to production is dangerous. Always gate on validation metrics: promote only if <code>val_auc</code> &gt;= <code>baseline_auc</code> × 0.995.</li><li>Treating the model registry as a one-way pipeline — model versions should also record deployment metadata (when deployed, to which environment, performance after deployment). Closed-loop feedback enables model monitoring and improvement.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Set up a complete MLflow experiment tracking + model registry workflow: (1) train 5 configurations of a classifier (vary hyperparameters), (2) log all params, metrics, and artifacts to MLflow, (3) register the best model in the model registry, (4) promote it to Staging, (5) load the Staging model, evaluate on a held-out test set, (6) if it passes quality gates (AUC &gt;= 0.85), promote to Production, (7) demonstrate rollback: register an intentionally bad model, promote it, then roll back to the previous Production version.</div>
     </div>
   </div>
 </section>
@@ -90,17 +113,23 @@
       <h2>Model serving</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Model serving is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In MLOps and production ML, study Model serving by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+        <p>Model serving is the infrastructure that makes a trained ML model accessible to users or other systems in production. At its core, serving means: accepting an input request (a sentence, an image, a structured record), running it through the model, and returning the prediction with acceptable latency and reliability. Everything else in serving is about doing this efficiently at scale.</p><p>REST APIs are the standard interface for model serving. A <code>FastAPI</code> or Flask server exposes an endpoint (e.g., POST /predict) that accepts JSON input, preprocesses it, runs the model, and returns JSON output. For synchronous requests (user waits for response), REST APIs with appropriate timeout handling work well. For asynchronous workloads (batch processing, background inference), queue-based architectures (Celery + Redis, SQS + Lambda) are more appropriate.</p><p>Serving infrastructure options: self-hosted (<code>PyTorch</code> serve, <code>TorchServe</code>, <code>BentoML</code>, Triton Inference Server) for full control, managed cloud (AWS <code>SageMaker</code>, Google Vertex AI, Azure ML endpoints) for ease of deployment, and specialized LLM serving (vLLM, TGI — Text Generation Inference) for <code>transformers</code> with optimizations like continuous batching and KV-cache management.</p><p>Latency optimization in serving: model quantization (reduce weight precision from float32 to int8 or int4 — 2–4× speedup at small accuracy cost), ONNX export (convert <code>PyTorch</code> model to optimized ONNX format for faster inference), <code>TensorRT</code> (NVIDIA&#x27;s inference optimizer that fuses layers and uses GPU-specific optimizations), model distillation (train a smaller student model to mimic the teacher), and request batching (group multiple requests into one batch for GPU efficiency).</p><p>Production serving requires more than just a model endpoint: health checks (is the model server alive?), metrics collection (latency percentiles, throughput, error rates), graceful degradation (return cached response or fallback if model fails), autoscaling (scale up GPU instances when traffic spikes), model versioning (support A/B testing between model versions), and logging (record every prediction for monitoring and debugging).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Model serving to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from fastapi import FastAPI; from pydantic import BaseModel; import uvicorn
+app = FastAPI()
+model = load_model(&#x27;model.pt&#x27;)  # load once at startup</code></pre><pre><code>class PredictRequest(BaseModel): text: str; max_length: int = 100
+class PredictResponse(BaseModel): prediction: str; confidence: float</code></pre><pre><code>@app.post(&#x27;/predict&#x27;, response_model=PredictResponse)
+async def predict(req: PredictRequest):
+    result = model.predict(req.text)
+    return PredictResponse(prediction=result[&#x27;label&#x27;], confidence=result[&#x27;score&#x27;])</code></pre><pre><code>Run: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4</code></pre><pre><code>Docker: FROM python:3.11; COPY . /app; WORKDIR /app; RUN pip install -r requirements.txt; CMD [&#x27;uvicorn&#x27;, &#x27;main:app&#x27;, &#x27;--host&#x27;, &#x27;0.0.0.0&#x27;]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Model serving affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A trained model that is not deployed delivers zero value. Model serving is the bridge between ML research and real-world impact. Every ML engineer must know how to wrap a model in an API, deploy it, and ensure it remains reliable in production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Loading the model inside the request handler — each request would load the model from disk, taking 2–10 seconds. Load once at startup.</li><li>Not handling concurrent requests — by default, a single Python server is single-threaded. Use async/await, multiple workers, or a thread pool for concurrent prediction.</li><li>Not testing the serving endpoint under load — a model that works in development may crash under production traffic due to memory constraints or thread contention.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Wrap a trained image classifier in a <code>FastAPI</code> REST API: POST /predict accepts a base64-encoded image, preprocesses it, runs the model, and returns {<code>class_name</code>, confidence}. Add: request validation (image size limit), error handling (malformed image returns 400), logging of every prediction, and a GET /health endpoint. Deploy with Docker and test with 100 concurrent requests using locust or wrk.</div>
     </div>
   </div>
 </section>
@@ -112,17 +141,42 @@
       <h2>Batch inference</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Batch inference is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Batch inference processes a large dataset through a model offline, producing predictions for all items at once. Unlike online (real-time) inference where predictions are needed immediately, batch inference runs on a schedule (nightly, weekly) and precomputes predictions that are stored and served later. Examples: generating product recommendations for all users each night, scoring all loan applications submitted in the past 24 hours, generating personalized email content for a marketing campaign.</p><p>Batch inference architecture: (1) trigger (scheduled cron job, event-driven), (2) data fetch (read from data warehouse or feature store), (3) batch prediction (process data through model), (4) store results (write predictions to database), (5) serve (application reads precomputed predictions from database, returns in milliseconds). The latency at request time is the database read latency (&lt; 5ms), not the model inference time.</p><p>Throughput optimization: batch inference should maximize throughput (items processed per second) rather than minimize per-item latency. Key techniques: batching (group items into batches of 32-256 for GPU utilization), vectorization (process entire batches as matrix operations, not one item at a time), parallel processing (multiple workers, each processing a chunk of the dataset), model optimization (<code>TorchScript</code>, ONNX, <code>TensorRT</code> for faster inference).</p><p>Pandas batch inference: for tabular models, iterate over <code>DataFrames</code> in chunks: <code>df.iterrows()</code> (slow, avoid), <code>df.apply()</code> (medium), vectorized prediction: <code>model.predict</code>(df[features]) on the full <code>DataFrame</code> or large chunks. For <code>sklearn</code> models, <code>predict()</code> accepts the full test matrix — process 1M rows at once if RAM allows, or in chunks of 100K.</p><p>Batch inference for LLMs: generating text for 10,000 items with an LLM is expensive. Optimize: use smaller, faster models when quality allows, cache common patterns (identical prompts get cached responses), batch prompts together (vLLM&#x27;s continuous batching), run inference on GPU (100× faster than CPU for LLMs), and parallelize across multiple GPUs.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply Batch inference. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from MLOps and production ML where Batch inference is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+import joblib
+from tqdm import tqdm
+# Efficient batch inference for sklearn model
+model = joblib.load(&#x27;model.pkl&#x27;)
+def batch_predict(df: pd.DataFrame, batch_size: int = 100_000) -&gt; pd.Series:
+    predictions = []
+    n_batches = (len(df) + batch_size - 1) // batch_size
+    for i in tqdm(range(n_batches), desc=&#x27;Batch inference&#x27;):
+        batch = df.iloc[i*batch_size:(i+1)*batch_size]
+        preds = model.predict_proba(batch[feature_cols])[:,1]
+        predictions.extend(preds)
+    return pd.Series(predictions, index=df.index)
+results = batch_predict(large_df, batch_size=50_000)
+print(f&#x27;Scored {len(results)} items&#x27;)
+results.to_csv(&#x27;predictions.csv&#x27;)</code></pre><pre><code># Parallel batch inference with joblib
+from joblib import Parallel, delayed
+def predict_chunk(chunk):
+    model = joblib.load(&#x27;model.pkl&#x27;)  # load once per worker
+    return model.predict_proba(chunk[features])[:,1]
+n_cores = 8
+chunks = [df.iloc[i::n_cores] for i in range(n_cores)]
+results_parallel = Parallel(n_jobs=n_cores)(
+    delayed(predict_chunk)(chunk) for chunk in chunks
+)
+predictions = pd.concat([pd.Series(r) for r in results_parallel]).sort_index()</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Batch inference, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Batch inference is the correct architecture for any use case where predictions can be precomputed — recommendations, scoring, content generation for campaigns. It decouples prediction latency (which can be slow) from serving latency (which must be fast). Understanding batch inference architecture prevents the mistake of performing expensive model inference synchronously during a user request.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using <code>df.iterrows()</code> for batch inference — <code>iterrows()</code> processes one row at a time and is 100-1000× slower than vectorized predict(df). Always process the full batch or large chunks with vectorized operations.</li><li>Not caching predictions between batch runs — if 80% of items haven&#x27;t changed since the last batch, recomputing predictions for all 100% wastes compute. Track which items changed and only recompute for those.</li><li>Not monitoring batch inference job health — a failed batch job means serving stale predictions from the previous run. Set up monitoring for: job completion time, number of items processed, prediction distribution vs previous run.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build an end-to-end batch inference pipeline: (1) train a churn prediction model on historical data, (2) implement batch scoring: every night, score all active users and write predictions to a <code>PostgreSQL</code> table, (3) add batch parallelism: split the user table into N chunks, process in parallel with N workers, (4) add monitoring: log job start/end time, <code>n_users</code> scored, prediction distribution statistics, (5) add a staleness check in the serving API: if predictions are &gt; 48 hours old, return a warning flag with the prediction, (6) implement incremental scoring: only re-score users who had activity in the last 24 hours.</div>
     </div>
   </div>
 </section>
@@ -134,17 +188,45 @@
       <h2>Online inference</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Online inference is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Online inference (also called real-time inference) produces predictions in response to individual requests, typically requiring a response within 100-500ms for user-facing applications. Unlike batch inference (precomputed, stored), online inference requires the model to be loaded in memory, ready to process any input at any time. The architecture: user request → API endpoint → preprocessing → model inference → postprocessing → response.</p><p>Serving infrastructure: ML models are served via REST APIs (<code>FastAPI</code>, Flask) or gRPC servers (<code>TensorFlow</code> Serving, Triton Inference Server). The model is loaded into memory at server startup and kept resident for the lifetime of the server. Multiple server instances run behind a load balancer for scalability. Stateless design: each request is independent, servers can be scaled horizontally.</p><p>Latency components: total request latency = network round trip + preprocessing + model inference + postprocessing. For a typical tabular model: preprocessing (10ms) + model inference (1-5ms) + serialization (1ms) ≈ 15ms. For a BERT model: tokenization (5ms) + inference on 1 GPU (20-50ms) ≈ 30-60ms. For an LLM: time-to-first-token (200-1000ms) + streaming generation (50 tokens/second) ≈ 1-10 seconds.</p><p>GPU serving for deep learning: inference on GPU is 10-100× faster than CPU for neural networks. But GPU memory is limited (24GB for an RTX 4090) and GPUs are expensive. Optimization strategies: model quantization (4-bit/8-bit reduces memory 4-8×), ONNX Runtime (2-3× faster than <code>PyTorch</code> for inference), <code>TensorRT</code> (up to 10× faster than <code>PyTorch</code>, NVIDIA GPU only), vLLM (state-of-the-art LLM serving with continuous batching and <code>PagedAttention</code>).</p><p>Autoscaling: production serving systems must scale up when traffic spikes and scale down when traffic decreases. Container orchestration (Kubernetes, AWS ECS) monitors request queue depth and CPU/GPU utilization, adding more server instances when load is high. For bursty traffic patterns, prewarming (keeping some instances running in advance) prevents cold start latency.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply Online inference. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from MLOps and production ML where Online inference is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from fastapi import FastAPI
+from pydantic import BaseModel
+import joblib
+import numpy as np
+app = FastAPI()
+# Load model once at startup
+@app.on_event(&#x27;startup&#x27;)
+async def load_model():
+    app.state.model = joblib.load(&#x27;churn_model.pkl&#x27;)
+    app.state.scaler = joblib.load(&#x27;scaler.pkl&#x27;)
+class PredictionRequest(BaseModel):
+    user_id: str
+    features: dict
+class PredictionResponse(BaseModel):
+    user_id: str; prediction: float; confidence: float
+@app.post(&#x27;/predict&#x27;, response_model=PredictionResponse)
+async def predict(request: PredictionRequest):
+    features = np.array([[request.features[f] for f in feature_names]])
+    features_scaled = app.state.scaler.transform(features)
+    proba = app.state.model.predict_proba(features_scaled)[0, 1]
+    return PredictionResponse(user_id=request.user_id, prediction=float(proba &gt; 0.5), confidence=float(proba))
+# Run: uvicorn main:app --host 0.0.0.0 --port 8080 --workers 4</code></pre><pre><code># Load test with locust
+from locust import HttpUser, task
+class MLUser(HttpUser):
+    @task
+    def predict(self):
+        self.client.post(&#x27;/predict&#x27;, json={&#x27;user_id&#x27;: &#x27;u1&#x27;, &#x27;features&#x27;: {&#x27;age&#x27;: 30, &#x27;income&#x27;: 50000, &#x27;tenure&#x27;: 24}})
+# locust -f locustfile.py --host http://localhost:8080
+# Measures: RPS (requests per second), p50/p95/p99 latency under load</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Online inference, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Online inference is the architecture for all user-facing ML applications: search ranking, product recommendations, content moderation, autocomplete, fraud detection. Understanding how to build, deploy, and scale online inference systems is the bridge between an ML model and a production AI product.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Loading the model on every request — loading a 500MB model takes 2-5 seconds. Load the model once at server startup and keep it in memory. Never load inside the request handler.</li><li>Not measuring latency under load — a model that responds in 20ms for 1 request may respond in 500ms when 100 requests arrive simultaneously (if they all compete for the same GPU). Always load test before deploying.</li><li>Running inference synchronously in a web request handler — for long-running inference (&gt; 200ms), use async workers: return a job ID immediately, run inference in a background worker, and let the client poll for the result. This prevents timeouts and enables graceful backpressure.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a production-grade online inference service: (1) train a churn prediction model and serialize it, (2) build a <code>FastAPI</code> endpoint that loads the model at startup, accepts prediction requests, and returns predictions with confidence scores, (3) add request logging (structured JSON with <code>request_id</code>, features hash, prediction, latency), (4) add a health check endpoint (/health) that verifies the model is loaded and a test prediction succeeds, (5) containerize with Docker, (6) load test with Locust: find the requests/second at which p99 latency exceeds 200ms — this is your capacity limit.</div>
     </div>
   </div>
 </section>
@@ -156,12 +238,22 @@
       <h2>FastAPI</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>FastAPI should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In MLOps and production ML, connect FastAPI to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p><code>FastAPI</code> is a modern Python web framework for building APIs quickly and efficiently. It is built on Starlette (ASGI framework) and Pydantic (data validation). <code>FastAPI</code>&#x27;s key features: automatic API documentation (Swagger UI at /docs and <code>ReDoc</code> at /redoc, generated from type annotations), request validation (Pydantic models validate input types automatically), async support (built-in async/await for non-blocking I/O), and performance comparable to Node.js and Go (due to ASGI and Starlette).</p><p>Pydantic models are the core of <code>FastAPI</code>&#x27;s input/output handling. Define a class inheriting from <code>pydantic</code>.<code>BaseModel</code> with typed fields. <code>FastAPI</code> automatically: validates incoming JSON against the model (returns HTTP 422 Unprocessable Entity for invalid input with a detailed error message), parses validated data into the model instance, and uses the model to generate the API schema. Output models ensure you never accidentally expose internal fields.</p><p>Dependency injection in <code>FastAPI</code> enables: shared database connections, authentication, configuration loading, and logging — all as reusable dependencies. def <code>get_db()</code>: db = <code>SessionLocal()</code>; try: yield db; finally: <code>db.close()</code>. Any endpoint that declares db: Session = Depends(<code>get_db</code>) automatically gets a fresh database session, properly closed after the request. This pattern is much cleaner than global connections.</p><p>Async endpoints: for I/O-bound operations (database queries, external API calls), use async def instead of def. async def predict(request: <code>PredictRequest</code>, db: Session = Depends(<code>get_db</code>)): result = await <code>model.async_predict</code>(<code>request.text</code>); return result. Async endpoints can serve thousands of concurrent requests on a single worker because awaiting I/O releases the thread to serve other requests. For CPU-bound operations (running ML inference), use a thread pool executor to avoid blocking the event loop.</p><p>Testing <code>FastAPI</code> with <code>TestClient</code>: from <code>fastapi</code>.testclient import <code>TestClient</code>; client = <code>TestClient</code>(app). <code>client.post</code>(&#x27;/predict&#x27;, json={&#x27;text&#x27;: &#x27;hello&#x27;}) — this runs the full request through <code>FastAPI</code> including validation. Use pytest fixtures to set up the client and mock dependencies. <code>FastAPI</code>&#x27;s dependency override (<code>app.dependency_overrides</code>) replaces production dependencies with test mocks — no real database or model needed in unit tests.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses FastAPI to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply FastAPI in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from fastapi import FastAPI
+from pydantic import BaseModel, Field
+app = FastAPI(title=&#x27;ML API&#x27;, version=&#x27;1.0&#x27;)</code></pre><pre><code>class PredictRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=10000, description=&#x27;Text to classify&#x27;)
+    model_version: str = Field(&#x27;v1&#x27;, description=&#x27;Model version to use&#x27;)
+class PredictResponse(BaseModel):
+    sentiment: str; confidence: float; model_version: str</code></pre><pre><code>@app.post(&#x27;/predict&#x27;, response_model=PredictResponse)
+async def predict(request: PredictRequest):
+    result = await run_model(request.text, request.model_version)
+    return PredictResponse(sentiment=result[&#x27;label&#x27;], confidence=result[&#x27;score&#x27;], model_version=request.model_version)</code></pre><pre><code>@app.get(&#x27;/health&#x27;)
+def health(): return {&#x27;status&#x27;: &#x27;ok&#x27;, &#x27;model_loaded&#x27;: model is not None}</code></pre><pre><code>Run: uvicorn main:app --host 0.0.0.0 --port 8000 --reload  # --reload for dev</code></pre>
       </div>
       <pre><code>from fastapi import FastAPI
 app = FastAPI()
@@ -169,9 +261,9 @@ app = FastAPI()
 @app.post(&quot;/predict&quot;)
 def predict(payload: dict):
     return {&quot;prediction&quot;: &quot;example&quot;}</code></pre>
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using FastAPI. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br><code>FastAPI</code> is the standard for ML model serving in Python. It combines rapid development, automatic validation, async performance, and self-documenting APIs. Every ML engineer deploying models via REST API should know <code>FastAPI</code>.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Loading the model inside the endpoint function — this loads the model from disk on every request (seconds of latency). Load the model at startup using a lifespan event or module-level variable.</li><li>Using def instead of async def for I/O-bound endpoints — synchronous endpoints block the server while waiting for I/O. Use async def for database calls and external API requests.</li><li>Returning raw dicts instead of Pydantic response models — raw dicts bypass response validation and automatic schema generation. Always define and use <code>response_model</code>.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a <code>FastAPI</code> ML service with: (1) POST /predict — accepts text input, returns sentiment + confidence, (2) GET /health — checks model is loaded, (3) POST /batch — accepts list of texts, returns list of predictions, (4) proper input validation (max length, required fields), (5) request logging middleware, (6) global exception handler returning structured errors. Add pytest tests for all endpoints including edge cases (empty text, very long text, batch of 1000).</div>
     </div>
   </div>
 </section>
@@ -183,17 +275,24 @@ def predict(payload: dict):
       <h2>Docker</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Docker should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In MLOps and production ML, connect Docker to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Docker is a containerization platform that packages an application and all its dependencies (Python version, libraries, CUDA version, config files) into a portable container image. The container runs identically on any machine that has Docker installed — your laptop, a teammate&#x27;s machine, a cloud VM, or a Kubernetes cluster. Containers solve the &#x27;it works on my machine&#x27; problem that plagues ML deployment.</p><p>Key concepts: a Docker image is a read-only blueprint (like a class in OOP) that specifies the filesystem, environment variables, and startup command. A container is a running instance of an image (like an object). Images are built from a Dockerfile — a text file with instructions: FROM (base image), RUN (execute commands to install software), COPY (copy files into the image), WORKDIR (set working directory), ENV (environment variables), EXPOSE (declare port), CMD (default startup command).</p><p>A well-structured ML model Dockerfile: start from a Python base image (python:3.11-slim or an NVIDIA CUDA image for GPU models), install system dependencies with apt-get, copy <code>requirements.txt</code> and run pip install, copy the model artifacts and application code, and specify the uvicorn/gunicorn command to start the serving API. Keep images small by using slim base images, combining RUN commands to reduce layers, and using .dockerignore to exclude large files.</p><p>Docker Compose orchestrates multi-container applications: your ML API container, a Redis cache container, a monitoring container (Prometheus + Grafana), and a database container can all be defined in a single docker-<code>compose.yml</code> file and started with one command: docker-compose up. This replicates a production-like environment locally for testing.</p><p>GPU support requires the NVIDIA Container Toolkit. After installing it, docker run --gpus all <code>your_image</code> makes all GPUs available to the container. For multi-GPU training, docker run --gpus all -e CUDA_VISIBLE_DEVICES=0,1 restricts to specific GPUs. In Kubernetes, GPU scheduling requires the NVIDIA device plugin.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Docker to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Docker in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Dockerfile:
+  FROM python:3.11-slim
+  WORKDIR /app
+  COPY requirements.txt .
+  RUN pip install --no-cache-dir -r requirements.txt
+  COPY . .
+  EXPOSE 8000
+  CMD [&#x27;uvicorn&#x27;, &#x27;main:app&#x27;, &#x27;--host&#x27;, &#x27;0.0.0.0&#x27;, &#x27;--port&#x27;, &#x27;8000&#x27;]</code></pre><pre><code>Build: docker build -t my-ml-api:v1.0 .</code></pre><pre><code>Run: docker run -p 8000:8000 my-ml-api:v1.0</code></pre><pre><code>GPU: docker run --gpus all -p 8000:8000 my-ml-api:v1.0</code></pre><pre><code>Push: docker tag my-ml-api:v1.0 myregistry/my-ml-api:v1.0; docker push myregistry/my-ml-api:v1.0</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Docker. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Docker is the standard packaging and deployment mechanism for ML models in industry. Without containerization, deploying a model requires manually replicating its environment on every target machine — an error-prone, time-consuming process. With Docker, deployment is reproducible and takes minutes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not using a .dockerignore file — without it, large files (datasets, .git directory, __pycache__) are included in the build context, making builds slow.</li><li>Installing packages in separate RUN commands — each RUN command creates a new image layer. Combine all installs into one RUN command to keep the image smaller.</li><li>Not pinning package versions in <code>requirements.txt</code> — <code>requirements.txt</code> without versions (just &#x27;<code>torch</code>&#x27;) will install the latest version, making the image non-reproducible when rebuilt later.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Containerize the <code>FastAPI</code> model server from the &#x27;Model serving&#x27; exercise. Create a Dockerfile that: installs all requirements, copies the model file, starts the <code>FastAPI</code> server. Build the image, run it, and test the /predict endpoint from the host machine. Measure the image size. Optimize the image size by switching to python:3.11-slim and combining RUN commands. Report the size reduction.</div>
     </div>
   </div>
 </section>
@@ -205,17 +304,29 @@ def predict(payload: dict):
       <h2>CI/CD</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>CI/CD matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn CI/CD by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>CI/CD (Continuous Integration / Continuous Delivery) is the practice of automatically testing and deploying code changes. In traditional software, CI/CD runs tests whenever code is pushed and deploys to production when tests pass. For ML, CI/CD extends to include: model training, evaluation, performance validation, model registration, and deployment — the complete ML pipeline from code commit to serving.</p><p>Continuous Integration for ML: when a developer pushes code (model code, preprocessing code, training script), the CI pipeline automatically: (1) runs linting and unit tests, (2) runs integration tests on a small data sample, (3) trains the model on a fixed training set, (4) evaluates on a fixed test set, (5) compares metrics to a baseline threshold, (6) flags failures for human review. Popular CI tools: <code>GitHub</code> Actions, <code>GitLab</code> CI, Jenkins, <code>CircleCI</code>. Config is a YAML file in the repository.</p><p>Continuous Delivery for ML: after a model passes all CI checks, CD automatically promotes it: (1) register the model in the model registry (MLflow, Vertex AI Model Registry) with version and performance metrics, (2) deploy to a staging environment for integration testing, (3) run canary deployment in production (serve 5% of traffic with the new model, 95% with the old model), (4) monitor production metrics for 24–48 hours, (5) gradually increase the new model&#x27;s traffic share if metrics hold.</p><p>Model validation gates are automated checks that block deployment if the model fails quality standards. Common gates: (1) minimum test set AUC (e.g., AUC &gt; 0.85), (2) performance parity on protected groups (AUC difference &lt; 0.03 across demographic groups), (3) inference latency (P99 &lt; 100ms), (4) no regression from production model (new model must beat current prod model by &gt; 0.01 AUC), (5) data distribution check (training data is not stale). Each gate failure blocks promotion to the next stage.</p><p>ML-specific CI/CD tools: MLflow for experiment tracking and model registry. DVC (Data Version Control) for versioning datasets and model files alongside code. Weights &amp; Biases for experiment tracking with CI integration. Vertex AI Pipelines and <code>SageMaker</code> Pipelines for managed ML pipelines. Metaflow and Prefect for orchestrating Python-based ML workflows. CML (Continuous Machine Learning) from Iterative AI adds model metrics directly to pull request comments.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where CI/CD affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>GitHub Actions CI (.github/workflows/train-evaluate.yml):
+name: Train and Evaluate
+on: [push]
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install -r requirements.txt
+      - run: python train.py
+      - run: python evaluate.py --threshold 0.85</code></pre><pre><code>Model gate: if auc &lt; 0.85 or auc &lt; prod_auc - 0.01:
+    print(&#x27;Model quality check failed. Blocking deployment.&#x27;)
+    sys.exit(1)</code></pre><pre><code>DVC: dvc init; dvc add data/train.csv; dvc run -n train -d data/train.csv -o model.pkl python train.py</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for CI/CD: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Manual ML deployment is slow, error-prone, and inconsistent. CI/CD enables reliable, frequent model updates. Without it, organizations deploy models monthly; with it, they deploy multiple times per week. Speed of iteration is a competitive advantage in AI product development.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not versioning training data alongside model code — a model&#x27;s behavior depends on both code and data. Without data versioning (DVC, Delta Lake), you cannot reproduce or audit model versions.</li><li>Using absolute thresholds only (AUC &gt; 0.85) without relative comparisons — a model might pass the absolute threshold but be significantly worse than the current production model. Always include a relative comparison.</li><li>Running the full training pipeline on every commit — large models take hours to train. Run fast smoke tests on every commit; run full training on main branch merges or scheduled triggers.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Set up a CI/CD pipeline for a loan default prediction model using <code>GitHub</code> Actions: (1) on every PR: run pytest for unit tests, train on 10% data sample, evaluate and post metrics as PR comment using CML, (2) on merge to main: train on full data, evaluate against production model, register to MLflow if better, (3) add a model gate that blocks deployment if AUC drops below the production model. Test by intentionally degrading the model and verifying the gate blocks it.</div>
     </div>
   </div>
 </section>
@@ -227,17 +338,23 @@ def predict(payload: dict):
       <h2>Monitoring</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Monitoring matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Monitoring by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>ML model monitoring tracks the performance, reliability, and behavior of deployed models in production. Unlike traditional software monitoring (is the server up? is response time &lt; 100ms?), ML monitoring also tracks prediction quality metrics, data drift, and model drift — aspects unique to statistical learning systems that can degrade silently without any software errors.</p><p>Monitoring dimensions: operational metrics (latency, throughput, error rate, memory usage — standard infrastructure metrics), prediction metrics (confidence score distribution, prediction class distribution — should be stable if input distribution is stable), data quality metrics (null rates, feature value distributions against training baseline — PSI, KS-test), and ground truth metrics (actual performance vs predictions — requires delayed labels from production outcomes).</p><p>Latency monitoring with percentiles is more informative than average latency. P50 latency is the median (50% of requests are faster). P95 latency is the 95th percentile (only 5% of requests are slower). P99 latency captures tail latency — the worst 1% of users. Set alerts on P99 latency, not average — a fast average can hide pathologically slow tail requests that users experience as failures.</p><p>Feedback loops enable ground truth monitoring. In fraud detection, labeled fraud outcomes arrive days later when human reviewers confirm or deny model flags. Log every prediction with a unique request ID, then join with outcome labels when they arrive. Compute model accuracy, precision, and recall on this labeled production sample. When production metrics drop below a threshold, trigger retraining.</p><p>Alerting strategy: too few alerts = problems slip through unnoticed. Too many alerts = alert fatigue and real alerts get ignored. Start with: error rate &gt; 1%, P99 latency &gt; 5s, confidence score mean drops more than 2 standard deviations, any feature PSI &gt; 0.2. Add or remove alert rules based on incident postmortems.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Monitoring affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from prometheus_client import Counter, Histogram, start_http_server
+REQUEST_COUNT = Counter(&#x27;model_requests_total&#x27;, &#x27;Total prediction requests&#x27;)
+REQUEST_LATENCY = Histogram(&#x27;model_latency_seconds&#x27;, &#x27;Prediction latency&#x27;)
+start_http_server(8001)  # metrics endpoint</code></pre><pre><code>In prediction handler:
+with REQUEST_LATENCY.time():
+    REQUEST_COUNT.inc()
+    result = model.predict(X)</code></pre><pre><code>Log predictions: logger.info(json.dumps({&#x27;request_id&#x27;: req_id, &#x27;features&#x27;: X.tolist(), &#x27;prediction&#x27;: result, &#x27;confidence&#x27;: conf}))</code></pre><pre><code>Grafana dashboard: query Prometheus for request_rate (predictions per second), latency_p99, and error_rate. Set alerts.</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Monitoring: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Unmonitored models degrade silently. Users notice first — in the form of lower engagement, incorrect recommendations, or fraudulent transactions slipping through. Monitoring catches degradation before users do and enables proactive maintenance.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Monitoring only infrastructure (CPU, memory) and not prediction quality — a model can be computationally healthy while producing consistently wrong predictions due to drift.</li><li>Not logging enough information to debug incidents — when a model makes a wrong prediction that causes an incident, you need to reproduce the exact input, model version, and prediction. Log everything.</li><li>Not testing alerts — alerts that are not regularly tested may silently break. Send a test event that should trigger each alert at least monthly.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Instrument a <code>FastAPI</code> prediction service with: (1) Prometheus metrics for request count and latency (Histogram), (2) prediction confidence logging, (3) structured JSON logging of every request with input hash, prediction, confidence. Deploy with Docker and set up a local Grafana dashboard. Simulate a sudden accuracy drop (manually alter predictions) and show your monitoring catches it within 5 minutes.</div>
     </div>
   </div>
 </section>
@@ -249,17 +366,26 @@ def predict(payload: dict):
       <h2>Data drift</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Data drift belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In MLOps and production ML, treat Data drift as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>Data drift (also called covariate shift) occurs when the statistical distribution of input features in production differs from the distribution seen during training. The model was trained on one distribution and now receives inputs from a different distribution — its predictions may be unreliable even if the model itself has not changed. Data drift is one of the most common reasons ML models degrade in production over time.</p><p>Types of drift: feature drift (input feature distributions change — e.g., customers now have higher average income than when the model was trained), label drift (the distribution of target values changes — fraud patterns evolve), and concept drift (the relationship between inputs and outputs changes — what used to predict churn no longer predicts churn because product features changed). Feature and label drift are measurable; concept drift requires monitoring prediction error on labeled data.</p><p>Detecting feature drift: compare production input distributions against training distributions using statistical tests. Population Stability Index (PSI) is widely used in credit risk: PSI &lt; 0.1 = no significant shift, 0.1–0.2 = moderate shift, &gt;0.2 = significant drift requiring model review. Kolmogorov-Smirnov test and chi-square test can also detect distributional shifts. Tools: Evidently AI, Alibi Detect, <code>WhyLabs</code>.</p><p>Monitoring drift in production: sample incoming requests (or all if volume allows) and compare feature statistics (mean, std, percentiles, value distributions for categoricals) against training set statistics. Set up alerts when PSI or KS-test p-values exceed thresholds. Log these metrics to a dashboard (Grafana, Datadog) so you can visualize drift trends over time.</p><p>Responding to drift: retrain the model on recent data. Implement a sliding window retraining schedule (retrain monthly on the last 6 months of data). Or use online learning — update the model continuously with new examples as they arrive. For severe concept drift, collect new labeled data and start a new development cycle.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Data drift and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>pip install evidently
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset
+report = Report(metrics=[DataDriftPreset()])
+report.run(reference_data=train_df, current_data=production_sample_df)
+report.save_html(&#x27;drift_report.html&#x27;)</code></pre><pre><code>PSI manually:
+def psi(expected, actual, buckets=10):
+    expected_pcts = pd.cut(expected, buckets).value_counts(normalize=True).sort_index()
+    actual_pcts = pd.cut(actual, pd.cut(expected, buckets).cat.categories).value_counts(normalize=True).sort_index()
+    return ((actual_pcts - expected_pcts) * np.log(actual_pcts / expected_pcts)).sum()</code></pre><pre><code>Alert: if psi_value &gt; 0.2: send_alert(&#x27;Feature X has drifted significantly, model retraining recommended&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Data drift. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>ML models are snapshots of patterns at training time. The world changes: user behavior evolves, product features change, external events shift distributions. Without drift monitoring, a degrading model is not caught until user complaints accumulate. Drift monitoring enables proactive model maintenance.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Monitoring only model metrics (accuracy) without monitoring input distributions — by the time model metrics degrade, the model has already been serving bad predictions. Detect drift in inputs before it affects outputs.</li><li>Using the entire training set as the reference distribution — for models trained on historical data, use a recent window (last 30–90 days) as the reference to avoid flagging seasonal patterns as drift.</li><li>Setting drift alerts too sensitive — every small natural variation triggers alerts, causing alert fatigue and ignoring genuine drift. Calibrate thresholds on historical drift patterns.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Simulate data drift: train a model on 2020 data. Create a &#x27;production&#x27; dataset by gradually shifting features over 12 months. Compute PSI monthly. Plot PSI over time and mark when it crosses the 0.1 and 0.2 thresholds. Show the corresponding model performance degradation. Implement an automated retraining trigger when PSI &gt; 0.2.</div>
     </div>
   </div>
 </section>
@@ -271,17 +397,28 @@ def predict(payload: dict):
       <h2>Concept drift</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Concept drift matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Concept drift by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Concept drift occurs when the statistical relationship between inputs (features) and outputs (labels) changes over time. A model trained on historical data becomes inaccurate because the world has changed. Examples: a fraud detection model trained in 2022 fails in 2024 because fraud patterns evolved, a recommendation model trained on pre-pandemic behavior fails in 2024 because user preferences changed, a demand forecasting model fails during economic shocks.</p><p>Types of drift: (1) data drift (feature drift, covariate shift) — the distribution of input features P(X) changes but the relationship P(Y|X) stays the same. (2) Concept drift (label drift) — P(Y|X) changes: the same features now map to different labels. (3) Label drift — P(Y) changes (class frequency shifts). (4) Upstream data drift — the data pipeline changes: a new feature engineering step, a schema change, or an upstream data source change that alters feature distributions.</p><p>Detecting drift: (1) statistical tests — compare feature distributions between training and inference: KL divergence, Population Stability Index (PSI), Kolmogorov-Smirnov (KS) test, chi-square test for categorical features. (2) Model performance monitoring — if ground truth labels are available (often delayed), track AUC, accuracy, or RMSE over time. A degrading performance trend signals drift. (3) Prediction drift — monitor the distribution of model outputs/confidence scores over time. Shifts in output distribution often precede measurable performance degradation.</p><p>Responding to drift: (1) continuous retraining — retrain periodically on recent data (rolling window: last 90 days), (2) triggered retraining — retrain when drift is detected above a threshold, (3) online learning — update the model incrementally with each new example (useful for fast-drifting systems like ads), (4) ensemble with time-aware weighting — weight recent models higher than old models.</p><p>Evidently AI and Arize: open-source tools for drift detection and monitoring. Evidently AI generates drift reports comparing training and production data distributions. Arize and <code>WhyLabs</code> are commercial platforms with real-time drift alerting. MLflow and W&amp;B also have monitoring dashboards. In production: monitor feature distributions daily, alert on PSI &gt; 0.2 (significant drift) or PSI &gt; 0.1 (moderate drift), trigger retraining when drift is detected.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Concept drift affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset
+report = Report(metrics=[DataDriftPreset()])
+report.run(reference_data=train_df, current_data=production_df)
+report.save_html(&#x27;drift_report.html&#x27;)</code></pre><pre><code># PSI (Population Stability Index) manually
+def compute_psi(expected, actual, bins=10):
+    expected_perc = np.histogram(expected, bins=bins)[0] / len(expected)
+    actual_perc = np.histogram(actual, bins=bins, range=(expected.min(), expected.max()))[0] / len(actual)
+    psi = np.sum((actual_perc - expected_perc) * np.log((actual_perc + 1e-8) / (expected_perc + 1e-8)))
+    return psi
+psi = compute_psi(train_df[&#x27;income&#x27;], prod_df[&#x27;income&#x27;])
+print(f&#x27;PSI: {psi:.4f} — {&quot;significant&quot; if psi &gt; 0.2 else &quot;moderate&quot; if psi &gt; 0.1 else &quot;minor&quot;} drift&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Concept drift: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Concept drift is one of the most common reasons ML models fail in production. A model with AUC=0.92 at deployment can degrade to AUC=0.75 after 6 months without any code change — purely from evolving data distributions. Monitoring for drift and responding with retraining is what separates a toy ML project from a production ML system.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Monitoring only prediction accuracy — accuracy requires labeled data which often lags by days or weeks. Monitor input feature distributions (no labels required) for early warning of drift.</li><li>Not establishing a baseline distribution — drift detection requires comparing current data to a reference. Define the reference as the training data distribution and compare production data against it.</li><li>Retraining on ALL available historical data after drift — if concept drift occurs, old data (pre-drift) may be harmful. Retrain on a recent window (last 30–90 days) to adapt to the new distribution.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a drift monitoring system: (1) simulate concept drift by training a model on Jan-Jun data, then creating a shifted Jul-Dec dataset (shift feature distributions by adding random noise), (2) compute PSI for each feature between the two periods, (3) build a drift dashboard showing feature distributions over time (monthly), (4) implement automated retraining triggered when PSI &gt; 0.2, (5) compare: model retrained on all data vs model retrained on last 90 days — which recovers better after drift? Plot performance over time.</div>
     </div>
   </div>
 </section>
@@ -293,17 +430,21 @@ def predict(payload: dict):
       <h2>A/B testing</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>A/B testing is a concept inside MLOps and production ML that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A/B testing (also called randomized controlled experiment) is the method of comparing two versions of something (A = control, B = treatment) by randomly assigning users to one version and measuring outcomes. In ML, A/B tests compare two models, two recommendation algorithms, two UI designs, or two pricing strategies. Randomization ensures that differences in outcomes are caused by the version, not by confounding factors.</p><p>A correctly designed A/B test requires: (1) a clear metric (conversion rate, session duration, revenue per user), (2) a pre-specified significance level α (typically 0.05) and power (1-β, typically 0.8), (3) a power analysis to determine the required sample size before collecting data, (4) random assignment to groups, and (5) analysis after the pre-specified sample size is reached (not before). Stopping early or peeking at results leads to false positives.</p><p>Sample size calculation: the required number of samples depends on the baseline rate, the minimum detectable effect (MDE — the smallest improvement worth detecting), desired power, and significance level. For a conversion rate test (baseline=5%, MDE=1%, α=0.05, power=0.8), you need ~5000 samples per group. Underpowering leads to inconclusive results; overpowering wastes resources.</p><p>Pitfalls: novelty effect (new versions get higher engagement temporarily because users are curious, not because they are genuinely better — wait until behavior stabilizes), Simpsons paradox (the winning version in total may lose in every subgroup — check segmented results), and network effects (in social platforms, user A assigned to B may interact with user A2 assigned to A, contaminating the groups).</p><p>Multi-armed bandit (MAB) testing is an alternative to A/B testing that dynamically allocates more traffic to better-performing variants during the experiment, reducing regret (lost conversions from showing inferior variants). MAB is appropriate when the cost of showing the worse version is high (medical treatment, high-value recommendations). Pure A/B testing is appropriate when you need clean statistical inference.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying MLOps and production ML and needs to apply A/B testing. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from MLOps and production ML where A/B testing is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Determine sample size: from statsmodels.stats.power import NormalIndPower
+analysis = NormalIndPower()
+n = analysis.solve_power(effect_size=0.2, alpha=0.05, power=0.8)
+print(f&#x27;Required n per group: {n:.0f}&#x27;)</code></pre><pre><code>Run experiment: randomly assign users with random.random() &lt; 0.5 → group A vs B. Collect metric for each user.</code></pre><pre><code>Analyze: from scipy.stats import ttest_ind or chi2_contingency
+Report: p-value, effect size (Cohen&#x27;s d or relative lift), 95% confidence interval.</code></pre><pre><code>Decision: if p &lt; 0.05 AND practical significance: deploy B. if p &gt;= 0.05: keep A or run longer. if significant but tiny effect: cost-benefit analysis.</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for A/B testing, explain it in 5 to 8 lines, and connect it to MLOps and production ML.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A/B testing is the gold standard for making data-driven product decisions. Without it, product changes are made based on intuition. With it, you can distinguish genuine improvements from noise, estimate the size of the effect, and make confident deployment decisions.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Peeking at results before the predetermined sample size is reached and stopping early — this inflates false positive rates dramatically. The p-value is only valid at the predetermined sample size.</li><li>Not checking group balance — if randomization is imperfect (assignment bug), the groups may differ on baseline characteristics, biasing results. Always check that groups have similar baseline metrics.</li><li>Running too many simultaneous tests — testing 20 features simultaneously at α=0.05 produces ~1 false positive. Use family-wise error rate control or FDR correction.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Design an A/B test for a new recommendation algorithm: specify the metric (CTR), baseline rate (5%), MDE (0.5%), α and power. Compute required sample size. Simulate the experiment: generate data with a true effect of 0.4% (below MDE). Run 3 analyses — at n=100, n=1000, n=<code>required_n</code> — and show that early stopping creates false significance. Report final correct conclusion.</div>
     </div>
   </div>
 </section>
@@ -315,17 +456,27 @@ def predict(payload: dict):
       <h2>Canary deployment</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Canary deployment matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Canary deployment by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Canary deployment is a gradual rollout strategy where a new model version is deployed to a small fraction of traffic (the &#x27;canary&#x27;) while the majority still uses the old model. If the new model performs well on the canary traffic, the rollout percentage is gradually increased until the new model handles 100% of traffic. If the new model degrades performance, the canary is immediately rolled back — only a small fraction of users were affected.</p><p>Why canary deployment: ML models can look great in validation but fail on production traffic due to distribution shift, edge cases, or infrastructure issues. Testing on production traffic (with real users) is the most reliable way to validate a model. Canary deployment limits the blast radius of a bad model to the canary percentage — a 5% canary means at most 5% of users see degraded performance before rollback.</p><p>Implementation: a traffic routing layer (load balancer, feature flag service, or ML serving infrastructure) routes requests between models based on the configured split percentage. Tools: AWS <code>SageMaker</code> deployment with model weights, Kubernetes with Istio traffic splitting, Seldon Core, Argo Rollouts, or simple A/B testing infrastructure. Each request is labeled with which model version served it, enabling per-version metric tracking.</p><p>Monitoring during canary: define rollback triggers before deployment. Common triggers: new model latency p99 &gt; 2× old model, new model AUC drops &gt; 1% below old model (if labels available), new model error rate &gt; 0.5%, prediction distribution shift (new model outputs very different probability distributions). Automated rollback triggers prevent overnight failures when no engineer is watching.</p><p>Shadow mode deployment: an even safer variant — the new model receives a copy of production traffic but its predictions are NOT used. The new model&#x27;s predictions are logged and compared to the serving model&#x27;s predictions (and eventually to ground truth labels). Shadow mode detects problems before any user is affected. The downside: you see no real-world impact, and some bugs only appear when predictions affect downstream systems.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Canary deployment affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Simple canary routing in Python (conceptual)
+import random
+def route_prediction(user_id, features):
+    # 10% canary traffic
+    is_canary = hash(user_id) % 100 &lt; 10  # deterministic per user
+    model = new_model if is_canary else current_model
+    prediction = model.predict(features)
+    # Log: {user_id, model_version, prediction, is_canary, timestamp}
+    return prediction</code></pre><pre><code># Kubernetes canary via labels
+# current-model: 90% of traffic; new-model: 10% of traffic
+# controlled by Kubernetes Service selector or Istio VirtualService weight</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Canary deployment: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Canary deployment is the standard way to safely release new ML models in production. It prevents the &#x27;big bang&#x27; deployment where a bad model immediately impacts all users. Every major tech company (Google, Meta, Netflix) uses canary deployments as standard practice for model releases.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not defining rollback criteria before the canary — decide upfront what constitutes a failure: AUC &lt; 0.90, p99 latency &gt; 500ms, error rate &gt; 1%. Without pre-defined criteria, rollback decisions become subjective and slow.</li><li>Running canary for too long — canary deployments should complete within 24–72 hours for most models. Running for weeks accumulates statistical evidence but delays the full release. Define a minimum observation period and rollout schedule.</li><li>Not using user-consistent routing — routing the same user to different models on different requests creates inconsistent experiences. Use <code>user_id</code> or <code>session_id</code>-based hashing for consistent routing.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Design a canary deployment for a recommendation model: (1) define the rollout plan: 1% → 5% → 20% → 50% → 100% with evaluation checkpoints, (2) specify rollback triggers (metrics and thresholds), (3) implement a mock traffic router that logs predictions from both models, (4) simulate 1000 users, generate predictions from both models, add noise to simulate new model being slightly worse, (5) run the statistical test (Mann-Whitney U) to detect if new model&#x27;s click-through rate is significantly different, (6) decide: roll forward or roll back?</div>
     </div>
   </div>
 </section>
@@ -337,17 +488,47 @@ def predict(payload: dict):
       <h2>Rollback</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Rollback matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Rollback by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Rollback is the process of reverting a deployed model to a previous version when the new version underperforms or causes issues in production. Rollback capability is a safety net that enables confident deployment: if you can always roll back in 5 minutes, the cost of a bad deployment is low. Without rollback, each deployment is high-risk, and teams become overly cautious about deploying changes.</p><p>When to rollback: (1) model performance metrics drop significantly (AUC drops &gt; 5%, conversion rate drops &gt; 2%), (2) latency increases beyond SLA (p99 &gt; 500ms), (3) error rate spikes (&gt; 1%), (4) prediction distribution shift (model starts predicting extreme values), (5) business KPI degradation (upstream business metrics that the model influences). Set up automated alerts and rollback triggers for all of these.</p><p>Blue-green deployment: run two versions simultaneously (blue=current, green=new). Route 100% traffic to blue while green is being tested. Switch traffic to green when confident. Rollback = switch traffic back to blue. Achieves zero-downtime deployment and instant rollback. The tradeoff: running two versions simultaneously doubles inference infrastructure cost.</p><p>Canary deployment: route a small percentage of traffic (5-10%) to the new version, monitor, and gradually increase the percentage if metrics are good. Rollback = route 100% back to the old version. This is more resource-efficient than blue-green and reduces blast radius (only 5% of users see a bad model). Most production ML deployments use canary releases.</p><p>Shadow mode: run the new model in parallel with the production model. The new model&#x27;s predictions are not served to users — they are just logged. This enables measuring the new model&#x27;s predictions and metrics without any user impact, before making any traffic routing decisions. Ideal for validating a new model before any user exposure.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Rollback affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># FastAPI with model versioning for rollback
+from fastapi import FastAPI
+import joblib
+app = FastAPI()
+# Load multiple model versions at startup
+app.state.models = {
+    &#x27;v1&#x27;: joblib.load(&#x27;model_v1.pkl&#x27;),
+    &#x27;v2&#x27;: joblib.load(&#x27;model_v2.pkl&#x27;),
+}
+app.state.active_version = &#x27;v1&#x27;  # can be changed without restart
+@app.post(&#x27;/predict&#x27;)
+async def predict(request):
+    model = app.state.models[app.state.active_version]
+    return {&#x27;prediction&#x27;: model.predict([request.features])[0], &#x27;model_version&#x27;: app.state.active_version}
+@app.post(&#x27;/rollback&#x27;)
+async def rollback(target_version: str):
+    if target_version not in app.state.models:
+        return {&#x27;error&#x27;: f&#x27;Version {target_version} not loaded&#x27;}
+    app.state.active_version = target_version
+    return {&#x27;active_version&#x27;: app.state.active_version}</code></pre><pre><code># Canary deployment with traffic splitting
+import random
+def get_model_version(user_id: str, canary_fraction: float = 0.1) -&gt; str:
+    # Deterministic: same user always gets same model version
+    user_hash = int(user_id.encode().hex(), 16) % 100
+    return &#x27;v2&#x27; if user_hash &lt; canary_fraction * 100 else &#x27;v1&#x27;
+# Log predictions by version for comparison
+def predict_with_version(user_id, features):
+    version = get_model_version(user_id)
+    prediction = models[version].predict([features])[0]
+    logger.info({&#x27;user_id&#x27;: user_id, &#x27;version&#x27;: version, &#x27;prediction&#x27;: prediction})
+    return prediction</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Rollback: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Rollback is the single most important production safety mechanism for ML deployments. Without it, a bad model update can cause minutes to hours of degraded user experience before a fix is deployed. With instant rollback, the same bad update causes &lt; 5 minutes of impact. This changes the risk calculus of deployment entirely.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not testing rollback procedures — rollback plans that have never been tested will fail when needed most. Run quarterly rollback drills: simulate a bad model deployment and practice rolling back.</li><li>Not versioning the preprocessing pipeline with the model — a model trained on standardized features requires the same <code>StandardScaler</code> at inference. Rolling back the model without rolling back the preprocessor produces wrong predictions. Always version model + preprocessing pipeline together.</li><li>Deploying without pre-deployment validation — catch issues before deployment with: shadow mode testing (run new model in parallel for 1 hour, compare prediction distributions), A/B test with 1% traffic, automated performance checks (is AUC on a held-out validation set within 1% of the current model?). This prevents needing rollback in the first place.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a complete model deployment and rollback system: (1) create 2 model versions (v1 and v2, with v2 having a slight performance degradation), (2) implement a <code>FastAPI</code> service with model version tracking, traffic splitting (canary), and rollback endpoint, (3) implement automated monitoring that checks model metrics every 5 minutes, (4) trigger an automated rollback when v2&#x27;s conversion rate drops &gt; 5% below v1, (5) write a runbook: step-by-step instructions for a new engineer to diagnose and rollback a bad model deployment in production.</div>
     </div>
   </div>
 </section>
@@ -359,17 +540,47 @@ def predict(payload: dict):
       <h2>Cost monitoring</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Cost monitoring matters when AI leaves a notebook and becomes a system used by real people. At that point, accuracy is only one requirement. You also need reliability, latency, privacy, monitoring, cost control, versioning, and a recovery plan.</p><p>In MLOps and production ML, learn Cost monitoring by drawing the operational path. What input arrives? Which service receives it? Which model or prompt version runs? What gets logged? What can fail? Who is alerted? What happens if the model is unavailable?</p><p>Production AI is different because the world changes. Data distributions drift, user behavior shifts, model providers change, dependencies break, and costs increase. A system that worked last month may silently degrade today.</p><p>A concrete example is a fraud model. If transaction behavior changes during a holiday sale, the model may flag too many normal customers or miss new fraud patterns. Monitoring and rollback are not optional; they protect users and the business.</p><p>A production-ready learner should always ask four questions: How do we know it is working? How do we know it is failing? What is the user impact? What is the safest next action?</p>
+        <p>Cost monitoring for AI systems tracks and controls the financial costs of LLM API calls, compute resources, and cloud infrastructure. Without monitoring, AI applications can silently accumulate thousands of dollars in unexpected costs — a prompt that generates 10,000 output tokens per call at $0.015/1K tokens costs $150 per 1,000 calls.</p><p>LLM cost components: input tokens (cheaper — reading context), output tokens (more expensive — generating text), and number of requests. For Claude Opus: ~$15/1M input tokens, ~$75/1M output tokens (verify current pricing). A system that processes a 2,000-token document and generates a 500-token summary costs: 2000×$0.015/1000 + 500×$0.075/1000 = $0.03 + $0.0375 = ~$0.067 per call. At 100,000 calls/day: $6,700/day.</p><p>Cost reduction strategies: (1) Caching — cache LLM responses for repeated identical or similar requests. A cache hit costs nothing vs a cache miss costing $0.067. (2) Prompt compression — remove unnecessary tokens from the system prompt and context. Shorter prompts cost less. (3) Smaller models — route simple requests to Claude Haiku (5-10x cheaper than Opus) and complex requests to Opus. (4) Batch processing — Anthropic&#x27;s message batches API reduces cost by 50% for non-real-time workloads.</p><p>Monitoring infrastructure: track per-request token usage from the API response object (<code>response.usage.input_tokens</code>, <code>response.usage.output_tokens</code>). Aggregate by: user, feature, time period. Set alerts: alert when daily cost &gt; $X, alert when cost per request increases &gt; 20% (indicates prompt bloat or unexpected token generation). Use Prometheus + Grafana or <code>DataDog</code> for visualization.</p><p>Cost attribution: attribute costs to the features/teams that generate them. Without attribution, you don&#x27;t know which feature is responsible for 80% of your LLM costs. With attribution: team A&#x27;s chatbot generates $500/day, team B&#x27;s document summarizer generates $3,000/day. Now you know where to focus optimization efforts.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Production churn model: track request latency, prediction distribution, input schema changes, and weekly accuracy so the team knows when to retrain or roll back.</p>
-        <ol><li>Describe the request path from user input to model output.</li><li>Identify where Cost monitoring affects reliability, cost, latency, privacy, or monitoring.</li><li>Define one metric or log that proves the system is healthy.</li><li>Define the rollback, fallback, or human escalation path.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+from dataclasses import dataclass, field
+from typing import Dict
+import time
+# Cost tracker
+@dataclass
+class LLMCostTracker:
+    PRICE_PER_1M = {&#x27;claude-opus-4-8&#x27;: {&#x27;input&#x27;: 15.0, &#x27;output&#x27;: 75.0},
+                     &#x27;claude-sonnet-4-6&#x27;: {&#x27;input&#x27;: 3.0, &#x27;output&#x27;: 15.0},
+                     &#x27;claude-haiku-4-5-20251001&#x27;: {&#x27;input&#x27;: 0.25, &#x27;output&#x27;: 1.25}}
+    total_cost: float = 0.0
+    total_input_tokens: int = 0
+    total_output_tokens: int = 0
+    calls_by_feature: Dict[str, int] = field(default_factory=dict)
+    cost_by_feature: Dict[str, float] = field(default_factory=dict)
+    def track_call(self, response, model: str, feature: str = &#x27;default&#x27;):
+        input_tokens = response.usage.input_tokens
+        output_tokens = response.usage.output_tokens
+        prices = self.PRICE_PER_1M.get(model, {&#x27;input&#x27;: 0, &#x27;output&#x27;: 0})
+        cost = (input_tokens * prices[&#x27;input&#x27;] + output_tokens * prices[&#x27;output&#x27;]) / 1_000_000
+        self.total_cost += cost
+        self.total_input_tokens += input_tokens
+        self.total_output_tokens += output_tokens
+        self.calls_by_feature[feature] = self.calls_by_feature.get(feature, 0) + 1
+        self.cost_by_feature[feature] = self.cost_by_feature.get(feature, 0.0) + cost
+        return cost
+    def report(self):
+        print(f&#x27;Total cost: ${self.total_cost:.4f}&#x27;)
+        print(f&#x27;Total tokens: {self.total_input_tokens:,} input, {self.total_output_tokens:,} output&#x27;)
+        for feature, cost in sorted(self.cost_by_feature.items(), key=lambda x: -x[1]):
+            print(f&#x27;  {feature}: ${cost:.4f} ({self.calls_by_feature[feature]} calls)&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>A model that works once in a notebook is not enough. Real users need stable behavior, fast responses, monitored quality, and a recovery plan.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Deploying without monitoring, rollback, or ownership.</li><li>Optimizing accuracy while ignoring latency, cost, and privacy.</li><li>Changing data or prompts without versioning.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a production checklist for Cost monitoring: signal to monitor, alert condition, owner, rollback action, and user impact.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Cost monitoring is what keeps AI products profitable. An LLM feature that&#x27;s free to build can become a money sink at scale without cost controls. A product that is free to users but costs $10,000/day in LLM calls is not viable. Cost monitoring reveals which features are expensive (for optimization) and which are cheap (not worth optimizing). Without monitoring, you&#x27;re flying blind on one of the largest variable costs in AI applications.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not tracking output tokens separately from input tokens — output tokens are typically 5x more expensive than input tokens. A model that generates 10,000 output tokens per call costs 10x more than one that generates 1,000 tokens. Monitoring only total tokens hides this difference.</li><li>Not setting cost alerts — without alerts, you discover unexpected costs in the monthly invoice. Set real-time alerts: &#x27;alert if hourly LLM spend &gt; $100&#x27; catches runaway costs before they become runaway bills.</li><li>Optimizing prompts without measuring the token reduction — &#x27;I shortened the prompt so it should cost less.&#x27; Measure: count tokens before and after with tiktoken (<code>OpenAI</code>) or the tokenizer <code>count_tokens</code> endpoint. Confirm the reduction was significant.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build cost monitoring for an LLM application: (1) instrument an existing LLM application to track tokens per call, (2) add cost calculation using current API pricing, (3) aggregate by: feature, user, time period (hourly, daily), (4) identify the top 3 most expensive operations — what are they? (5) implement one optimization (caching, model routing, prompt compression) and measure the cost reduction, (6) set up an alert: send a log warning if any single API call costs &gt; $0.10 (likely indicates an unexpectedly large prompt).</div>
     </div>
   </div>
 </section>

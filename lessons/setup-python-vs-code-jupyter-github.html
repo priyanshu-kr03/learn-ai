@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Setup: Python, VS Code, Jupyter, GitHub | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -39,17 +40,22 @@
       <h2>Python installation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Python installation should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Setup: Python, VS Code, Jupyter, GitHub, connect Python installation to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Python installation is the first step in your ML journey and getting it right saves hours of future debugging. The recommended approach for ML is to install Python via Miniconda or Anaconda rather than the system Python — this gives you an isolated package manager (conda) that handles complex binary dependencies (<code>numpy</code>, <code>scipy</code>, CUDA drivers) much better than pip alone. Go to <code>docs.anaconda.com</code>/miniconda and download the installer for your OS.</p><p>After installing Miniconda, always create a separate conda environment for each project: &#x27;conda create -n ml-project python=3.11&#x27;. This isolates dependencies — project A requires <code>numpy</code> 1.24 while project B requires <code>numpy</code> 2.0. Without environments, upgrading one package breaks another. Activate with &#x27;conda activate ml-project&#x27;. List environments with &#x27;conda env list&#x27;.</p><p>Python version matters: Python 3.10 or 3.11 is recommended as of 2024. Python 3.12 is newer but some ML libraries (<code>PyTorch</code>, <code>TensorFlow</code>) lag behind in support. Avoid Python 2 — it is dead. Check your Python version: &#x27;python --version&#x27; or &#x27;python3 --version&#x27;. In conda environments, always use &#x27;python&#x27; not &#x27;python3&#x27;.</p><p>Installing ML packages: after activating your environment, install the core ML stack: &#x27;pip install <code>numpy</code> <code>pandas</code> <code>matplotlib</code> scikit-learn jupyter&#x27;. For deep learning: &#x27;pip install <code>torch</code> torchvision&#x27; (for CPU) or visit <code>pytorch</code>.org for the CUDA version command. For <code>transformers</code>: &#x27;pip install <code>transformers</code> datasets&#x27;. Always install packages inside an active environment, never globally.</p><p>Verifying the installation: open Python and run &#x27;import <code>numpy</code> as np; print(np.__version__)&#x27;. If it imports without error, the installation succeeded. A common issue: installing packages globally and then opening Jupyter in a different environment — the packages are not found. Solution: install Jupyter inside the environment (&#x27;pip install jupyter&#x27;) and launch from within it.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Python installation to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Python installation in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Install Miniconda (Mac/Linux)
+# Download from docs.anaconda.com/miniconda
+bash Miniconda3-latest-MacOSX-arm64.sh
+conda create -n ml python=3.11
+conda activate ml</code></pre><pre><code>pip install numpy pandas matplotlib scikit-learn jupyter ipykernel
+python -m ipykernel install --user --name ml --display-name &#x27;Python (ml)&#x27;</code></pre><pre><code>python -c &#x27;import numpy, pandas, sklearn; print(&quot;All good!&quot;, numpy.__version__, pandas.__version__, sklearn.__version__)&#x27;</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Python installation. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Correctly setting up Python with isolated environments prevents &#x27;dependency hell&#x27; — the state where upgrading one package breaks another. Every ML practitioner must know how to manage environments — it is the foundation that everything else builds on.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Installing packages globally (without an active environment) — this causes conflicts across projects and makes it impossible to recreate the environment on another machine.</li><li>Using pip and conda interchangeably without care — conda manages both packages and binary dependencies; mixing pip and conda can corrupt the environment. Prefer pip after conda activation for ML packages not available on conda-forge.</li><li>Not pinning Python version when creating the environment — &#x27;conda create -n ml&#x27; uses the latest Python which may not be compatible with all ML libraries yet.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Set up a complete ML Python environment: (1) install Miniconda, (2) create environment &#x27;ml-course&#x27; with Python 3.11, (3) install <code>numpy</code>, <code>pandas</code>, <code>matplotlib</code>, scikit-learn, <code>torch</code>, <code>transformers</code>, jupyter, (4) export the environment to <code>requirements.txt</code> and <code>environment.yml</code>, (5) delete and recreate the environment from the exported files. Verify all imports work in a Jupyter notebook.</div>
     </div>
   </div>
 </section>
@@ -61,17 +67,41 @@
       <h2>VS Code setup</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>VS Code setup is a concept inside Setup: Python, VS Code, Jupyter, GitHub that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>VS Code is the most widely used editor for Python and ML development. A well-configured VS Code setup dramatically improves productivity: <code>IntelliSense</code> for auto-completion, Python debugger for interactive debugging, integrated terminal, and Jupyter notebook support. Setting it up correctly takes 30 minutes but saves hours every week.</p><p>Essential extensions: Python (Microsoft) — the core Python extension with <code>IntelliSense</code>, debugging, formatting. Pylance — fast, accurate type checking and <code>IntelliSense</code>. Jupyter — native Jupyter notebook support (run .ipynb files in VS Code). <code>GitLens</code> — enhanced git integration. Ruff — fast Python linter and formatter. autoDocstring — auto-generates docstrings. Even Better TOML — for <code>pyproject.toml</code> files.</p><p>Python environment selection: VS Code must know which Python environment to use. Bottom status bar shows the Python version — click to select from available environments. For each project: create a virtual environment (python -m venv .venv), activate it (.venv/bin/activate), install requirements, and select the .venv interpreter in VS Code. This ensures VS Code <code>IntelliSense</code> uses the correct packages.</p><p>Settings for ML development: <code>editor.formatOnSave</code>: true (auto-format with Ruff on save), <code>python.formatting.provider</code>: &#x27;ruff&#x27;, <code>editor.rulers</code>: [88] (show a line at 88 chars for PEP8), <code>files.autoSave</code>: afterDelay (prevent losing work), <code>terminal.integrated.env.osx</code>/linux: set PYTHONPATH to your project root (so imports from src/ work in the integrated terminal).</p><p>Debugging Python and notebooks: set a breakpoint by clicking left of the line number. Press F5 to start debugging. The debugger shows variable values, the call stack, and allows step-through execution. For notebooks: click the debugger icon in the cell toolbar. Use &#x27;Run Cell and Inspect&#x27; to see all variable values without adding print statements everywhere. Learning to use the debugger instead of print statements saves hours.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Setup: Python, VS Code, Jupyter, GitHub and needs to apply VS Code setup. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Setup: Python, VS Code, Jupyter, GitHub where VS Code setup is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># VS Code settings.json (Command Palette → &#x27;Preferences: Open Settings JSON&#x27;)
+settings = {
+    &#x27;editor.formatOnSave&#x27;: True,
+    &#x27;[python]&#x27;: {&#x27;editor.defaultFormatter&#x27;: &#x27;charliermarsh.ruff&#x27;},
+    &#x27;editor.rulers&#x27;: [88, 120],
+    &#x27;python.analysis.typeCheckingMode&#x27;: &#x27;basic&#x27;,
+    &#x27;jupyter.askForKernelRestart&#x27;: False,
+    &#x27;editor.minimap.enabled&#x27;: False,
+    &#x27;files.autoSave&#x27;: &#x27;afterDelay&#x27;,
+    &#x27;files.autoSaveDelay&#x27;: 3000,
+    &#x27;terminal.integrated.env.osx&#x27;: {&#x27;PYTHONPATH&#x27;: &#x27;${workspaceFolder}/src&#x27;},
+}
+import json; print(json.dumps(settings, indent=2))</code></pre><pre><code># .vscode/launch.json for debugging ML scripts
+debug_config = {
+    &#x27;version&#x27;: &#x27;0.2.0&#x27;,
+    &#x27;configurations&#x27;: [{
+        &#x27;name&#x27;: &#x27;Python: Current File&#x27;,
+        &#x27;type&#x27;: &#x27;python&#x27;,
+        &#x27;request&#x27;: &#x27;launch&#x27;,
+        &#x27;program&#x27;: &#x27;${file}&#x27;,
+        &#x27;console&#x27;: &#x27;integratedTerminal&#x27;,
+        &#x27;env&#x27;: {&#x27;PYTHONPATH&#x27;: &#x27;${workspaceFolder}/src&#x27;}
+    }]
+}
+print(json.dumps(debug_config, indent=2))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for VS Code setup, explain it in 5 to 8 lines, and connect it to Setup: Python, VS Code, Jupyter, GitHub.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>A well-configured development environment is infrastructure for learning. Poor tooling means you spend time fighting your editor instead of learning ML. VS Code with proper Python setup provides <code>IntelliSense</code> (stops you from making typos in API calls), debugging (stops you from using print statements for debugging), and formatting (enforces consistent style automatically).</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not setting PYTHONPATH — without PYTHONPATH including your project root, &#x27;from <code>src.features</code> import <code>FeatureEngineer</code>&#x27; fails in both the terminal and Jupyter notebooks. Add PYTHONPATH to <code>settings.json</code>.</li><li>Using the wrong Python interpreter — if VS Code is using the system Python but your packages are in a virtualenv, <code>IntelliSense</code> won&#x27;t find your packages. Always verify the interpreter in the status bar.</li><li>Not using the debugger — using <code>print()</code> everywhere for debugging is 5× slower than setting a breakpoint and inspecting variables interactively in the debugger. Learn F9 (set breakpoint), F5 (start debug), F10 (step over), F11 (step into).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Set up a fully configured ML development environment: (1) install VS Code with all 7 extensions above, (2) configure <code>settings.json</code> as shown, (3) create a new Python project, set up a virtualenv, configure the interpreter, (4) write a 50-line ML script with at least one bug (e.g., wrong array index), use the VS Code debugger to find and fix it — no print statements allowed, (5) configure <code>launch.json</code> to pass command-line arguments to your script, (6) run the script from VS Code&#x27;s integrated terminal, from the debugger (F5), and as a Jupyter notebook — all three should produce the same result.</div>
     </div>
   </div>
 </section>
@@ -83,17 +113,36 @@
       <h2>Jupyter Notebook</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Jupyter Notebook should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Setup: Python, VS Code, Jupyter, GitHub, connect Jupyter Notebook to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Jupyter Notebook is the standard interactive computing environment for data science and ML. It combines executable code cells, narrative markdown text, mathematical equations (<code>LaTeX</code>), and rich visualizations (plots, tables, images) in a single document. This literate programming format is ideal for exploratory data analysis, prototyping models, and sharing reproducible research.</p><p>Cells in Jupyter: (1) code cells — run Python (or R, Julia, others) code and display output (print statements, errors, plots). (2) markdown cells — formatted text with headers, bullet points, bold/italic, links, and <code>LaTeX</code> math ($E = mc^2$). (3) raw cells — unformatted content. Keyboard shortcuts: Shift+Enter runs the current cell and moves to the next. Ctrl+Enter runs in place. Esc then B inserts a new cell below. Esc then M converts to markdown. Esc then Y converts to code.</p><p><code>JupyterLab</code>: the next-generation interface (jupyter lab command) with a file browser, multiple notebooks side-by-side, a terminal, CSV viewer, and extension system. <code>JupyterLab</code> is replacing the classic Notebook interface. Key extensions: jupyterlab-git (version control integration), jupyterlab-lsp (autocomplete, go-to-definition), jupyter-widgets (interactive widgets).</p><p>Magic commands: special commands starting with % (line magic) or %% (cell magic). %timeit — time a single expression (averages over multiple runs). %%time — time an entire cell. %<code>matplotlib</code> inline — display plots in the notebook. %who / %whos — list variables. %<code>load_ext</code> autoreload; %autoreload 2 — automatically reload modules when they change. !command — run shell commands: !pip install package, !ls -la.</p><p>Best practices for notebooks: (1) restart and run all before sharing — ensures reproducibility (no hidden state from running cells out of order). (2) Don&#x27;t use notebooks for production code — extract reusable code into .py modules, import them into notebooks. (3) Clear output before committing to git — large outputs inflate repository size. Use nbstripout. (4) Number sections clearly — Chapter 1, 2, 3... makes notebooks easy to navigate.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Jupyter Notebook to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Jupyter Notebook in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Start Jupyter
+conda activate ml
+jupyter lab  # or: jupyter notebook
+# Opens browser at localhost:8888</code></pre><pre><code># Useful magic commands
+%matplotlib inline  # show plots in notebook
+%timeit np.sum(np.arange(10000))  # time an expression
+%%time  # time an entire cell
+import numpy as np
+result = np.linalg.svd(np.random.randn(1000, 1000))
+
+# Load external code
+%load_ext autoreload
+%autoreload 2
+from my_module import my_function</code></pre><pre><code># Interactive widgets
+from ipywidgets import interact
+@interact(n=(1, 100), alpha=(0.1, 2.0, 0.1))
+def plot_sine(n=10, alpha=1.0):
+    x = np.linspace(0, 2*np.pi, 1000)
+    plt.plot(x, np.sin(n*x) * alpha)
+    plt.show()</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Jupyter Notebook. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Jupyter Notebooks are the primary development environment for data science and ML prototyping. Virtually every ML tutorial, research paper reproduction, and Kaggle notebook uses Jupyter. Mastering Jupyter — keyboard shortcuts, magic commands, debugging — is essential for productive ML development.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Running cells out of order and getting confused — Jupyter allows running any cell at any time, creating hidden state (a variable set in cell 10 affects cell 3 if cell 10 is run first). Always restart kernel and run all cells in order before sharing.</li><li>Putting all code in notebooks rather than .py modules — notebooks are for exploration and communication. Reusable code (data loaders, model classes, training loops) belongs in .py files that are imported into notebooks.</li><li>Committing notebooks with large output (embedding matrices, full <code>DataFrames</code>) to git — this inflates the repo significantly. Use nbstripout (git hook that automatically strips output before committing) or clear output manually.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete EDA notebook: (1) load the Titanic dataset, (2) explore each feature: distribution plots, missing value counts, unique values, (3) compute survival rate by: gender, class, age bin, fare bin, (4) create a correlation heatmap, (5) add markdown cells explaining every finding, (6) use %timeit to compare <code>pandas</code> vs <code>numpy</code> for a computation, (7) create an interactive widget that lets you adjust the age bin size and see how survival rates change, (8) export the notebook as HTML (File → Export → HTML) for sharing.</div>
     </div>
   </div>
 </section>
@@ -105,17 +154,28 @@
       <h2>Google Colab</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Google Colab should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Setup: Python, VS Code, Jupyter, GitHub, connect Google Colab to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Google Colab (Colaboratory) is a free cloud-based Jupyter notebook environment with GPU access. It eliminates the need for local GPU hardware for most ML experiments. Key features: free T4 GPU (15GB VRAM), free A100 GPU with Colab Pro+, 12 hours runtime (free), integration with Google Drive (mount your drive to access datasets), and pre-installed ML libraries (<code>PyTorch</code>, <code>TensorFlow</code>, Hugging Face, <code>sklearn</code>, <code>pandas</code>).</p><p>Runtime types: CPU (free, unlimited), T4 GPU (free, up to 12 hours per session — disconnects after idle), A100 GPU (Colab Pro+, $10/month), TPU (Tensor Processing Unit, for very large models). Connect a GPU runtime: Runtime → Change Runtime Type → GPU → T4. Check GPU availability: !nvidia-smi shows GPU type and VRAM. Free Colab disconnects after 90 minutes of browser inactivity.</p><p>Google Drive integration: mount your Drive to access large datasets and save model checkpoints without re-uploading each session. from <code>google.colab</code> import drive; <code>drive.mount</code>(&#x27;/content/drive&#x27;). Store datasets in Drive/<code>MyDrive</code>/datasets/. Access: df = <code>pd.read_csv</code>(&#x27;/content/drive/<code>MyDrive</code>/datasets/<code>titanic.csv</code>&#x27;). Save models: <code>torch</code>.save(<code>model.state_dict()</code>, &#x27;/content/drive/<code>MyDrive</code>/models/<code>checkpoint.pt</code>&#x27;).</p><p>Installing packages: most packages are pre-installed, but some need to be installed each session: !pip install package. These installations persist for the session but are lost on reconnect. For frequently used packages, put the pip install cell at the top of the notebook and run it first.</p><p>Colab vs local Jupyter: Colab advantages: free GPU, no setup, easy sharing (share URL like Google Docs), collaborative editing. Colab disadvantages: session timeout (lose progress), limited persistent storage (Drive mount is the workaround), internet required, slower for data loading (data must be in Drive or downloaded). Use Colab for: training models that require GPU, sharing demos, quick prototyping. Use local Jupyter for: long-running experiments, sensitive data, complex custom environments.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Google Colab to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Google Colab in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Connect to Google Drive
+from google.colab import drive
+drive.mount(&#x27;/content/drive&#x27;)
+import pandas as pd
+df = pd.read_csv(&#x27;/content/drive/MyDrive/data/train.csv&#x27;)</code></pre><pre><code># Check GPU
+import torch
+print(f&#x27;CUDA available: {torch.cuda.is_available()}&#x27;)
+if torch.cuda.is_available():
+    print(f&#x27;GPU: {torch.cuda.get_device_name()}&#x27;)
+    print(f&#x27;VRAM: {torch.cuda.get_device_properties(0).total_memory/1e9:.1f} GB&#x27;)</code></pre><pre><code># Keep session alive (avoid timeout)
+from IPython.display import display, Javascript
+display(Javascript(&#x27;&#x27;&#x27;setInterval(function(){{ document.querySelector(&quot;#top-toolbar &gt; colab-connect-button&quot;).shadowRoot.querySelector(&quot;div &gt; button&quot;).click() }}, 60000)&#x27;&#x27;&#x27;))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Google Colab. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Google Colab democratizes access to GPU compute for ML practitioners. For students and early-career practitioners who don&#x27;t have access to expensive GPU hardware, Colab is the primary way to train deep learning models. Understanding how to work effectively in Colab is a practical skill for anyone starting out in ML.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not saving checkpoints frequently — Colab sessions disconnect after 12 hours or idle time. Always save model checkpoints to Drive every N epochs so you can resume training.</li><li>Loading large datasets over HTTP instead of from Drive — downloading a 10GB dataset from the internet every Colab session wastes time. Upload to Google Drive once and mount it.</li><li>Using free Colab for long training runs — free Colab has a 12-hour limit and is not guaranteed. For multi-hour training runs, use Colab Pro+ or cloud GPU (AWS/GCP spot instances). Save checkpoints to resume after disconnection.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Complete ML project using Google Colab: (1) open a new Colab notebook, (2) mount Google Drive and load a dataset from Drive, (3) connect to T4 GPU runtime and verify with <code>torch.cuda.is_available()</code>, (4) train a <code>PyTorch</code> model (MLP on tabular data, or CNN on CIFAR-10), (5) save checkpoints to Drive every 5 epochs, (6) disconnect Colab and reconnect — resume training from checkpoint, (7) share the completed notebook with someone via URL. Verify they can run it from scratch in a new session.</div>
     </div>
   </div>
 </section>
@@ -127,17 +187,25 @@
       <h2>Virtual environments</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Virtual environments is a concept inside Setup: Python, VS Code, Jupyter, GitHub that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A virtual environment is an isolated Python installation that contains its own interpreter, libraries, and pip. When you activate a virtual environment, &#x27;python&#x27; and &#x27;pip&#x27; refer to that environment&#x27;s versions — not the system-wide Python. This isolation means: project A&#x27;s packages don&#x27;t interfere with project B&#x27;s, you can have <code>numpy</code> 1.24 in one env and <code>numpy</code> 2.0 in another, and you can easily recreate the exact environment on another machine.</p><p>venv (built-in): Python 3.3+ includes the venv module. &#x27;python -m venv myenv&#x27; creates a directory called myenv/ containing a Python interpreter and empty site-packages. Activate with &#x27;source myenv/bin/activate&#x27; (Mac/Linux) or &#x27;myenv\Scripts\activate&#x27; (Windows). Deactivate with &#x27;deactivate&#x27;. The environment prompt shows &#x27;(myenv)&#x27; to indicate activation.</p><p>conda environments: conda create -n myenv python=3.11 creates an environment in ~/miniconda3/envs/myenv/. Conda environments can also install non-Python packages (CUDA libraries, HDF5, <code>OpenBLAS</code>). conda activate myenv activates it. conda deactivate deactivates. &#x27;conda env list&#x27; shows all environments. Conda is preferred for ML because it handles binary dependencies (compiled C extensions) better than pip alone.</p><p>Freezing dependencies: once your project works, freeze the exact package versions. For pip: &#x27;pip freeze &gt; <code>requirements.txt</code>&#x27;. Recreate on another machine: &#x27;pip install -r <code>requirements.txt</code>&#x27;. For conda: &#x27;conda env export &gt; <code>environment.yml</code>&#x27;. Recreate: &#x27;conda env create -f <code>environment.yml</code>&#x27;. This makes your project reproducible — a collaborator can set up the exact same environment.</p><p>Best practices: (1) one environment per project, (2) never install ML packages in the base/system Python, (3) always activate the environment before installing packages or running code, (4) add the environment directory (myenv/) to .gitignore — commit <code>requirements.txt</code>/<code>environment.yml</code> instead, (5) give environments descriptive names (&#x27;fraud-detection-model&#x27; rather than &#x27;env1&#x27;).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Setup: Python, VS Code, Jupyter, GitHub and needs to apply Virtual environments. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Setup: Python, VS Code, Jupyter, GitHub where Virtual environments is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>python -m venv .venv
+source .venv/bin/activate  # Mac/Linux
+pip install numpy pandas scikit-learn
+pip freeze &gt; requirements.txt</code></pre><pre><code>conda create -n project-name python=3.11
+conda activate project-name
+pip install -r requirements.txt
+conda env export &gt; environment.yml</code></pre><pre><code># Recreate from requirements
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Virtual environments, explain it in 5 to 8 lines, and connect it to Setup: Python, VS Code, Jupyter, GitHub.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Virtual environments are the difference between a reproducible ML project and one that &#x27;works on my machine.&#x27; They prevent the frustrating experience of a working project breaking after upgrading a package for a different project, and they make it easy to share and deploy projects.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Committing the environment directory to git — the compiled binaries are OS-specific and the directory can be hundreds of MB. Commit <code>requirements.txt</code> instead.</li><li>Installing into the wrong environment — always check the prompt shows the environment name before running pip install.</li><li>Using pip without upgrading it first — &#x27;pip install --upgrade pip&#x27; before installing packages prevents cryptic installation errors.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Practice environment workflow: (1) create a venv for a &#x27;data analysis&#x27; project, install specific versions (<code>pandas</code>==2.0.3, <code>numpy</code>==1.24.0, <code>matplotlib</code>==3.7.2), (2) freeze to <code>requirements.txt</code>, (3) create a second venv and install from <code>requirements.txt</code>, (4) verify both environments have identical package versions, (5) intentionally install different <code>numpy</code> in each env and show they are isolated. Write a shell script that automates project setup.</div>
     </div>
   </div>
 </section>
@@ -149,17 +217,25 @@
       <h2>pip and requirements.txt</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>pip and requirements.txt should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Setup: Python, VS Code, Jupyter, GitHub, connect pip and requirements.txt to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>pip is Python&#x27;s package installer. &#x27;pip install package-name&#x27; downloads from <code>PyPI</code> (Python Package Index — <code>pypi.org</code>), resolves dependencies, and installs into the current environment. &#x27;pip install <code>numpy</code>==1.24.0&#x27; installs a specific version. &#x27;pip install <code>numpy</code>&gt;=1.24,&lt;2.0&#x27; installs any version in the range. Understanding pip and <code>requirements.txt</code> is essential for reproducible ML projects.</p><p><code>requirements.txt</code>: a plain text file listing packages and their versions, one per line. Format: &#x27;<code>numpy</code>==1.24.0&#x27; (exact version), &#x27;<code>pandas</code>&gt;=2.0&#x27; (minimum version), &#x27;scikit-learn&#x27; (latest). Best practice: use exact versions (==) for production and approximate versions (&gt;=) for development. Generate with &#x27;pip freeze &gt; <code>requirements.txt</code>&#x27;. Install all: &#x27;pip install -r <code>requirements.txt</code>&#x27;.</p><p>pip freeze vs pip list: &#x27;pip freeze&#x27; shows all installed packages in <code>requirements.txt</code> format (includes transitive dependencies). &#x27;pip list&#x27; shows a human-readable table. For <code>requirements.txt</code>, use pip freeze. Note: pip freeze includes EVERY package including indirect dependencies — this is good for perfect reproducibility but results in long files. Tools like &#x27;pip-tools&#x27; (pip-compile) can separate direct from transitive dependencies.</p><p>Common pip commands: &#x27;pip install package&#x27; (install latest), &#x27;pip install package==version&#x27; (exact version), &#x27;pip uninstall package&#x27; (remove), &#x27;pip show package&#x27; (show info, including location), &#x27;pip list --outdated&#x27; (find outdated packages), &#x27;pip install --upgrade package&#x27; (upgrade to latest). For speed: &#x27;pip install --no-cache-dir&#x27; avoids using stale cached downloads.</p><p><code>PyPI</code> alternatives: some packages are on conda-forge rather than <code>PyPI</code> (complex binary extensions). For GPU-related packages (CUDA, cuDNN), always follow the official installation guide (e.g., <code>pytorch</code>.org) rather than plain pip install — the GPU version requires matching CUDA version. The command &#x27;pip install <code>torch</code>&#x27; installs CPU-only <code>torch</code>; the GPU version needs a specific index URL.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses pip and requirements.txt to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply pip and requirements.txt in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>pip install scikit-learn
+pip install pandas==2.0.3
+pip install -r requirements.txt</code></pre><pre><code>pip freeze &gt; requirements.txt
+# Or write manually:
+numpy==1.26.0
+pandas==2.1.0
+scikit-learn==1.3.2</code></pre><pre><code>pip show scikit-learn
+pip install --upgrade scikit-learn
+pip list --outdated</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using pip and requirements.txt. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>pip and <code>requirements.txt</code> are the foundation of Python dependency management. Without <code>requirements.txt</code>, your ML project cannot be reproduced by a colleague or deployed to a server. Understanding how to use pip correctly prevents hours of debugging environment issues.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Running pip without activating the virtual environment — this installs packages globally, polluting the system Python and potentially breaking other projects.</li><li>Using <code>requirements.txt</code> with only approximate version constraints (&gt;=) for deployment — deployment environments should use exact versions (==) to prevent surprise breakage when a package updates.</li><li>Forgetting to regenerate <code>requirements.txt</code> after adding new packages — always run &#x27;pip freeze &gt; <code>requirements.txt</code>&#x27; after any &#x27;pip install&#x27; to keep <code>requirements.txt</code> current.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a dependency management workflow: (1) create a new project with venv, (2) install 5 packages with specific versions, (3) create two requirements files — <code>requirements.txt</code> (exact versions) and requirements-<code>dev.txt</code> (adds pytest, black, ruff), (4) simulate a deployment: create a fresh venv and install from <code>requirements.txt</code>, (5) deliberately introduce a version conflict and observe the error. Fix it.</div>
     </div>
   </div>
 </section>
@@ -171,17 +247,30 @@
       <h2>Git and GitHub</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Git and GitHub should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Setup: Python, VS Code, Jupyter, GitHub, connect Git and GitHub to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Git is a distributed version control system that tracks changes to files over time. For ML projects, Git solves: &#x27;I changed the model and broke everything&#x27; (you can revert to the last working version), &#x27;which model configuration produced that result?&#x27; (git log shows what code generated what output), and &#x27;how do I share my work?&#x27; (push to <code>GitHub</code>). Every ML project should be a git repository from day one.</p><p>Core git workflow: (1) &#x27;git init&#x27; — initialize a repository, (2) &#x27;git add <code>file.py</code>&#x27; — stage changes for commit, (3) &#x27;git commit -m &quot;add feature&quot;&#x27; — save a snapshot of staged changes, (4) &#x27;git push origin main&#x27; — upload to <code>GitHub</code>, (5) &#x27;git pull origin main&#x27; — download latest changes. &#x27;git status&#x27; shows what has changed. &#x27;git log&#x27; shows commit history. &#x27;git diff&#x27; shows uncommitted changes.</p><p>Branching: branches let you work on a feature without affecting the main codebase. &#x27;git checkout -b experiment/bert-fine-tune&#x27; creates a new branch. Work, commit, then merge: &#x27;git checkout main &amp;&amp; git merge experiment/bert-fine-tune&#x27;. For ML: use branches for experiments — &#x27;experiment/bert-vs-roberta&#x27;, &#x27;feature/add-attention&#x27;. This keeps main stable while experiments proceed.</p><p>.gitignore for ML projects: never commit large files (datasets, model weights), secrets (API keys), or environment directories. ML .gitignore should exclude: __pycache__/, .<code>ipynb_checkpoints</code>/, *.pyc, .env, venv/, data/raw/, models/weights/, *.h5, *.pt. Use <code>github.com</code>/github/gitignore for templates. Store data in S3/GCS or use DVC (Data Version Control).</p><p><code>GitHub</code> for ML: <code>GitHub</code> stores code history, enables collaboration, and provides CI/CD. <code>GitHub</code> Actions can run tests automatically on every commit. <code>GitHub</code> Releases can tag model versions. Keep your ML repo organized: src/ (code), notebooks/ (exploration), configs/ (hyperparameters), tests/ (validation), README.md (what the project is, how to run it, results).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Git and GitHub to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Git and GitHub in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>git init
+git add .
+git commit -m &#x27;initial: baseline model and data pipeline&#x27;
+git branch -M main
+git remote add origin https://github.com/username/repo.git
+git push -u origin main</code></pre><pre><code>git status  # see what changed
+git add src/model.py notebooks/EDA.ipynb
+git commit -m &#x27;feat: add attention mechanism to LSTM&#x27;
+git push</code></pre><pre><code># .gitignore for ML
+echo &#x27;data/
+models/*.pt
+.env
+__pycache__/
+.venv/&#x27; &gt; .gitignore</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Git and GitHub. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Git is the foundation of professional software and ML engineering. Without it, you cannot safely experiment, cannot collaborate, and cannot reproduce results. Git is non-negotiable for ML practice.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Committing large datasets or model weights to git — git is not a data store. Large files slow down the repo and may exceed <code>GitHub</code>&#x27;s file size limit. Use DVC, Git LFS, or cloud storage.</li><li>Using vague commit messages like &#x27;update&#x27; or &#x27;fix bug&#x27; — good ML commit messages: &#x27;feat: add <code>LoRA</code> fine-tuning&#x27;, &#x27;fix: correct data leakage in feature engineering&#x27;.</li><li>Not using .gitignore from the start — accidentally committing .env files with API keys is a critical security risk. Create .gitignore before the first commit.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Create a complete ML project git workflow: (1) initialize repo with proper .gitignore, (2) create branch &#x27;experiment/logistic-vs-rf&#x27; and train both models, (3) commit experiment results with a <code>metrics.json</code> file, (4) merge the better model to main, (5) tag the release as v1.0.0, (6) push to <code>GitHub</code> and write a README with project description, dataset, results, and reproduction steps. Practice reverting a bad commit with &#x27;git revert&#x27;.</div>
     </div>
   </div>
 </section>
@@ -193,17 +282,59 @@
       <h2>Project folder structure</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Project folder structure is about turning learning into evidence. A project should show more than a running demo. It should show that you can frame a problem, choose data, build a method, evaluate results, explain limitations, and communicate tradeoffs.</p><p>In Setup: Python, VS Code, Jupyter, GitHub, connect Project folder structure to an artifact someone else can inspect: a notebook, app, README, evaluation table, deployment link, or case study. The artifact should make your thinking visible.</p><p>A strong project begins with a problem statement. Who is the user? What decision are they trying to make? What input does the system receive? What output does it produce? What does success mean?</p><p>Then the project needs evidence. Include a baseline, metrics, examples of correct outputs, examples of failures, and a short explanation of what you would improve next. This is what separates a portfolio project from a tutorial copy.</p><p>For a college learner, the README is part of the learning. If you cannot explain the project clearly in writing, you probably do not understand it well enough yet.</p>
+        <p>A well-organized project folder structure makes ML projects reproducible, maintainable, and collaborative. Without structure, ML projects accumulate in Jupyter notebooks named &#x27;<code>final_v2_ACTUALLY_FINAL.ipynb</code>&#x27;, with undocumented intermediate results, hardcoded paths, and no way to reproduce the original model. A standard structure enforces good practices through convention.</p><p>Recommended structure: data/ (raw/, processed/, external/), notebooks/ (exploratory/, reports/), src/ (data/, features/, models/, visualization/), models/ (trained model files), configs/ (hyperparameter YAML files), tests/ (unit tests), docs/ (documentation), and root-level files: <code>requirements.txt</code>, .env, README.md, Makefile or <code>dvc</code>.yaml. The data/ directory should not be committed to git (add to .gitignore) — use DVC or cloud storage for data versioning.</p><p>src/ as an installable package: create src/__init__.py and src/<code>setup.py</code> so you can install your code with pip install -e . (editable install). This means you can import from <code>src.features</code> import <code>FeatureEngineer</code> in any notebook or script without <code>sys.path</code> hacks. This is the most important structural decision — it makes your code reusable across notebooks and scripts.</p><p>Configuration management: don&#x27;t hardcode model hyperparameters, file paths, or API keys in scripts. Put hyperparameters in <code>config.yaml</code> (loaded with <code>PyYAML</code> or Hydra), file paths in .env (loaded with python-dotenv), and API keys in environment variables. This makes experiments reproducible (version config YAML alongside code) and prevents secrets from being committed to git.</p><p>Reproducibility: a project is reproducible if someone else (or you in 6 months) can run a single command and reproduce your results. Requirements: <code>requirements.txt</code> with pinned versions (pip freeze &gt; <code>requirements.txt</code>), random seed management (set seeds at the start of every training script), and data versioning (DVC tracks which version of the data produced which model). Cookiecutter Data Science provides a good starting template.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Add Project folder structure to a portfolio case study. Show the user problem, the AI approach, evidence that it works, and one limitation you would improve.</p>
-        <ol><li>Set up a small realistic scenario from Setup: Python, VS Code, Jupyter, GitHub where Project folder structure is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Create project structure
+import os
+def create_ml_project(project_name):
+    dirs = [
+        f&#x27;{project_name}/data/raw&#x27;,
+        f&#x27;{project_name}/data/processed&#x27;,
+        f&#x27;{project_name}/data/external&#x27;,
+        f&#x27;{project_name}/notebooks&#x27;,
+        f&#x27;{project_name}/src/data&#x27;,
+        f&#x27;{project_name}/src/features&#x27;,
+        f&#x27;{project_name}/src/models&#x27;,
+        f&#x27;{project_name}/src/visualization&#x27;,
+        f&#x27;{project_name}/models&#x27;,
+        f&#x27;{project_name}/configs&#x27;,
+        f&#x27;{project_name}/tests&#x27;,
+        f&#x27;{project_name}/docs&#x27;,
+    ]
+    for d in dirs: os.makedirs(d, exist_ok=True)
+    # Create placeholder files
+    for d in [f&#x27;{project_name}/src/data&#x27;, f&#x27;{project_name}/src/features&#x27;,
+              f&#x27;{project_name}/src/models&#x27;, f&#x27;{project_name}/src/visualization&#x27;]:
+        open(f&#x27;{d}/__init__.py&#x27;, &#x27;w&#x27;).close()
+    print(f&#x27;Project {project_name} created.&#x27;)
+create_ml_project(&#x27;fraud_detection&#x27;)</code></pre><pre><code># config.yaml
+config_content = &quot;&quot;&quot;
+data:
+  raw_path: data/raw/transactions.csv
+  processed_path: data/processed/features.parquet
+model:
+  name: xgboost
+  n_estimators: 500
+  learning_rate: 0.05
+  max_depth: 6
+training:
+  test_size: 0.2
+  random_seed: 42
+  cv_folds: 5
+&quot;&quot;&quot;
+# Load in your scripts:
+import yaml
+with open(&#x27;configs/config.yaml&#x27;) as f:
+    config = yaml.safe_load(f)
+print(config[&#x27;model&#x27;][&#x27;n_estimators&#x27;])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Projects turn passive learning into evidence. They reveal gaps in data handling, evaluation, UX, deployment, and communication.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Building a demo without explaining the problem and evaluation.</li><li>Hiding limitations instead of documenting them.</li><li>Leaving the README too vague for someone else to run the project.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Add Project folder structure to a portfolio project README with problem, approach, evidence, limitation, and next improvement.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Project structure is the invisible infrastructure of reproducible ML. Every ML project with bad structure eventually reaches a point where no one (including the author) knows which script produced the final model, what data it was trained on, or what hyperparameters were used. Good structure makes ML projects maintainable for their entire lifetime.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Keeping all code in notebooks — notebooks are great for exploration but terrible for production code: they execute out of order, have hidden state, and are hard to test. Move reusable code to src/ early.</li><li>Committing large data files to git — binary files in git balloon the repository size and slow down operations. Use .gitignore for data/ and models/, and use DVC or cloud storage (S3, GCS) for data versioning.</li><li>Not pinning dependency versions — <code>requirements.txt</code> without pinned versions (<code>numpy</code>&gt;=1.20 instead of <code>numpy</code>==1.24.3) means your project breaks when packages update. Use pip freeze &gt; <code>requirements.txt</code> to capture exact versions.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Set up a complete reproducible ML project: (1) create the folder structure above for a churn prediction project, (2) set up src/ as an installable package with a simple feature engineering module, (3) create a <code>config.yaml</code> with all hyperparameters, (4) create .env for secrets (database URL, API keys) with python-dotenv, (5) create a Makefile with targets: make data (run data pipeline), make train (train model), make evaluate (run eval suite), (6) test reproducibility: clone to a fresh directory, run &#x27;pip install -e . &amp;&amp; make train&#x27; — does it produce exactly the same results?</div>
     </div>
   </div>
 </section>

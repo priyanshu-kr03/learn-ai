@@ -1,16 +1,17 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI From Scratch to Advanced | AI Roadmap</title><link rel="stylesheet" href="styles.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI From Scratch to Advanced | AI Roadmap</title><link rel="stylesheet" href="styles.css"><script src="theme.js"></script></head>
 <body>
-<header class="topbar"><div class="wrap nav"><a class="brand" href="index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="index.html">Roadmap</a><a href="topics.html">All topics</a><a href="study-plan.html">Study plan</a><a href="projects.html">Projects</a></nav></div></header>
+<header class="topbar"><div class="wrap nav"><a class="brand" href="index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="index.html">Roadmap</a><a href="topics.html">All topics</a><a href="study-plan.html">Study plan</a><a href="projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
 <main>
-  <section class="hero"><div class="wrap"><div class="hero-card"><span class="eyebrow">Beginner to advanced curriculum</span><h1>Learn AI from scratch with real explanations.</h1><p class="lead">Every chapter now teaches the subtopics in plain language, connects them to real AI work, shows examples, names common mistakes, and gives a practice task so learners can build understanding instead of skimming definitions.</p><div class="stats"><div class="stat"><b>40</b><span>detailed chapters</span></div><div class="stat"><b>446</b><span>topics explained</span></div><div class="stat"><b>6-12</b><span>month path</span></div><div class="stat"><b>Static</b><span>GitHub Pages ready</span></div></div></div></div></section>
+  <section class="hero"><div class="wrap"><div class="hero-card"><span class="eyebrow">Beginner to advanced curriculum</span><h1>Learn AI from scratch with real explanations.</h1><p class="lead">Every chapter now teaches the subtopics in plain language, connects them to real AI work, shows examples, names common mistakes, and gives a practice task so learners can build understanding instead of skimming definitions.</p><div class="stats"><div class="stat"><b>44</b><span>detailed chapters</span></div><div class="stat"><b>486</b><span>topics explained</span></div><div class="stat"><b>6-12</b><span>month path</span></div><div class="stat"><b>Static</b><span>GitHub Pages ready</span></div></div></div></div></section>
   <section class="wrap"><div class="toolbar"><input id="searchInput" class="search" placeholder="Search Python, regression, RAG, agents, SHAP..."><select id="trackFilter" class="select"><option value="all">All tracks</option><option value="00 Orientation">00 Orientation</option>
 <option value="01 Python for AI">01 Python for AI</option>
 <option value="02 Data Handling">02 Data Handling</option>
 <option value="03 Math and Statistics">03 Math and Statistics</option>
 <option value="04 Machine Learning">04 Machine Learning</option>
 <option value="05 Deep Learning">05 Deep Learning</option>
+<option value="06 Reinforcement Learning">06 Reinforcement Learning</option>
 <option value="07 NLP">07 NLP</option>
 <option value="08 Generative AI and LLMs">08 Generative AI and LLMs</option>
 <option value="09 Data Engineering for AI">09 Data Engineering for AI</option>
@@ -341,9 +342,35 @@
   <div class="tags"><span class="tag">Sequence data</span><span class="tag">RNN</span><span class="tag">Hidden state</span><span class="tag">LSTM</span><span class="tag">GRU</span><span class="tag">Padding and masking</span><span class="tag">Attention</span><span class="tag">Self-attention</span><span class="tag">Query Key Value</span><span class="tag">Multi-head attention</span><span class="tag">Positional encoding</span><span class="tag">Transformers</span><span class="tag">Encoder decoder decoder-only</span></div>
 </article>
 
-<article class="card" data-card data-track="07 NLP" data-search="NLP foundations 07 NLP Tokenization Stop words Stemming Lemmatization n-grams Bag of Words TF-IDF Word embeddings Word2Vec GloVe FastText Text classification Sentiment analysis NER Question answering Summarization Translation ROUGE BLEU perplexity">
+<article class="card" data-card data-track="06 Reinforcement Learning" data-search="Reinforcement learning fundamentals 06 Reinforcement Learning Agent and environment State action reward Policy Value function Q-function Exploration vs exploitation Epsilon-greedy Markov decision process Discount factor Episode and trajectory">
   <div class="card-head">
     <div class="num">26</div>
+    <div>
+      <h3>Reinforcement learning fundamentals</h3>
+      <div class="meta"><span class="pill">06 Reinforcement Learning</span><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span></div>
+      <p>Open this chapter for detailed explanations, real AI examples, mistakes to avoid, and practice tasks.</p>
+    </div>
+    <a class="btn" href="lessons/reinforcement-learning-fundamentals.html">Open</a>
+  </div>
+  <div class="tags"><span class="tag">Agent and environment</span><span class="tag">State action reward</span><span class="tag">Policy</span><span class="tag">Value function</span><span class="tag">Q-function</span><span class="tag">Exploration vs exploitation</span><span class="tag">Epsilon-greedy</span><span class="tag">Markov decision process</span><span class="tag">Discount factor</span><span class="tag">Episode and trajectory</span></div>
+</article>
+
+<article class="card" data-card data-track="06 Reinforcement Learning" data-search="RL algorithms and applications 06 Reinforcement Learning Q-learning Deep Q-Network Policy gradient REINFORCE algorithm Actor-critic Proximal policy optimization Model-based vs model-free RL Reward shaping RLHF overview RL in games and robotics">
+  <div class="card-head">
+    <div class="num">27</div>
+    <div>
+      <h3>RL algorithms and applications</h3>
+      <div class="meta"><span class="pill">06 Reinforcement Learning</span><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span></div>
+      <p>Open this chapter for detailed explanations, real AI examples, mistakes to avoid, and practice tasks.</p>
+    </div>
+    <a class="btn" href="lessons/rl-algorithms-and-applications.html">Open</a>
+  </div>
+  <div class="tags"><span class="tag">Q-learning</span><span class="tag">Deep Q-Network</span><span class="tag">Policy gradient</span><span class="tag">REINFORCE algorithm</span><span class="tag">Actor-critic</span><span class="tag">Proximal policy optimization</span><span class="tag">Model-based vs model-free RL</span><span class="tag">Reward shaping</span><span class="tag">RLHF overview</span><span class="tag">RL in games and robotics</span></div>
+</article>
+
+<article class="card" data-card data-track="07 NLP" data-search="NLP foundations 07 NLP Tokenization Stop words Stemming Lemmatization n-grams Bag of Words TF-IDF Word embeddings Word2Vec GloVe FastText Text classification Sentiment analysis NER Question answering Summarization Translation ROUGE BLEU perplexity">
+  <div class="card-head">
+    <div class="num">28</div>
     <div>
       <h3>NLP foundations</h3>
       <div class="meta"><span class="pill">07 NLP</span><span class="pill">Beginner</span><span class="pill">1.5 weeks</span></div>
@@ -354,9 +381,35 @@
   <div class="tags"><span class="tag">Tokenization</span><span class="tag">Stop words</span><span class="tag">Stemming</span><span class="tag">Lemmatization</span><span class="tag">n-grams</span><span class="tag">Bag of Words</span><span class="tag">TF-IDF</span><span class="tag">Word embeddings</span><span class="tag">Word2Vec GloVe FastText</span><span class="tag">Text classification</span><span class="tag">Sentiment analysis</span><span class="tag">NER</span><span class="tag">Question answering</span><span class="tag">Summarization</span><span class="tag">Translation</span><span class="tag">ROUGE BLEU perplexity</span></div>
 </article>
 
+<article class="card" data-card data-track="07 NLP" data-search="NLP with transformers and BERT 07 NLP BERT architecture Masked language modeling Next sentence prediction Subword tokenization BPE and WordPiece Fine-tuning BERT Sentence-BERT Cross-encoder vs bi-encoder Zero-shot NLP classification NER with transformers">
+  <div class="card-head">
+    <div class="num">29</div>
+    <div>
+      <h3>NLP with transformers and BERT</h3>
+      <div class="meta"><span class="pill">07 NLP</span><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span></div>
+      <p>Open this chapter for detailed explanations, real AI examples, mistakes to avoid, and practice tasks.</p>
+    </div>
+    <a class="btn" href="lessons/nlp-with-transformers-and-bert.html">Open</a>
+  </div>
+  <div class="tags"><span class="tag">BERT architecture</span><span class="tag">Masked language modeling</span><span class="tag">Next sentence prediction</span><span class="tag">Subword tokenization</span><span class="tag">BPE and WordPiece</span><span class="tag">Fine-tuning BERT</span><span class="tag">Sentence-BERT</span><span class="tag">Cross-encoder vs bi-encoder</span><span class="tag">Zero-shot NLP classification</span><span class="tag">NER with transformers</span></div>
+</article>
+
+<article class="card" data-card data-track="07 NLP" data-search="Advanced NLP and information extraction 07 NLP Coreference resolution Dependency parsing Relation extraction Event detection Text clustering Topic modeling LDA Language identification Text augmentation Multilingual NLP">
+  <div class="card-head">
+    <div class="num">30</div>
+    <div>
+      <h3>Advanced NLP and information extraction</h3>
+      <div class="meta"><span class="pill">07 NLP</span><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span></div>
+      <p>Open this chapter for detailed explanations, real AI examples, mistakes to avoid, and practice tasks.</p>
+    </div>
+    <a class="btn" href="lessons/advanced-nlp-and-information-extraction.html">Open</a>
+  </div>
+  <div class="tags"><span class="tag">Coreference resolution</span><span class="tag">Dependency parsing</span><span class="tag">Relation extraction</span><span class="tag">Event detection</span><span class="tag">Text clustering</span><span class="tag">Topic modeling</span><span class="tag">LDA</span><span class="tag">Language identification</span><span class="tag">Text augmentation</span><span class="tag">Multilingual NLP</span></div>
+</article>
+
 <article class="card" data-card data-track="08 Generative AI and LLMs" data-search="LLM foundations 08 Generative AI and LLMs LLM tokens Context window Pretraining Instruction tuning RLHF Temperature top-p max tokens Hallucination Grounding Model limitations Cost and latency">
   <div class="card-head">
-    <div class="num">27</div>
+    <div class="num">31</div>
     <div>
       <h3>LLM foundations</h3>
       <div class="meta"><span class="pill">08 Generative AI and LLMs</span><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span></div>
@@ -369,7 +422,7 @@
 
 <article class="card" data-card data-track="08 Generative AI and LLMs" data-search="Prompt engineering 08 Generative AI and LLMs Prompt engineering Prompt anatomy System user assistant roles Zero-shot prompting Few-shot prompting Chain-of-thought concept Structured output JSON output Prompt templates Prompt testing Common prompt failures">
   <div class="card-head">
-    <div class="num">28</div>
+    <div class="num">32</div>
     <div>
       <h3>Prompt engineering</h3>
       <div class="meta"><span class="pill">08 Generative AI and LLMs</span><span class="pill">Intermediate</span><span class="pill">1 week</span></div>
@@ -382,7 +435,7 @@
 
 <article class="card" data-card data-track="08 Generative AI and LLMs" data-search="Embeddings and vector databases 08 Generative AI and LLMs Embeddings Sentence embeddings Cosine similarity Semantic search Vector database FAISS Chroma Pinecone Milvus pgvector Metadata filtering Hybrid search Chunking Embedding evaluation">
   <div class="card-head">
-    <div class="num">29</div>
+    <div class="num">33</div>
     <div>
       <h3>Embeddings and vector databases</h3>
       <div class="meta"><span class="pill">08 Generative AI and LLMs</span><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span></div>
@@ -395,7 +448,7 @@
 
 <article class="card" data-card data-track="08 Generative AI and LLMs" data-search="RAG systems 08 Generative AI and LLMs RAG Document loading Chunking Indexing Retrieval Query rewriting Reranking Context construction Grounded generation Citations RAG evaluation RAG failure modes">
   <div class="card-head">
-    <div class="num">30</div>
+    <div class="num">34</div>
     <div>
       <h3>RAG systems</h3>
       <div class="meta"><span class="pill">08 Generative AI and LLMs</span><span class="pill">Intermediate</span><span class="pill">2 weeks</span></div>
@@ -408,7 +461,7 @@
 
 <article class="card" data-card data-track="08 Generative AI and LLMs" data-search="Tool calling and AI agents 08 Generative AI and LLMs Function calling Tool schema Tool validation Agents Planner executor ReAct concept Memory LangChain LangGraph Fallbacks Tracing and debugging Human-in-the-loop">
   <div class="card-head">
-    <div class="num">31</div>
+    <div class="num">35</div>
     <div>
       <h3>Tool calling and AI agents</h3>
       <div class="meta"><span class="pill">08 Generative AI and LLMs</span><span class="pill">Advanced</span><span class="pill">2 weeks</span></div>
@@ -421,7 +474,7 @@
 
 <article class="card" data-card data-track="08 Generative AI and LLMs" data-search="Fine-tuning and model adaptation 08 Generative AI and LLMs Fine-tuning When not to fine-tune Instruction dataset Data quality Train validation split LoRA QLoRA PEFT Evaluation Overfitting Safety after fine-tuning">
   <div class="card-head">
-    <div class="num">32</div>
+    <div class="num">36</div>
     <div>
       <h3>Fine-tuning and model adaptation</h3>
       <div class="meta"><span class="pill">08 Generative AI and LLMs</span><span class="pill">Advanced</span><span class="pill">1.5 weeks</span></div>
@@ -434,7 +487,7 @@
 
 <article class="card" data-card data-track="08 Generative AI and LLMs" data-search="Multimodal AI 08 Generative AI and LLMs Multimodal AI Vision-language models Image captioning OCR Document AI PDF parsing Layout understanding Speech-to-text Text-to-speech Speaker diarization Audio classification Image generation Diffusion models Video understanding Multimodal RAG">
   <div class="card-head">
-    <div class="num">33</div>
+    <div class="num">37</div>
     <div>
       <h3>Multimodal AI</h3>
       <div class="meta"><span class="pill">08 Generative AI and LLMs</span><span class="pill">Advanced</span><span class="pill">1.5 weeks</span></div>
@@ -447,7 +500,7 @@
 
 <article class="card" data-card data-track="09 Data Engineering for AI" data-search="SQL and data pipelines 09 Data Engineering for AI SQL SELECT WHERE GROUP BY Joins Window functions concept ETL ELT Batch pipelines Streaming pipelines Kafka Data validation Data quality checks Dataset versioning">
   <div class="card-head">
-    <div class="num">34</div>
+    <div class="num">38</div>
     <div>
       <h3>SQL and data pipelines</h3>
       <div class="meta"><span class="pill">09 Data Engineering for AI</span><span class="pill">Intermediate</span><span class="pill">1.5 weeks</span></div>
@@ -460,7 +513,7 @@
 
 <article class="card" data-card data-track="09 Data Engineering for AI" data-search="MLOps and production ML 09 Data Engineering for AI Experiment tracking Model registry Model serving Batch inference Online inference FastAPI Docker CI/CD Monitoring Data drift Concept drift A/B testing Canary deployment Rollback Cost monitoring">
   <div class="card-head">
-    <div class="num">35</div>
+    <div class="num">39</div>
     <div>
       <h3>MLOps and production ML</h3>
       <div class="meta"><span class="pill">09 Data Engineering for AI</span><span class="pill">Advanced</span><span class="pill">2 weeks</span></div>
@@ -473,7 +526,7 @@
 
 <article class="card" data-card data-track="09 Data Engineering for AI" data-search="AI security and responsible AI 09 Data Engineering for AI Prompt injection Jailbreaks PII Data privacy Moderation Guardrails Tool safety Abuse prevention Bias and fairness Responsible AI Explainability Model cards Dataset cards">
   <div class="card-head">
-    <div class="num">36</div>
+    <div class="num">40</div>
     <div>
       <h3>AI security and responsible AI</h3>
       <div class="meta"><span class="pill">09 Data Engineering for AI</span><span class="pill">Advanced</span><span class="pill">1.5 weeks</span></div>
@@ -486,7 +539,7 @@
 
 <article class="card" data-card data-track="10 AI System Design" data-search="ML system design 10 AI System Design Problem framing ML vs rules Data requirements Model selection Offline inference Online inference Latency vs accuracy Scalability Reliability Fallbacks Human-in-the-loop Feedback loop Evaluation pipeline">
   <div class="card-head">
-    <div class="num">37</div>
+    <div class="num">41</div>
     <div>
       <h3>ML system design</h3>
       <div class="meta"><span class="pill">10 AI System Design</span><span class="pill">Advanced</span><span class="pill">2 weeks</span></div>
@@ -499,7 +552,7 @@
 
 <article class="card" data-card data-track="10 AI System Design" data-search="LLM app architecture 10 AI System Design Frontend backend model provider Prompt versioning RAG architecture Tool layer Streaming Caching Rate limiting Observability Evals Cost optimization Security design">
   <div class="card-head">
-    <div class="num">38</div>
+    <div class="num">42</div>
     <div>
       <h3>LLM app architecture</h3>
       <div class="meta"><span class="pill">10 AI System Design</span><span class="pill">Advanced</span><span class="pill">2 weeks</span></div>
@@ -512,7 +565,7 @@
 
 <article class="card" data-card data-track="11 Projects and Portfolio" data-search="Projects: beginner to advanced 11 Projects and Portfolio Beginner projects EDA project House price prediction Spam classifier Churn prediction Fraud detection Recommendation project Image classifier Chat with PDF Agent with tools MLOps pipeline Multimodal document AI README and case study">
   <div class="card-head">
-    <div class="num">39</div>
+    <div class="num">43</div>
     <div>
       <h3>Projects: beginner to advanced</h3>
       <div class="meta"><span class="pill">11 Projects and Portfolio</span><span class="pill">Beginner to Advanced</span><span class="pill">Ongoing</span></div>
@@ -525,7 +578,7 @@
 
 <article class="card" data-card data-track="11 Projects and Portfolio" data-search="Capstone: AI learning assistant 11 Projects and Portfolio Capstone idea Content database Progress tracker RAG assistant Quiz generation Weak topic recommendation Evaluation set Deployment GitHub Pages Future backend Product roadmap">
   <div class="card-head">
-    <div class="num">40</div>
+    <div class="num">44</div>
     <div>
       <h3>Capstone: AI learning assistant</h3>
       <div class="meta"><span class="pill">11 Projects and Portfolio</span><span class="pill">Advanced</span><span class="pill">3 weeks</span></div>

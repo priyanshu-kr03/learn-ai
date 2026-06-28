@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Control flow, functions and OOP | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -41,17 +42,31 @@
       <h2>Conditions and loops</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Conditions and loops is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Conditional statements (if/elif/else) and loops (for/while) are the two fundamental control-flow structures in Python. Together they allow programs to make decisions based on data and repeat operations over collections. In ML, conditions appear constantly: checking if validation loss improved, if a threshold is exceeded, if a key exists in a dictionary. Loops drive training iterations, batch processing, dataset loading, and hyperparameter sweeps.</p><p>Python if-elif-else evaluates conditions top to bottom and executes the first branch that evaluates to True. Python&#x27;s truthiness rules: 0, 0.0, empty string, empty list, empty dict, and None are all falsy. Everything else is truthy. This enables idiomatic checks like &#x27;if results:&#x27; instead of &#x27;if len(results) &gt; 0:&#x27;.</p><p>The for loop iterates over any iterable — list, tuple, string, dict, set, range, generator, or custom object implementing __iter__. Python&#x27;s enumerate(iterable) gives both index and value: for i, item in enumerate(items). zip(a, b) pairs corresponding elements from two iterables. These patterns are used constantly in ML: for epoch, (<code>batch_x</code>, <code>batch_y</code>) in enumerate(dataloader).</p><p>The while loop repeats while a condition is True. It is used for: training until convergence (while <code>val_loss</code> &gt; tol), game playing loops in RL (while not done), and retry loops (while retries &lt; <code>max_retries</code>). Be careful: a while loop without a guaranteed exit condition is an infinite loop. Always ensure the loop variable changes on each iteration.</p><p>Loop control: break exits the loop immediately (useful for early stopping). continue skips the rest of the current iteration (useful for skipping invalid samples). pass is a no-op placeholder (used in empty class bodies or as a stub). else on a for/while loop executes if the loop completed without hitting a break — unusual but useful for &#x27;search and not found&#x27; patterns.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Conditions and loops to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Conditions and loops is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Conditions: accuracy = 0.87
+if accuracy &gt;= 0.90: print(&#x27;excellent&#x27;)
+elif accuracy &gt;= 0.80: print(&#x27;good&#x27;)
+elif accuracy &gt;= 0.70: print(&#x27;fair&#x27;)
+else: print(&#x27;poor — retrain&#x27;)</code></pre><pre><code>for loop: for epoch in range(1, 11):
+    train_loss = train_one_epoch(model)
+    val_loss = evaluate(model)
+    print(f&#x27;Epoch {epoch}: train={train_loss:.4f}, val={val_loss:.4f}&#x27;)</code></pre><pre><code>enumerate and zip: for i, (x, y) in enumerate(zip(X_test, y_test)):
+    pred = model.predict([x])[0]
+    if pred != y: print(f&#x27;Sample {i}: predicted {pred}, actual {y}&#x27;)</code></pre><pre><code>while with break: patience = 0; best_val_loss = float(&#x27;inf&#x27;)
+while patience &lt; 5:
+    val_loss = train_and_evaluate()
+    if val_loss &lt; best_val_loss: best_val_loss = val_loss; patience = 0
+    else: patience += 1
+print(f&#x27;Early stopping at patience={patience}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Conditions and loops, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Conditions and loops are the skeleton of every ML training script. Epoch loops, batch loops, early stopping logic, metric threshold checks, and data preprocessing pipelines are all built on these two structures. Mastering them is prerequisite to writing any training code.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Infinite loops from forgetting to update the loop variable — always verify that a while loop has a path to termination.</li><li>Modifying a list while iterating over it — leads to skipped or repeated elements. Iterate over a copy: for item in list(<code>my_list</code>):.</li><li>Using == to compare floats — floating point imprecision makes 0.1 + 0.2 != 0.3. Use abs(a - b) &lt; 1e-9 or <code>math.isclose</code>(a, b).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a training loop that: (1) trains for up to 100 epochs, (2) computes train and validation loss each epoch, (3) implements early stopping with patience=5, (4) saves the best model when validation loss improves, (5) breaks out early if training loss &lt; 0.01. Print per-epoch progress and a final report of best epoch and best validation loss.</div>
     </div>
   </div>
 </section>
@@ -63,17 +78,33 @@
       <h2>break and continue</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>break and continue is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>break exits the enclosing loop immediately — execution continues with the first statement after the loop. continue skips the rest of the current iteration and moves to the next — execution jumps back to the loop condition. These two statements provide fine-grained control over loop execution.</p><p>break is used for early exit when a condition is met: early stopping in training (stop when validation loss stops improving), finding the first item matching a condition, exiting an infinite game loop when the game ends. continue is used to skip invalid or irrelevant items without nesting if-else blocks: skip corrupted training samples, skip already-processed records, skip None values.</p><p>In nested loops, break and continue only apply to the innermost enclosing loop. To break out of multiple nested loops, use a flag variable (found = True; if found: break), wrap in a function and use return, or (rarely) use Python&#x27;s for-else: the else clause of a for loop executes only if the loop completed without hitting a break.</p><p>For loops with break and else: for item in items: if condition(item): result = item; break; else: result = None — the else block runs if and only if no break occurred. This is a clean &#x27;search and not found&#x27; pattern. &#x27;if result is None: print(Not found)&#x27; achieves the same thing but is less idiomatic.</p><p>Performance note: in inner loops over large sequences, an early break can dramatically improve performance. Searching for the first matching element in a list of 1 million items takes O(n) in the worst case. With a break as soon as the match is found, average case is O(n/2) — 2× faster for random data.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses break and continue to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where break and continue is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>break: for epoch in range(1000):
+    val_loss = train_epoch()
+    if val_loss &lt; 0.001:
+        print(f&#x27;Converged at epoch {epoch}&#x27;)
+        break</code></pre><pre><code>continue: for sample in dataset:
+    if sample[&#x27;label&#x27;] is None: continue  # skip unlabeled
+    if sample[&#x27;text&#x27;] == &#x27;&#x27;: continue  # skip empty
+    process(sample)</code></pre><pre><code>for-else: for model_name in [&#x27;rf&#x27;, &#x27;xgb&#x27;, &#x27;lgb&#x27;]:
+    if metrics[model_name][&#x27;auc&#x27;] &gt; 0.90:
+        best_model = model_name; break
+else:
+    best_model = None  # no model achieved AUC &gt; 0.90</code></pre><pre><code>Nested loop break: found = False
+for i in range(n):
+    for j in range(n):
+        if matrix[i][j] == target:
+            row, col = i, j; found = True; break
+    if found: break</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for break and continue, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>break and continue are essential for writing efficient, readable loops. Without them, loops require deeply nested conditionals or sentinel values. Early stopping in ML training is a prototypical break use case — continuing to train when the model has converged wastes time and causes overfitting.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Expecting break to exit multiple nested loops — break only exits the innermost loop. Use a flag variable or function return to exit multiple levels.</li><li>Using continue when break is meant — if you want to stop the loop, use break. continue just skips the current iteration and continues the loop.</li><li>Missing the for-else clause — Python&#x27;s for-else is rarely known but useful for search patterns. Know it exists so you recognize it in others&#x27; code.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a batch processing loop with all four loop control patterns: (1) break when a batch&#x27;s loss is <code>NaN</code> (training diverged), (2) continue when a batch has fewer than <code>min_batch_size</code> samples, (3) use for-else to detect if all epochs completed without early stopping, (4) break out of a nested hyperparameter search loop when a valid configuration is found. Add a <code>max_retries</code> counter to avoid infinite loops.</div>
     </div>
   </div>
 </section>
@@ -85,17 +116,25 @@
       <h2>Functions</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Functions is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A function is a named, reusable block of code that takes inputs (parameters), performs a task, and optionally returns an output. Functions are the fundamental unit of code organization in Python. Every non-trivial program is built from functions. The rule of thumb: if you are writing the same logic twice, it belongs in a function; if a block of code grows beyond ~15 lines, it should be split into multiple functions.</p><p>Python functions are defined with the def keyword, followed by the function name, parentheses containing parameters, a colon, and an indented body. Parameters are variables that receive the values passed when the function is called. The return statement sends a value back to the caller. A function without an explicit return statement returns None.</p><p>Parameters can have default values, making them optional: def greet(name, greeting=&#x27;Hello&#x27;): ... means you can call greet(&#x27;Alice&#x27;) or greet(&#x27;Alice&#x27;, &#x27;Hi&#x27;). *args collects any number of positional arguments into a tuple. **kwargs collects any number of keyword arguments into a dictionary. These let you write flexible functions that accept variable numbers of arguments.</p><p>Functions should do one thing and do it well — this is the Single Responsibility Principle. A function called <code>process_data</code> that loads CSV, cleans nulls, engineers features, trains a model, and plots results is doing 6 things; split it into 6 functions. This makes each piece testable, debuggable, and reusable independently.</p><p>Docstrings document functions. Write a triple-quoted string immediately after the def line describing: what the function does, what each parameter is (type and meaning), and what it returns. Good docstrings are how you communicate with future-you and your teammates. In AI work, document the expected shape and dtype of tensor/array parameters explicitly.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Functions is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>def compute_accuracy(y_true, y_pred):
+    &#x27;&#x27;&#x27;Compute classification accuracy.
+    Args:
+        y_true: list or array of true labels
+        y_pred: list or array of predicted labels
+    Returns:
+        float: accuracy between 0.0 and 1.0
+    &#x27;&#x27;&#x27;
+    return sum(t == p for t, p in zip(y_true, y_pred)) / len(y_true)</code></pre><pre><code>Call: acc = compute_accuracy([1,0,1,1], [1,0,0,1]) → 0.75</code></pre><pre><code>Default parameter: def train_model(X, y, lr=0.01, epochs=100): ...</code></pre><pre><code>Variable args: def log(*messages, level=&#x27;INFO&#x27;): for msg in messages: print(f&#x27;[{level}] {msg}&#x27;)</code></pre><pre><code>Return multiple values: def min_max(values): return min(values), max(values); lo, hi = min_max([3,1,4,1,5])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Functions, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Functions are how you structure any program larger than 20 lines. In AI work, every step of the pipeline — load data, preprocess, train, evaluate, deploy — should be its own function. Unfactored code is untestable and unmaintainable.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Writing functions that do too many things — a function that loads data, trains a model, and plots results is three functions combined. Split it.</li><li>Not returning a value when the caller needs one — forgetting return means the function returns None silently, causing bugs where the caller gets None unexpectedly.</li><li>Mutable default arguments like def f(lst=[]): — the list is shared across all calls. Use def f(lst=None): if lst is None: lst = [] instead.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write 5 functions for an ML pipeline: <code>load_data</code>(filepath) → <code>DataFrame</code>, <code>clean_data</code>(df) → <code>DataFrame</code>, <code>train_model</code>(<code>X_train</code>, <code>y_train</code>, lr=0.01) → model, <code>evaluate_model</code>(model, <code>X_test</code>, <code>y_test</code>) → dict of metrics, <code>plot_confusion_matrix</code>(<code>y_true</code>, <code>y_pred</code>). Chain them in a <code>main()</code> function. Add docstrings to all 5.</div>
     </div>
   </div>
 </section>
@@ -107,17 +146,28 @@
       <h2>Arguments and return values</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Arguments and return values is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Python functions accept parameters (defined in the function signature) and receive arguments (actual values passed at call time). Positional arguments are passed in order. Keyword arguments are passed by name: preprocess(data, normalize=True) — normalize gets its value by name. Default values: def preprocess(data, normalize=True, <code>max_len</code>=512) — normalize and <code>max_len</code> have defaults and are optional.</p><p>*args packs extra positional arguments into a tuple. **kwargs packs extra keyword arguments into a dict. def log(*args, **kwargs): print(args, kwargs). This pattern is used in ML for flexible APIs: trainer = Trainer(*<code>dataset_args</code>, **<code>config_dict</code>) passes an arbitrary number of positional and keyword arguments.</p><p>Return values: a function can return any Python object (or None if no return statement). Return multiple values as a tuple: def split(X, y, ratio): return X[:n], X[n:], y[:n], y[n:]. The caller unpacks: <code>X_train</code>, <code>X_test</code>, <code>y_train</code>, <code>y_test</code> = split(X, y, 0.8). This is the most common Python multi-return pattern.</p><p>Variable scope: variables defined inside a function are local — they cannot be accessed outside. Variables defined outside a function are global. The global keyword allows a function to modify a global variable (avoid this — it creates hard-to-debug side effects). Use function parameters and return values instead of global state.</p><p>Type hints (Python 3.5+) annotate argument and return types: def train(X: <code>np.ndarray</code>, y: <code>np.ndarray</code>, lr: float = 0.01) -&gt; dict. Type hints are not enforced at runtime but enable IDE autocompletion, static analysis (mypy), and serve as documentation. They are increasingly standard in professional Python code.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Arguments and return values to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Arguments and return values is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Positional and keyword: def evaluate(model, X, y, metric=&#x27;accuracy&#x27;):
+    preds = model.predict(X)
+    return metric_fn[metric](y, preds)
+result = evaluate(clf, X_test, y_test)  # positional
+result = evaluate(clf, X_test, y_test, metric=&#x27;f1&#x27;)  # keyword</code></pre><pre><code>*args/**kwargs: def log_metrics(**metrics):
+    for name, value in metrics.items():
+        print(f&#x27;{name}: {value:.4f}&#x27;)
+log_metrics(train_loss=0.25, val_loss=0.31, val_auc=0.87)</code></pre><pre><code>Multiple return: def train_val_split(X, y, val_frac=0.2):
+    n = int(len(X) * (1 - val_frac))
+    return X[:n], X[n:], y[:n], y[n:]
+X_tr, X_val, y_tr, y_val = train_val_split(X, y)</code></pre><pre><code>Type hints: from typing import Tuple
+def evaluate(y_true: list, y_pred: list, threshold: float = 0.5) -&gt; Tuple[float, float, float]: ...</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Arguments and return values, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Functions with clear arguments and return values are the building blocks of maintainable ML code. Poorly designed function signatures (using global variables, returning None when a value is expected) make code hard to test, debug, and reuse. Consistent function design is what separates professional ML code from notebook-only code.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using mutable default arguments — def fn(data=[]): <code>data.append</code>(1) shares the list across all calls. Use def fn(data=None): if data is None: data = [].</li><li>Not returning values from functions that compute results — a function that modifies a global variable instead of returning a result is hard to test and reuse.</li><li>Over-using **kwargs to avoid documenting arguments — **kwargs hides the function&#x27;s interface. Prefer explicit named parameters with defaults for discoverability.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Refactor a monolithic training script into well-designed functions: preprocess(X, normalize=True, <code>max_len</code>=512) → <code>X_clean</code>, train(model, <code>X_train</code>, <code>y_train</code>, lr=0.01, epochs=100) → <code>trained_model</code>, evaluate(model, <code>X_test</code>, <code>y_test</code>, metrics=[&#x27;accuracy&#x27;,&#x27;f1&#x27;,&#x27;auc&#x27;]) → dict of results. Each function should have type hints, a docstring (one line), and handle edge cases. Write pytest tests for each function.</div>
     </div>
   </div>
 </section>
@@ -129,17 +179,23 @@
       <h2>Lambda map filter reduce</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Lambda map filter reduce is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Lambda functions are anonymous single-expression functions written inline. The syntax is: lambda arguments: expression. Lambda x: x**2 is a function that squares its input. They are useful for short functions passed as arguments — sorted(items, key=lambda x: x[&#x27;score&#x27;]) sorts a list of dicts by their &#x27;score&#x27; key. Lambdas cannot contain statements (no if-elif-else blocks, no assignments), only expressions.</p><p>map(function, iterable) applies a function to every element and returns an iterator. result = list(map(lambda x: x**2, [1,2,3,4])) gives [1,4,9,16]. In ML, map is used to apply the same transformation to every element: <code>token_ids</code> = list(map(<code>tokenizer.encode</code>, texts)). List comprehensions are often more Pythonic: [x**2 for x in range(1,5)].</p><p>filter(function, iterable) returns an iterator of elements where the function returns True. <code>long_texts</code> = list(filter(lambda t: len(t) &gt; 100, texts)) keeps only texts longer than 100 characters. In ML: <code>valid_samples</code> = list(filter(lambda s: s[&#x27;label&#x27;] is not None, dataset)). Again, comprehensions often read better: [s for s in dataset if s[&#x27;label&#x27;] is not None].</p><p>reduce(function, iterable) from functools applies a function cumulatively to combine all elements into a single result. reduce(lambda a, b: a*b, [1,2,3,4,5]) computes 1*2*3*4*5 = 120. In ML, reduce is used to combine metrics across batches: <code>total_loss</code> = reduce(lambda a, b: a+b, <code>batch_losses</code>). Python&#x27;s built-in <code>sum()</code> and <code>max()</code> cover most reduce use cases without importing functools.</p><p>When to use lambda vs def: use lambda for simple one-liners passed to higher-order functions (sorted, map, filter, key= arguments). Use def for anything more complex — a named function is clearer, testable, and can contain multiple statements. Never use a lambda that spans multiple lines or contains complex logic. The Pythonic rule: if it needs a comment, give it a name.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Lambda map filter reduce to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Lambda map filter reduce is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>lambda: square = lambda x: x**2; print(square(5))  # 25
+# Equivalent: def square(x): return x**2</code></pre><pre><code>map: texts = [&#x27;hello world&#x27;, &#x27;machine learning&#x27;, &#x27;deep neural networks&#x27;]
+lengths = list(map(len, texts))  # [11, 16, 20]
+upper = list(map(str.upper, texts))  # [&#x27;HELLO WORLD&#x27;, ...]</code></pre><pre><code>filter: scores = [0.3, 0.8, 0.6, 0.9, 0.2, 0.75]
+high_conf = list(filter(lambda s: s &gt; 0.7, scores))  # [0.8, 0.9, 0.75]</code></pre><pre><code>reduce: from functools import reduce
+product = reduce(lambda a,b: a*b, range(1,6))  # 120 (5!)</code></pre><pre><code>Prefer comprehensions: # Instead of list(map(lambda x: x**2, items))
+# Use: [x**2 for x in items]  # clearer and faster</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Lambda map filter reduce, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Lambda, map, filter, and reduce enable functional programming patterns — applying transformations to data without explicit loops. They appear in data preprocessing pipelines, metric computation, and dataset processing code. Understanding them makes you fluent in reading and writing idiomatic Python ML code.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using lambda for complex logic — lambda factorial = lambda n: 1 if n==0 else n * factorial(n-1) works but is unreadable. Write a named function.</li><li>Not converting map/filter results to list — <code>map()</code> and <code>filter()</code> return lazy iterators; accessing them twice gives empty results on the second access.</li><li>Using reduce for simple aggregations — use <code>sum()</code>, <code>max()</code>, <code>min()</code>, <code>any()</code>, <code>all()</code> instead of reduce(lambda a,b: a+b, ...) for clarity.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Given a list of 100 dictionaries: [{&#x27;text&#x27;: &#x27;...&#x27;, &#x27;label&#x27;: 0 or 1, &#x27;confidence&#x27;: 0.0-1.0}]. Using only map, filter, and reduce (no for loops): (1) filter out samples with confidence &lt; 0.5, (2) extract the texts of remaining samples, (3) compute the total length of all texts, (4) count how many are label=1. Then rewrite all four steps using list comprehensions. Compare readability.</div>
     </div>
   </div>
 </section>
@@ -151,17 +207,19 @@
       <h2>Comprehensions</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Comprehensions is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>List comprehensions are a concise, Pythonic way to create lists: [expression for item in iterable if condition]. <code>squared_evens</code> = [x**2 for x in range(20) if x % 2 == 0]. This is equivalent to a for loop with an append, but more concise and often faster (CPython optimizes comprehensions). Comprehensions are idiomatic Python — professional code uses them extensively.</p><p>Dict comprehensions create dictionaries: {<code>key_expr</code>: <code>value_expr</code> for item in iterable if condition}. <code>label_to_idx</code> = {label: idx for idx, label in enumerate(<code>unique_labels</code>)}. <code>word_freq</code> = {word: <code>text.count</code>(word) for word in set(<code>text.split()</code>)}. Set comprehensions: {<code>item.lower()</code> for item in words}.</p><p>Generator expressions are lazy comprehensions — they compute values on demand without building a full list in memory. (x**2 for x in range(1_000_000)) creates a generator that yields values one at a time. This is critical when processing large datasets that don&#x27;t fit in memory. sum(x**2 for x in data) uses a generator — no intermediate list is created.</p><p>Nested comprehensions handle 2D data: matrix = [[1,2,3],[4,5,6],[7,8,9]]; flat = [x for row in matrix for x in row] → [1,2,3,4,5,6,7,8,9]. For creating 2D lists: identity = [[1 if i==j else 0 for j in range(n)] for i in range(n)]. Nested comprehensions can become hard to read — if nested more than two levels deep, use explicit for loops.</p><p>When NOT to use comprehensions: (1) when the logic is complex (use a named function instead), (2) when you need to handle exceptions inside the comprehension (use a try/except in a helper function), (3) when the comprehension has side effects — comprehensions should produce a value, not cause side effects.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Comprehensions to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Comprehensions is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>List: features = [&#x27;age&#x27;, &#x27;income&#x27;, &#x27;salary&#x27;, &#x27;experience&#x27;]
+numeric = [f for f in features if f != &#x27;name&#x27;]
+# [x**2 for x in range(10)] → [0,1,4,9,16,25,36,49,64,81]</code></pre><pre><code>Dict: class_weights = {cls: 1/count for cls, count in class_counts.items()}</code></pre><pre><code>Set: unique_tokens = {token.lower() for sentence in corpus for token in sentence.split()}</code></pre><pre><code>Generator: total = sum(len(row) for row in dataset)  # memory-efficient</code></pre><pre><code>Nested: predictions = [[model.predict([x, y]) for y in range(10)] for x in range(10)]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Comprehensions, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Comprehensions are the Pythonic way to transform and filter data. They are faster than equivalent for loops (especially list comprehensions), more readable when simple, and enable writing data transformations in a functional style. Every Python ML engineer uses them constantly.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using a list comprehension when a generator would suffice — for <code>sum()</code>, <code>any()</code>, <code>all()</code>, and lazy operations, use a generator expression to avoid building a large intermediate list.</li><li>Nesting comprehensions more than 2 levels deep — beyond two levels, use explicit for loops. Readability matters more than conciseness.</li><li>Adding side effects inside comprehensions — [print(x) for x in items] works but is wrong. Use a for loop when side effects are intended.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Rewrite the following loop-based code as comprehensions: (1) filter a list of dicts to keep only records where age &gt; 18 and income &gt; 30000, (2) create a word-frequency dict from a corpus of 1000 sentences, (3) create a 5×5 multiplication table as a list of lists, (4) extract all email addresses from a list of strings using regex. Then benchmark each comprehension vs its equivalent for loop using timeit.</div>
     </div>
   </div>
 </section>
@@ -173,17 +231,24 @@
       <h2>Modules and packages</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Modules and packages is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A Python module is a single .py file containing functions, classes, and variables. A package is a directory of modules with an __init__.py file. When you write &#x27;import <code>numpy</code> as np&#x27;, Python finds the <code>numpy</code> package (directory) in your Python path, loads its __init__.py, and makes it available as &#x27;np&#x27;. Packages can be nested: <code>torch</code>.<code>nn.functional</code> is the &#x27;functional&#x27; module inside the &#x27;nn&#x27; sub-package of &#x27;<code>torch</code>&#x27;.</p><p>Import styles: &#x27;import module&#x27; — access with <code>module.function()</code>. &#x27;from module import function&#x27; — access directly as <code>function()</code>. &#x27;from module import *&#x27; — imports all public names into the current namespace (avoid this — pollutes the namespace and makes it unclear where names came from). &#x27;import module as alias&#x27; — useful for long names (import <code>numpy</code> as np, import <code>pandas</code> as pd).</p><p>The PYTHONPATH and <code>sys.path</code> determine where Python looks for modules. Virtual environments (venv, conda) provide isolated Python installations with their own site-packages directory, preventing version conflicts between projects. Always use a virtual environment for each project: python -m venv venv; source venv/bin/activate.</p><p>Creating your own module: create <code>utils.py</code> with your helper functions. In <code>main.py</code>: from utils import preprocess, evaluate. For larger projects, organize into packages: src/data/<code>loader.py</code>, src/models/<code>train.py</code>, src/utils/<code>metrics.py</code>. Add an __init__.py to each directory. The __init__.py can be empty or can import key names for a cleaner public API.</p><p>Circular imports: module A imports from module B which imports from module A. This causes an <code>ImportError</code>. Solution: move shared code to a third module C, restructure dependencies, or use late imports (import inside functions). Circular imports are a design smell indicating modules are too tightly coupled.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Modules and packages to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Modules and packages is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Create module: # metrics.py
+def accuracy(y_true, y_pred): return (y_true == y_pred).mean()
+def f1(y_true, y_pred): ...</code></pre><pre><code>Import: # main.py
+from metrics import accuracy, f1
+acc = accuracy(y_test, preds)</code></pre><pre><code>Package: src/
+  __init__.py
+  data/__init__.py, loader.py
+  models/__init__.py, train.py</code></pre><pre><code>Virtual env: python -m venv .venv; source .venv/bin/activate; pip install -r requirements.txt</code></pre><pre><code>Check installed packages: pip list; pip show numpy  # shows version, location, dependencies</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Modules and packages, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Modules and packages are how Python projects are organized. As ML projects grow beyond a single script, you need to split code into reusable components: data loading, model definition, training, evaluation. Understanding imports enables you to navigate large codebases and structure your own projects professionally.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Naming your own file the same as a standard library module (e.g., <code>random.py</code>, <code>os.py</code>) — Python finds your file first, shadowing the standard library module and causing cryptic errors.</li><li>Using &#x27;from module import *&#x27; — this makes the code hard to understand because the origin of names is unclear, and conflicts silently override names.</li><li>Not using virtual environments — global Python installations lead to version conflicts between projects. Always use venv or conda.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Refactor a single monolithic ML script into a package: create src/data/<code>load.py</code> (dataset loading and preprocessing), src/models/<code>train.py</code> (model training loop), src/models/<code>evaluate.py</code> (evaluation metrics), src/utils/<code>visualization.py</code> (plotting functions). Add proper __init__.py files. Ensure the main script can import from all sub-modules cleanly.</div>
     </div>
   </div>
 </section>
@@ -195,17 +260,31 @@
       <h2>OOP</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>OOP should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Control flow, functions and OOP, connect OOP to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Object-Oriented Programming (OOP) organizes code around objects — entities that combine data (attributes) and behavior (methods) into a single unit. Python is a fully object-oriented language: everything, including numbers and functions, is an object. OOP helps you model real-world entities and build reusable, maintainable systems.</p><p>A class is a blueprint for creating objects. You define the blueprint with class <code>ClassName</code>: and create individual objects (instances) by calling the class like a function: obj = <code>ClassName()</code>. Each instance has its own copy of the attributes defined in __init__ (the constructor). Methods are functions defined inside the class that automatically receive the instance as their first argument (self).</p><p>Encapsulation means bundling data and the methods that operate on it together, and controlling access. In Python, a single underscore prefix (_attribute) signals &#x27;internal, don&#x27;t use outside the class&#x27; by convention; double underscore (__attribute) triggers name mangling to make it harder to access from outside. Encapsulation hides implementation details and exposes a clean interface.</p><p>Inheritance lets a subclass reuse and extend the behavior of a parent class. class Dog(Animal): means Dog inherits all attributes and methods from Animal, and can add its own or override existing ones. <code>super()</code>.<code>__init__()</code> calls the parent class&#x27;s constructor. This enables code reuse — you define common behavior once in the parent and specialize in children.</p><p>In AI engineering, OOP is pervasive: <code>PyTorch</code> models are <code>nn.Module</code> subclasses, scikit-learn estimators follow a fit/predict/transform interface, <code>HuggingFace</code> datasets use a Dataset class. Understanding OOP makes you able to read and extend these frameworks rather than treating them as black boxes.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses OOP to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply OOP in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>class MLModel:
+    def __init__(self, lr=0.01, epochs=100):
+        self.lr = lr; self.epochs = epochs; self.weights = None; self.history = []
+    def fit(self, X, y):
+        # ... training logic ...
+        return self
+    def predict(self, X):
+        return X @ self.weights
+    def __repr__(self):
+        return f&#x27;MLModel(lr={self.lr}, epochs={self.epochs})&#x27;</code></pre><pre><code>model = MLModel(lr=0.001, epochs=200)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)</code></pre><pre><code>Inheritance: class RegularizedModel(MLModel):
+    def __init__(self, lr=0.01, epochs=100, lambda_=0.01):
+        super().__init__(lr, epochs)
+        self.lambda_ = lambda_</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using OOP. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>OOP is how <code>PyTorch</code>, scikit-learn, and every ML framework is structured. Being able to subclass <code>nn.Module</code> to build models, or follow the scikit-learn fit/predict interface to build custom estimators, requires understanding OOP.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Forgetting self in method definitions — def train(X, y): should be def train(self, X, y): — Python does not automatically pass the instance.</li><li>Modifying mutable default attributes in __init__ — same mutable default problem as with functions; use None and create in __init__ body.</li><li>Creating classes for everything — not every function needs to be a class. Use a class when you have state (data) that methods need to share; otherwise a function is simpler.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a <code>DataPreprocessor</code> class with: __init__(self, scale=True, <code>fill_missing</code>=&#x27;mean&#x27;), fit(X) that learns mean/std from X, transform(X) that applies scaling and filling, <code>fit_transform</code>(X) convenience method, and __repr__. Test that two instances with different <code>fill_missing</code> settings produce different outputs. Subclass it into a <code>RobustPreprocessor</code> that uses median instead of mean.</div>
     </div>
   </div>
 </section>
@@ -217,17 +296,29 @@
       <h2>Classes and objects</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Classes and objects is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Object-oriented programming (OOP) in Python organizes code around objects — instances of classes that combine data (attributes) and behavior (methods). A class is a blueprint; an object is an instance. class Dog: defines a blueprint; fido = <code>Dog()</code> creates an instance. This pattern is used extensively in ML: <code>sklearn</code> estimators (<code>RandomForestClassifier</code>), <code>PyTorch</code> modules (<code>nn.Linear</code>), and dataset classes all follow the same OOP pattern.</p><p>The __init__ method is the constructor — called when an instance is created. self is the first parameter of every instance method, referring to the current instance. <code>self.attribute</code> stores instance data. Example: class Model: def __init__(self, lr=0.01, epochs=100): <code>self.lr</code> = lr; <code>self.epochs</code> = epochs. Methods: def train(self, X, y): ... — access instance attributes with <code>self.lr</code>.</p><p>Encapsulation bundles data and methods together. Private attributes (by convention: _name or __name) are intended for internal use only. Properties (@property decorator) allow attribute-like access to computed values or controlled setters. class Circle: def __init__(self, radius): self._radius = radius; @property def area(self): return 3.14 * self._radius ** 2.</p><p><code>PyTorch</code> uses OOP extensively. Every neural network is a class inheriting from <code>nn.Module</code>: class MLP(<code>nn.Module</code>): def __init__(self): <code>super()</code>.<code>__init__()</code>; <code>self.fc1</code> = <code>nn.Linear</code>(784, 256); <code>self.fc2</code> = <code>nn.Linear</code>(256, 10). def forward(self, x): return <code>self.fc2</code>(F.relu(<code>self.fc1</code>(x))). The <code>forward()</code> method defines the computation graph. model = <code>MLP()</code> creates an instance; model(x) calls forward(x).</p><p>Magic methods (dunder methods) customize class behavior. __str__ defines the string representation: print(model) calls __str__. __len__ defines len(obj). __getitem__ defines obj[i] (enables iteration and <code>PyTorch</code> <code>DataSet</code> indexing). class <code>MyDataset</code>: def __len__(self): return len(<code>self.data</code>); def __getitem__(self, idx): return <code>self.data</code>[idx], <code>self.labels</code>[idx]. <code>DataLoader</code> calls these to iterate over batches.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Classes and objects to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Classes and objects is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>class Trainer:
+    def __init__(self, model, lr=0.001, epochs=10):
+        self.model = model; self.lr = lr; self.epochs = epochs
+        self.history = {&#x27;train_loss&#x27;: [], &#x27;val_loss&#x27;: []}</code></pre><pre><code>    def fit(self, X_train, y_train, X_val, y_val):
+        for epoch in range(self.epochs):
+            loss = self._train_epoch(X_train, y_train)
+            val_loss = self._evaluate(X_val, y_val)
+            self.history[&#x27;train_loss&#x27;].append(loss)
+            self.history[&#x27;val_loss&#x27;].append(val_loss)</code></pre><pre><code>    def __repr__(self):
+        return f&#x27;Trainer(model={type(self.model).__name__}, lr={self.lr}, epochs={self.epochs})&#x27;</code></pre><pre><code>PyTorch: class TwoLayerNet(nn.Module):
+    def __init__(self, in_dim, hidden, out_dim):
+        super().__init__(); self.net = nn.Sequential(nn.Linear(in_dim, hidden), nn.ReLU(), nn.Linear(hidden, out_dim))
+    def forward(self, x): return self.net(x)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Classes and objects, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>OOP is how large ML systems are organized. Sklearn estimators, <code>PyTorch</code> modules, and Hugging Face models all follow the class interface. Understanding classes enables you to: extend existing models (inheritance), create custom datasets (<code>DataSet</code> subclasses), and write reusable training infrastructure (Trainer class).</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Forgetting <code>super()</code>.<code>__init__()</code> in subclasses — <code>PyTorch</code> <code>nn.Module</code> requires calling <code>super()</code>.<code>__init__()</code> to initialize the module&#x27;s internals. Forgetting it causes cryptic errors.</li><li>Accessing instance attributes without self — inside a method, x = 5 creates a local variable; self.x = 5 sets an instance attribute. Forgetting self. means the attribute is not stored.</li><li>Not separating model logic from training logic — put model architecture in one class, training loop in another (or a function). This separation makes the code reusable and testable.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement a <code>LogisticRegression</code> class from scratch: __init__(lr=0.01, epochs=100), fit(X, y) that runs gradient descent, predict(X) that returns class labels, <code>predict_proba</code>(X) that returns probabilities, score(X, y) that returns accuracy, and __repr__ that shows key parameters. Train on the Iris dataset. Compare predictions and accuracy against <code>sklearn</code>&#x27;s <code>LogisticRegression</code>.</div>
     </div>
   </div>
 </section>
@@ -239,17 +330,46 @@
       <h2>Inheritance polymorphism basics</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Inheritance polymorphism basics is a concept inside Control flow, functions and OOP that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Inheritance lets a class inherit attributes and methods from a parent class, eliminating code duplication and establishing an is-a relationship. class Dog(Animal): means Dog IS-A Animal and inherits all of Animal&#x27;s methods. Polymorphism means different classes can be used interchangeably if they share the same interface — you can call <code>model.fit</code>(X, y) on any <code>sklearn</code> estimator because they all implement the same interface.</p><p>Inheritance syntax: class <code>ChildClass</code>(<code>ParentClass</code>): <code>super()</code>.<code>__init__()</code> calls the parent&#x27;s __init__ from inside the child&#x27;s __init__. This initializes the parent&#x27;s attributes before adding the child&#x27;s own. You can override any parent method: defining the same method name in the child class replaces the parent&#x27;s version. You can extend a parent method: call <code>super()</code>.<code>method_name()</code> and add more behavior.</p><p>Method resolution order (MRO): Python uses C3 linearization to determine which method to call when there are multiple levels of inheritance. Child methods take precedence over parent methods. Python&#x27;s built-in <code>type()</code> shows the class, and <code>ClassName</code>.__mro__ shows the method resolution order. Multiple inheritance (class C(A, B)) is supported but should be used carefully — mixins are the cleaner pattern.</p><p>Polymorphism in ML: <code>sklearn</code>&#x27;s estimator API is the canonical example of polymorphism. <code>LogisticRegression</code>, <code>RandomForestClassifier</code>, SVC, and XGBClassifier all implement fit(X, y), predict(X), and <code>predict_proba</code>(X). Code that uses these methods works identically regardless of which classifier is used — you can swap classifiers without changing any other code. This is polymorphism enabling modular design.</p><p>Abstract base classes: the abc module allows you to define interfaces that subclasses MUST implement. @abstractmethod on a method in the parent class means any subclass that doesn&#x27;t implement it will raise a <code>TypeError</code> when instantiated. This is how <code>sklearn</code>&#x27;s <code>BaseEstimator</code> enforces that all estimators implement fit and predict.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Inheritance polymorphism basics to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Control flow, functions and OOP where Inheritance polymorphism basics is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from abc import ABC, abstractmethod
+class Model(ABC):
+    @abstractmethod
+    def fit(self, X, y): pass
+    @abstractmethod
+    def predict(self, X): pass
+    def score(self, X, y):  # not abstract: has a default implementation
+        return (self.predict(X) == y).mean()
+class LinearModel(Model):
+    def __init__(self, lr=0.01):
+        super().__init__()
+        self.lr = lr
+        self.weights = None
+    def fit(self, X, y):
+        # Gradient descent for logistic regression
+        self.weights = np.zeros(X.shape[1])
+        for _ in range(1000):
+            y_pred = 1/(1+np.exp(-X @ self.weights))
+            self.weights -= self.lr * X.T @ (y_pred - y) / len(y)
+        return self
+    def predict(self, X):
+        return (1/(1+np.exp(-X @ self.weights)) &gt; 0.5).astype(int)
+class TreeModel(Model):
+    def __init__(self): super().__init__()
+    def fit(self, X, y): from sklearn.tree import DecisionTreeClassifier; self._model = DecisionTreeClassifier().fit(X, y); return self
+    def predict(self, X): return self._model.predict(X)
+# Polymorphism: same code works with both models
+for model in [LinearModel(lr=0.1), TreeModel()]:
+    model.fit(X_train, y_train)
+    print(f&#x27;{model.__class__.__name__}: accuracy = {model.score(X_val, y_val):.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Inheritance polymorphism basics, explain it in 5 to 8 lines, and connect it to Control flow, functions and OOP.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Inheritance and polymorphism are the OOP patterns that make <code>sklearn</code>&#x27;s design so elegant: write code once that works with any estimator. In your own ML code, these patterns let you swap components (different models, different preprocessors) without rewriting the surrounding logic.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Forgetting to call <code>super()</code>.<code>__init__()</code> in the child&#x27;s __init__ — if the parent class has an __init__ that sets up important attributes, forgetting <code>super()</code> means those attributes are never set, causing <code>AttributeError</code> later.</li><li>Overriding methods when you should be extending them — if you override a parent method completely, you lose the parent&#x27;s behavior. If the parent&#x27;s behavior should still run, call <code>super()</code>.<code>method_name()</code> inside your override.</li><li>Using deep inheritance hierarchies — more than 2-3 levels of inheritance becomes confusing. Prefer composition (&#x27;has-a&#x27;) over deep inheritance (&#x27;is-a&#x27;). An MLPipeline that has a <code>FeatureExtractor</code> and a Model is easier to understand than a hierarchy of 4 classes.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a custom <code>sklearn</code>-compatible estimator using inheritance: (1) inherit from <code>sklearn</code>&#x27;s <code>BaseEstimator</code> and <code>ClassifierMixin</code>, (2) implement fit(X, y) using gradient descent for logistic regression, (3) implement predict(X) and <code>predict_proba</code>(X), (4) test it in <code>sklearn</code>&#x27;s <code>cross_val_score</code> and Pipeline — it should work seamlessly, (5) add a second custom estimator (e.g., a simple KNN), demonstrate polymorphism: the same evaluation code works for both estimators, (6) create an abstract base class with @abstractmethod that forces all your custom estimators to implement an <code>explain_prediction()</code> method.</div>
     </div>
   </div>
 </section>

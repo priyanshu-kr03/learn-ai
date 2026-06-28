@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Python basics | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -38,17 +39,21 @@
       <h2>Variables and data types</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Variables and data types belongs to the stage where raw data becomes usable evidence for an AI system. A model does not understand the real world directly; it only sees the rows, columns, tokens, pixels, or arrays you give it. If this representation is poor, even a strong model learns the wrong thing.</p><p>In Python basics, treat Variables and data types as a decision with consequences. A cleaning step can remove noise, but it can also remove rare but important cases. A transformation can make training easier, but it can also create leakage if it uses information from the future or from the test set.</p><p>Start every data topic by asking four questions: What does the raw value mean? What shape or format is it in? What will the model see after transformation? What real-world information might be lost or distorted?</p><p>A concrete example is customer churn data. If a column has missing values, you should not simply drop all missing rows. Missingness may itself be meaningful: perhaps customers with missing profile data are new users. The model behavior changes depending on whether you drop, fill, flag, or model those missing values.</p><p>For college learners, the right habit is to keep before-and-after evidence. Show five original rows, apply the step, show the changed rows, and explain why the change makes the data more valid for the prediction problem.</p>
+        <p>A variable is a named container that stores a value. In Python, variables are created by assignment: x = 42. Unlike C/Java, Python is dynamically typed — you do not declare the type; Python infers it from the value. The type can change: x = 42 (int), then x = &#x27;hello&#x27; (now str). The <code>type()</code> function returns the current type. Variables point to objects in memory — when you write x = y, both x and y point to the same object.</p><p>Python&#x27;s core data types: int (integer: 42, -7, 0), float (floating-point: 3.14, -0.5, 1e-6), str (string: &#x27;hello&#x27;, &#x27;machine learning&#x27;), bool (boolean: True, False), <code>NoneType</code> (the absence of a value: None). In ML, you will constantly deal with these types: model hyperparameters are often floats (<code>learning_rate</code>=0.01), class labels are ints (0, 1, 2), feature names are strings, and missing values are None or <code>NaN</code>.</p><p>Type conversion: int(&#x27;42&#x27;) converts a string to int. float(&#x27;3.14&#x27;) converts to float. str(42) converts int to string. bool(0) is False; bool(1) is True; bool(&#x27;&#x27;) is False; bool(&#x27;hello&#x27;) is True. These conversions are critical when processing CSV data where all values are read as strings and must be converted to the correct type for computation.</p><p>Python variables are references, not values. When you assign a list: a = [1, 2, 3]; b = a, both a and b point to the same list. Modifying b modifies a too: <code>b.append</code>(4); print(a) → [1, 2, 3, 4]. To create an independent copy, use b = <code>a.copy()</code> or b = list(a). This reference behavior causes subtle bugs in ML code when you modify model parameters or dataset splits without copying.</p><p>Naming conventions: Python uses <code>snake_case</code> for variables and functions (<code>learning_rate</code>, <code>train_model</code>), <code>PascalCase</code> for classes (<code>LogisticRegression</code>, <code>DataLoader</code>), and UPPER_CASE for constants (MAX_EPOCHS = 100). Descriptive names make code self-documenting: <code>batch_size</code> = 32 is clear; b = 32 is not. The Python style guide PEP 8 specifies these conventions — follow it for professional code.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>In a spam classifier, email_text is a string, word_count is an integer, spam_probability is a float, and is_spam is a boolean.</p>
-        <ol><li>Write a 10-row table before applying the concept.</li><li>Apply Variables and data types and save the transformed table.</li><li>Compare one row before and after so the change is visible.</li><li>Explain whether the transformation could remove signal, create bias, or leak information.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>x = 42; print(type(x))  # &lt;class &#x27;int&#x27;&gt;
+y = 3.14; print(type(y))  # &lt;class &#x27;float&#x27;&gt;
+name = &#x27;Alice&#x27;; print(type(name))  # &lt;class &#x27;str&#x27;&gt;
+found = True; print(type(found))  # &lt;class &#x27;bool&#x27;&gt;</code></pre><pre><code>Type conversion: age_str = &#x27;25&#x27;; age_int = int(age_str); price_str = &#x27;19.99&#x27;; price_float = float(price_str)</code></pre><pre><code>Reference gotcha: a = [1,2,3]; b = a; b.append(4); print(a)  # [1,2,3,4] ← SURPRISE!
+c = a.copy(); c.append(5); print(a)  # [1,2,3,4] ← unchanged</code></pre><pre><code>Type check: isinstance(42, int)  # True; isinstance(3.14, (int, float))  # True</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Most model failures start as data problems: missing values, inconsistent formats, leakage, biased samples, or features that do not match production.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Cleaning the full dataset before splitting train and test data.</li><li>Assuming a chart or summary statistic proves causation.</li><li>Dropping messy rows without checking whether that creates bias.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create a tiny table with 8 to 12 rows and apply Variables and data types. Before and after the step, write what changed and whether the change could bias the dataset.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Variables and data types are the building blocks of every Python program. Understanding types prevents common errors (adding a string to a number, passing the wrong type to a function) and enables efficient data processing in ML pipelines.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Comparing floats with == — 0.1 + 0.2 == 0.3 is False due to floating-point precision. Use abs(a - b) &lt; 1e-9 or <code>math.isclose</code>(a, b).</li><li>Mutating a shared list unintentionally — when you pass a list to a function, the function can modify the original. Use .<code>copy()</code> to prevent this.</li><li>Using Python 2-style integer division — in Python 3, 7/2 = 3.5 (float division). Use 7//2 = 3 for integer division.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a data preprocessing function that takes a dictionary of raw strings from a CSV row: {&#x27;age&#x27;: &#x27;25&#x27;, &#x27;salary&#x27;: &#x27;50000.5&#x27;, &#x27;employed&#x27;: &#x27;1&#x27;, &#x27;department&#x27;: &#x27;Engineering&#x27;}. Convert each value to its correct Python type, validate ranges (age 0–120, salary &gt; 0), and return a cleaned dict. Handle None and empty string values gracefully. Test with 5 edge cases including missing values and out-of-range inputs.</div>
     </div>
   </div>
 </section>
@@ -60,17 +65,28 @@
       <h2>Numbers and operators</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Numbers and operators is a concept inside Python basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Python has three numeric types: int (arbitrary precision integers: 1, -5, 10**100), float (64-bit IEEE 754: 3.14, -2.7, 1e-10), and complex (a + bj: 3+4j). For ML, floats are most common — model parameters are floats. <code>NumPy</code> adds float32 (single precision, less GPU memory), float64 (default), float16 (half precision, fast on modern GPUs), int32, int64.</p><p>Arithmetic operators: + (addition), - (subtraction), * (multiplication), / (true division — 7/2 = 3.5), // (floor division — 7//2 = 3), % (modulo — 7%2 = 1), ** (exponentiation — 2**10 = 1024). Python 3 always does true division — unlike Python 2 where 7/2 = 3.</p><p>Floating point precision: 0.1 + 0.2 = 0.30000000000000004 in Python — this is IEEE 754 binary floating point, not a bug. When comparing floats, never use ==: use <code>math.isclose</code>(a, b, <code>rel_tol</code>=1e-9) or <code>np.isclose</code>(a, b). This matters in training loops when comparing loss values.</p><p>Operator precedence: ** (highest), then unary -, then * / // %, then + - (lowest). Use parentheses to be explicit: (a + b) * c vs a + b * c gives different results. For ML formulas, parentheses prevent bugs: MSE = <code>np.mean</code>((<code>y_pred</code> - <code>y_true</code>)**2).</p><p>Comparison and logical operators: == (value equality), != (not equal), &lt;, &gt;, &lt;=, &gt;=. &#x27;and&#x27;, &#x27;or&#x27;, &#x27;not&#x27;. &#x27;is&#x27; (identity — same object) vs == (value). In ML: (<code>y_pred</code> == <code>y_true</code>).<code>sum()</code> counts correct predictions. Never use &#x27;is&#x27; for value comparison.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>If a model outputs spam_probability = 0.82, the comparison spam_probability &gt;= 0.50 turns a probability into a spam/not-spam decision.</p>
-        <ol><li>Set up a small realistic scenario from Python basics where Numbers and operators is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>a, b = 7, 2
+print(a / b)   # 3.5 true division
+print(a // b)  # 3 floor division
+print(a % b)   # 1 modulo
+print(a ** b)  # 49 exponentiation</code></pre><pre><code>import math
+print(0.1 + 0.2)              # 0.30000000000000004
+print(0.1 + 0.2 == 0.3)       # False!
+print(math.isclose(0.1 + 0.2, 0.3))  # True</code></pre><pre><code>print(int(3.9))   # 3 (truncates)
+print(float(5))   # 5.0
+print(round(3.7)) # 4
+print(type(7/2))  # float
+print(type(7//2)) # int</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Numbers and operators, explain it in 5 to 8 lines, and connect it to Python basics.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Python&#x27;s number types and operators are the foundation of all numerical computing in ML. Float precision issues cause bugs in loss computation. Integer vs true division differences cause subtle preprocessing errors.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using == to compare floats — floating point arithmetic is imprecise. Use <code>np.isclose</code>(a, b) or <code>math.isclose</code>(a, b) for scalar comparison.</li><li>Assuming int division: in Python 3, 7/2 = 3.5. Use 7//2 = 3 for integer division. This trips up programmers from Python 2.</li><li><code>NumPy</code> integer overflow: <code>np.int32</code>(2**31) wraps around to -2147483648. Python ints are arbitrary precision but <code>NumPy</code>/<code>PyTorch</code> integers do overflow.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Implement key ML formulas using only Python numbers and operators (no <code>numpy</code>): (1) sigmoid σ(x) = 1/(1+e^(-x)) for x = -2, 0, 2, (2) MSE loss for <code>y_true</code>=[1,0,1,1] and <code>y_pred</code>=[0.9,0.1,0.8,0.4], (3) softmax for [2.0, 1.0, 0.1], (4) show float precision issue and fix with <code>math.isclose</code>, (5) implement accuracy as <code>correct_predictions</code>/total.</div>
     </div>
   </div>
 </section>
@@ -82,17 +98,21 @@
       <h2>Strings and text cleaning</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Strings and text cleaning is a concept inside Python basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Strings are sequences of characters. Python strings are immutable — you cannot modify a character in place; you must create a new string. Key string methods: <code>lower()</code> (convert to lowercase), <code>upper()</code>, <code>strip()</code> (remove leading/trailing whitespace), split(delimiter) (split into a list), join(iterable) (join a list into a string), replace(old, new), find(substring) (returns index or -1), startswith(prefix), endswith(suffix).</p><p>Text cleaning for NLP: raw text from the web, user input, or scraped data is messy. A standard pipeline: (1) lowercase: <code>text.lower()</code>, (2) remove HTML tags: <code>re.sub</code>(&#x27;&lt;[^&gt;]+&gt;&#x27;, &#x27;&#x27;, text), (3) remove special characters: <code>re.sub</code>(&#x27;[^a-zA-Z0-9\s]&#x27;, &#x27;&#x27;, text), (4) normalize whitespace: &#x27; &#x27;.join(<code>text.split()</code>), (5) remove stopwords (common words like &#x27;the&#x27;, &#x27;a&#x27;, &#x27;is&#x27; with low discriminative value), (6) stemming/lemmatization (reduce &#x27;running&#x27; and &#x27;runs&#x27; to &#x27;run&#x27;).</p><p>f-strings (formatted string literals) are Python&#x27;s cleanest way to embed variables in strings: name = &#x27;Alice&#x27;; score = 0.87; message = f&#x27;User {name} achieved {score:.2%}&#x27;. The :.2% format specifier converts 0.87 to &#x27;87.00%&#x27;. f-strings are faster than .<code>format()</code> and % formatting and are now the standard.</p><p>String splitting for tokenization: <code>sentence.split()</code> splits on any whitespace. <code>sentence.split</code>(&#x27;,&#x27;) splits on commas. For more complex tokenization (handling punctuation correctly), use a dedicated tokenizer: from <code>transformers</code> import <code>AutoTokenizer</code>; tokenizer = <code>AutoTokenizer</code>.<code>from_pretrained</code>(&#x27;bert-base-uncased&#x27;); tokens = <code>tokenizer.tokenize</code>(&#x27;Hello, world!&#x27;).</p><p>Regular expressions (regex) are patterns for matching and extracting text. <code>re.findall</code>(pattern, text) returns all matches. <code>re.sub</code>(pattern, replacement, text) replaces matches. Common patterns: \d+ (one or more digits), \w+ (word characters), \s+ (whitespace), [A-Za-z]+ (letters only), ^start$ (anchors). For email extraction: <code>re.findall</code>(r&#x27;[\w.-]+@[\w.-]+\.\w+&#x27;, text).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>The texts &#x27;Free Money!!!&#x27; and &#x27; free money &#x27; should often become a similar cleaned form before a spam model sees them.</p>
-        <ol><li>Set up a small realistic scenario from Python basics where Strings and text cleaning is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>text = &#x27;  Hello, World! I LOVE machine learning.  &#x27;
+clean = text.strip().lower().replace(&#x27;,&#x27;, &#x27;&#x27;).replace(&#x27;!&#x27;, &#x27;&#x27;)
+print(clean)  # &#x27;hello world i love machine learning.&#x27;</code></pre><pre><code>Tokenization: words = clean.split()  # [&#x27;hello&#x27;, &#x27;world&#x27;, &#x27;i&#x27;, &#x27;love&#x27;, &#x27;machine&#x27;, &#x27;learning&#x27;]</code></pre><pre><code>Stopword removal: stopwords = {&#x27;i&#x27;, &#x27;a&#x27;, &#x27;the&#x27;, &#x27;is&#x27;, &#x27;and&#x27;, &#x27;or&#x27;, &#x27;it&#x27;}
+filtered = [w for w in words if w not in stopwords]</code></pre><pre><code>Regex extraction: import re
+emails = re.findall(r&#x27;[\w.-]+@[\w.-]+\.\w+&#x27;, &#x27;Contact alice@example.com or bob@company.org&#x27;)</code></pre><pre><code>f-string: f&#x27;Accuracy: {0.8732:.2%}&#x27;  # &#x27;87.32%&#x27;</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Strings and text cleaning, explain it in 5 to 8 lines, and connect it to Python basics.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Text cleaning is the first step in any NLP pipeline. Raw text data from the real world is inconsistent — different capitalizations, punctuation, HTML entities, emojis. A model trained on uncleaned text learns noise patterns. The quality of text cleaning directly impacts NLP model performance.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Applying text cleaning that removes information — removing all punctuation strips important meaning from sentiment analysis (&#x27;great!&#x27; vs &#x27;great?&#x27;) and code (operators). Clean thoughtfully, not blindly.</li><li>Cleaning text after vectorization — always clean text before feeding it to TF-IDF or tokenizers. The vectorizer should see the cleaned text.</li><li>Using <code>str.replace()</code> for regex patterns — <code>str.replace()</code> is literal; <code>re.sub()</code> handles patterns. &#x27;a.b&#x27;.replace(&#x27;.&#x27;, &#x27;&#x27;) removes all dots; <code>re.sub</code>(r&#x27;\.&#x27;, &#x27;&#x27;, &#x27;a.b&#x27;) removes the literal dot.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Write a text cleaning pipeline for customer reviews: (1) strip whitespace, (2) lowercase, (3) remove HTML tags, (4) remove URLs, (5) remove special characters except apostrophes, (6) normalize multiple spaces to one, (7) remove stopwords. Apply to 100 Amazon product reviews. Compute: vocabulary size before and after cleaning. Train TF-IDF on both. Show that models trained on cleaned text have lower dimensionality and better generalization.</div>
     </div>
   </div>
 </section>
@@ -104,17 +124,20 @@
       <h2>Lists tuples sets dictionaries</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Lists tuples sets dictionaries is a concept inside Python basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Python has four built-in collection types. List (list): ordered, mutable, allows duplicates. features = [&#x27;age&#x27;, &#x27;income&#x27;, &#x27;education&#x27;]. Tuple (tuple): ordered, immutable, allows duplicates. coordinates = (40.7128, -74.0060). Set (set): unordered, mutable, no duplicates — automatically removes duplicates. <code>unique_labels</code> = {0, 1, 2}. Dictionary (dict): key-value pairs, ordered (Python 3.7+), mutable, keys must be unique. <code>model_config</code> = {&#x27;lr&#x27;: 0.01, &#x27;epochs&#x27;: 100}.</p><p>When to use each: list when you need an ordered sequence you will modify (training data batches, epoch losses). Tuple when the data is fixed (RGB color (255, 128, 0), model input/output shapes). Set when you need membership testing or deduplication: if word in <code>vocab_set</code> is O(1); if word in <code>vocab_list</code> is O(n). Dictionary for structured data with named fields (model hyperparameters, per-class metrics).</p><p>List operations: append(item) adds to the end, insert(idx, item) adds at index, remove(item) removes first occurrence, pop(idx) removes and returns item at index. List comprehension: squares = [x**2 for x in range(10)]. Slicing: features[1:4] (indices 1,2,3), features[::-1] (reversed), features[::2] (every other item).</p><p>Dictionary operations: d[key] accesses a value (<code>KeyError</code> if not found), <code>d.get</code>(key, default) returns default if not found (safe), <code>d.items()</code> gives (key, value) pairs, <code>d.keys()</code> gives keys, <code>d.values()</code> gives values. Dictionary comprehension: {k: v*2 for k, v in <code>metrics.items()</code>}. Nested dictionaries are common in ML config: config = {&#x27;model&#x27;: {&#x27;type&#x27;: &#x27;rf&#x27;, &#x27;<code>n_estimators</code>&#x27;: 100}, &#x27;training&#x27;: {&#x27;epochs&#x27;: 10}}.</p><p>Common ML patterns: use a list of dicts for a dataset (one dict per sample), a dict of lists for columnar data (one key per feature), sets for vocabulary building, and tuples for immutable model configurations. Pandas <code>DataFrames</code> are essentially optimized dicts of lists with powerful operations built on top.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>A dictionary can store one prediction result: {&#x27;text&#x27;: &#x27;Win cash now&#x27;, &#x27;label&#x27;: &#x27;spam&#x27;, &#x27;score&#x27;: 0.97}.</p>
-        <ol><li>Set up a small realistic scenario from Python basics where Lists tuples sets dictionaries is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>List: losses = []; losses.append(0.5); losses.extend([0.4, 0.3]); print(losses[-1])  # 0.3</code></pre><pre><code>Dict: metrics = {&#x27;train_acc&#x27;: 0.92, &#x27;val_acc&#x27;: 0.87, &#x27;test_acc&#x27;: 0.85}
+best = max(metrics, key=metrics.get)  # &#x27;train_acc&#x27;</code></pre><pre><code>Set operations: train_ids = {1, 2, 3, 4}; val_ids = {3, 4, 5, 6}
+overlap = train_ids &amp; val_ids  # {3, 4} — data leakage check!</code></pre><pre><code>Tuple unpacking: x_min, x_max = 0.0, 1.0; width, height, channels = (224, 224, 3)</code></pre><pre><code>Nested config: hyperparams = {&#x27;rf&#x27;: {&#x27;n_estimators&#x27;: 100, &#x27;max_depth&#x27;: 10}, &#x27;lgb&#x27;: {&#x27;n_leaves&#x27;: 31, &#x27;lr&#x27;: 0.05}}
+print(hyperparams[&#x27;rf&#x27;][&#x27;max_depth&#x27;])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Lists tuples sets dictionaries, explain it in 5 to 8 lines, and connect it to Python basics.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Lists, tuples, sets, and dicts are the data structures underlying all ML code. Training datasets are stored in lists or arrays. Model configurations are dicts. Vocabulary sets enable fast word lookup. Knowing when to use each prevents performance bottlenecks (using a list where a set would be O(n) vs O(1)).</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using a list for membership testing in a large collection — &#x27;if x in <code>my_list</code>&#x27; is O(n). Convert to a set first: <code>my_set</code> = set(<code>my_list</code>); &#x27;if x in <code>my_set</code>&#x27; is O(1).</li><li>Mutating a list while iterating over it — skips elements. Iterate over a copy: for item in list(<code>my_list</code>).</li><li>Using mutable defaults in function signatures — def fn(data=[]): <code>data.append</code>(1) — the default list is shared across all calls. Use def fn(data=None): if data is None: data = [].</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a vocabulary system for a text classification task: (1) read 1000 reviews, (2) tokenize each into words, (3) build a vocabulary set of all unique words, (4) create a word-to-index dict and index-to-word list, (5) convert each review into a list of indices, (6) create a frequency dict (word → count), (7) filter to only top-5000 most frequent words. Measure the lookup speed difference between list and set membership testing with timeit.</div>
     </div>
   </div>
 </section>
@@ -126,17 +149,38 @@
       <h2>Input and output</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Input and output is a concept inside Python basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Python&#x27;s built-in I/O functions handle interaction with the user and the file system. <code>input()</code> reads a line from the user at the command line and always returns a string. <code>print()</code> outputs to the console. For ML applications, command-line I/O is used for: script arguments, interactive debugging sessions, progress bars (tqdm), and logging.</p><p><code>input()</code>: always returns a string regardless of what the user types. &#x27;42&#x27; not 42. Always convert: age = int(input(&#x27;Enter your age: &#x27;)). Add error handling: try: age = int(input(&#x27;Age: &#x27;)) except <code>ValueError</code>: print(&#x27;Invalid input&#x27;). For ML scripts, use argparse or click for command-line arguments rather than raw <code>input()</code> — they support default values, type checking, and help text.</p><p><code>print()</code> formatting: print(f&#x27;Accuracy: {accuracy:.4f}&#x27;) uses f-strings. print(&#x27;Epoch {:3d}: loss={:.6f}&#x27;.format(epoch, loss)) uses .<code>format()</code>. print(f&#x27;{&quot;Name&quot;:&lt;20} {&quot;Score&quot;:&gt;10}&#x27;) — &lt; aligns left, &gt; aligns right, width=20. print(f&#x27;{value:.2e}&#x27;) — scientific notation. sep=&#x27; | &#x27; and end=&#x27;&#x27; control separators and line endings: print(&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;, sep=&#x27;, &#x27;) prints &#x27;a, b, c&#x27;.</p><p><code>sys.stdin</code> and <code>sys.stdout</code>: for reading piped input (cat <code>data.txt</code> | python <code>script.py</code>) and redirecting output (python <code>script.py</code> &gt; <code>results.txt</code>). import sys; for line in <code>sys.stdin</code>: processes each line. <code>sys.stdout.write()</code> writes without newline. <code>sys.stderr.write()</code> writes error messages (important for keeping stdout clean in pipelines).</p><p>Progress bars with tqdm: a must-have for ML training loops. from tqdm import tqdm; for batch in tqdm(dataloader, desc=&#x27;Training&#x27;): shows a progress bar with ETA. tqdm(range(1000)) wraps any iterable. For nested loops: tqdm(outer, position=0, leave=True) and tqdm(inner, position=1, leave=False). <code>tqdm.notebook.tqdm</code> for Jupyter display.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>A sentiment script receives the text &#x27;delivery was late&#x27; as input and outputs {&#x27;label&#x27;: &#x27;negative&#x27;, &#x27;score&#x27;: 0.91}.</p>
-        <ol><li>Set up a small realistic scenario from Python basics where Input and output is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># User input with validation
+def get_int(prompt, min_val=0, max_val=100):
+    while True:
+        try:
+            val = int(input(f&#x27;{prompt} [{min_val}-{max_val}]: &#x27;))
+            if min_val &lt;= val &lt;= max_val:
+                return val
+            print(f&#x27;Please enter a value between {min_val} and {max_val}&#x27;)
+        except ValueError:
+            print(&#x27;Invalid input, please enter an integer&#x27;)</code></pre><pre><code># Progress bars for ML training
+from tqdm import tqdm
+for epoch in range(10):
+    pbar = tqdm(train_loader, desc=f&#x27;Epoch {epoch+1}/10&#x27;)
+    for batch_idx, (X, y) in enumerate(pbar):
+        loss = train_step(X, y)
+        pbar.set_postfix({&#x27;loss&#x27;: f&#x27;{loss:.4f}&#x27;, &#x27;lr&#x27;: f&#x27;{lr:.6f}&#x27;})</code></pre><pre><code># argparse for ML scripts
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&#x27;--epochs&#x27;, type=int, default=100)
+parser.add_argument(&#x27;--lr&#x27;, type=float, default=0.001)
+args = parser.parse_args()
+# Run: python train.py --epochs 50 --lr 0.01</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Input and output, explain it in 5 to 8 lines, and connect it to Python basics.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Input and output are the interfaces through which ML scripts communicate. tqdm progress bars make long training loops bearable. argparse allows scripts to be configured without editing source code — essential for running experiments with different hyperparameters. Proper print formatting makes training logs readable.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not converting <code>input()</code> output to the right type — <code>input()</code> always returns a string. int(<code>input()</code>), float(<code>input()</code>) are almost always needed.</li><li>Using <code>print()</code> for structured logging in production — use the logging module instead. It supports log levels (DEBUG, INFO, WARNING, ERROR), timestamps, and output to files without changing the code.</li><li>Not using tqdm for long loops — training 1000 epochs without a progress bar gives no feedback on progress or ETA. Always wrap training loops with tqdm.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a complete command-line ML training script: (1) use argparse to accept: <code>dataset_path</code>, <code>model_type</code>, epochs, <code>learning_rate</code>, <code>batch_size</code>, <code>output_dir</code>, (2) validate all arguments (file exists, values in valid range), (3) add tqdm progress bars for epochs and batches, (4) log training metrics with the logging module (to both console and file), (5) print a formatted final summary table of train/val metrics across all epochs. Run the script with different argument combinations from the terminal.</div>
     </div>
   </div>
 </section>
@@ -148,17 +192,28 @@
       <h2>Type conversion</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Type conversion is a concept inside Python basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Type conversion (casting) changes a value from one type to another. Explicit conversion: <code>int()</code>, <code>float()</code>, <code>str()</code>, <code>bool()</code>, <code>list()</code>, <code>tuple()</code>, <code>set()</code>, <code>dict()</code>. Implicit coercion: Python automatically converts in some operations (int + float → float: 3 + 2.0 = 5.0). In ML, type conversion errors are common when loading data — a CSV column that should be float is loaded as str, causing runtime errors in model training.</p><p>Common conversions for ML: str to int/float: int(&#x27;5&#x27;), float(&#x27;3.14&#x27;). Fails if not a valid number — use try/except or <code>pd.to_numeric</code>(col, errors=&#x27;coerce&#x27;) to handle <code>NaN</code> gracefully. int to float: float(5) = 5.0. float to int: int(3.9) = 3 (truncates — use <code>round()</code> first if rounding is needed).</p><p>bool conversions: bool(0) = False, bool(1) = True, bool(&#x27;&#x27;) = False, bool(&#x27;hello&#x27;) = True, bool(None) = False, bool([]) = False, bool([0]) = True (non-empty list is True). In ML: binary targets should be 0/1 integers — some libraries handle booleans, others do not.</p><p><code>NumPy</code> dtype conversions: <code>array.astype</code>(<code>np.float32</code>) for GPU training, <code>array.astype</code>(<code>np.int64</code>) for <code>PyTorch</code> <code>LongTensor</code> (classification labels). Conversion can lose precision: float64 → float32 loses ~8 significant digits. Watch for int8 overflow: 300 wraps to 44 (int8 range is -128 to 127).</p><p>Pandas type conversion: <code>pd.to_numeric</code>(series, errors=&#x27;coerce&#x27;) converts to numeric, replacing non-convertible values with <code>NaN</code>. <code>pd.to_datetime</code>(series) parses strings. <code>series.astype</code>(&#x27;category&#x27;) reduces memory for repeated string values. Check dtypes with <code>df.dtypes</code> — &#x27;object&#x27; dtype means strings, which must be converted before training.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>The CSV value &#x27;42&#x27; must become the integer 42 before you can compare ages, compute averages, or feed the value into a model.</p>
-        <ol><li>Set up a small realistic scenario from Python basics where Type conversion is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>print(int(&#x27;42&#x27;))          # 42
+print(float(&#x27;3.14&#x27;))      # 3.14
+print(str(42))            # &#x27;42&#x27;
+print(int(float(&#x27;3.9&#x27;)))  # 3 truncates!
+print(round(float(&#x27;3.9&#x27;)))# 4.0</code></pre><pre><code>import pandas as pd
+df[&#x27;price&#x27;] = pd.to_numeric(df[&#x27;price&#x27;], errors=&#x27;coerce&#x27;)
+df[&#x27;date&#x27;] = pd.to_datetime(df[&#x27;date&#x27;])
+df[&#x27;category&#x27;] = df[&#x27;category&#x27;].astype(&#x27;category&#x27;)
+print(df.dtypes)</code></pre><pre><code>import numpy as np
+X = X.astype(np.float32)  # for PyTorch GPU
+y = y.astype(np.int64)    # for CrossEntropyLoss
+print(X.dtype, y.dtype)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Type conversion, explain it in 5 to 8 lines, and connect it to Python basics.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Type errors are among the most common ML runtime errors. &#x27;unsupported operand type(s) for +: int and str&#x27; breaks training pipelines. &#x27;Expected Float but got Long&#x27; breaks <code>PyTorch</code> loss computation. Understanding type conversion prevents hours of debugging.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Assuming <code>int()</code> rounds — int(3.9) = 3, not 4. <code>int()</code> always truncates toward zero. Use <code>round()</code> first.</li><li>Not handling conversion errors — int(&#x27;hello&#x27;) raises <code>ValueError</code>. Use try/except or <code>pd.to_numeric</code>(errors=&#x27;coerce&#x27;) for robust pipelines.</li><li>Forgetting to convert categorical strings before model training — <code>sklearn</code> and <code>PyTorch</code> require numeric inputs.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a robust data type cleaning function: given a <code>DataFrame</code> with mixed types (numeric columns as strings, booleans stored as &#x27;yes&#x27;/&#x27;no&#x27;, dates as strings), write a function that: (1) identifies all column dtypes, (2) converts &#x27;yes&#x27;/&#x27;no&#x27; → 1/0, (3) converts numeric strings to float with errors=&#x27;coerce&#x27;, (4) converts date strings to datetime, (5) reports how many <code>NaN</code> values were introduced by coercion. Test on real messy data.</div>
     </div>
   </div>
 </section>
@@ -170,17 +225,42 @@
       <h2>Basic debugging</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Basic debugging is a concept inside Python basics that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Debugging is the process of finding and fixing errors in code. Python errors fall into: syntax errors (code won&#x27;t run — Python tells you the line), runtime errors (code runs but crashes — Traceback tells you what happened), and logic errors (code runs without error but produces wrong results — hardest to find). ML debugging adds a fourth category: silent model failures (code runs, trains, but model performs poorly — no error, just bad metrics).</p><p>Reading tracebacks: when Python raises an exception, it prints a traceback from the outermost call to the innermost error. Read it from BOTTOM to TOP — the error is at the bottom, the call that triggered it is above. The last line tells you the error type and message. The line above it tells you which file and line. Example: &#x27;<code>AttributeError</code>: <code>NoneType</code> object has no attribute shape&#x27; at line 45 in <code>model.py</code> — a variable is None when it should be an array.</p><p>print-based debugging: the simplest technique. Insert <code>print()</code> statements to check variable values at different points. print(f&#x27;Shape of X: {X.shape}&#x27;) after data loading. print(f&#x27;y unique values: {<code>np.unique</code>(y)}&#x27;) before training. print(f&#x27;Loss at step {i}: {<code>loss.item()</code>:.6f}&#x27;) in training loop. Remove print statements or replace with <code>logging.DEBUG</code> after debugging.</p><p>pdb (Python debugger): interactive debugging. import pdb; <code>pdb.set_trace()</code> inserts a breakpoint — code pauses there and you get an interactive Python prompt. Commands: n (next line), s (step into function), c (continue), l (list code), p variable (print variable), q (quit). In Python 3.7+, use <code>breakpoint()</code> instead of <code>pdb.set_trace()</code>. In Jupyter, use %debug after an error to enter post-mortem debugging.</p><p>Debugging ML-specific issues: (1) <code>NaN</code>/Inf in loss — check for zero-division (add epsilon), check for log(0), check gradient explosion (gradient clipping). (2) Constant predictions — all predictions are the same? Check if the model is learning (monitor loss decreasing), check if gradients flow (<code>compute.grad</code> and ensure non-zero). (3) Perfect training accuracy but poor validation — data leakage or overfitting. (4) Model not converging — learning rate too high (loss oscillates) or too low (loss barely decreases).</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Basic debugging to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Set up a small realistic scenario from Python basics where Basic debugging is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Check for NaN in tensors (crucial for ML debugging)
+import torch
+tensor = torch.tensor([1.0, float(&#x27;nan&#x27;), 3.0])
+print(f&#x27;Has NaN: {torch.isnan(tensor).any()}&#x27;)
+# In training loop:
+if torch.isnan(loss):
+    print(&#x27;NaN loss detected!&#x27;)
+    print(f&#x27;Input stats: mean={X.mean():.4f}, std={X.std():.4f}, max={X.abs().max():.4f}&#x27;)
+    break</code></pre><pre><code># pdb debugging
+import pdb
+def problematic_function(X):
+    result = process(X)
+    pdb.set_trace()  # breakpoint here
+    return result.sum()  # next line to debug
+
+# Or use breakpoint() (Python 3.7+)
+def process_data(df):
+    X = df.drop(&#x27;label&#x27;, axis=1)
+    breakpoint()  # inspect X here
+    return X.values</code></pre><pre><code># Assertions for defensive debugging
+def train_step(X, y):
+    assert not torch.isnan(X).any(), f&#x27;NaN in input X, shape={X.shape}&#x27;
+    assert X.shape[0] == y.shape[0], f&#x27;Batch size mismatch: {X.shape[0]} vs {y.shape[0]}&#x27;
+    output = model(X)
+    assert output.shape == (X.shape[0], n_classes), f&#x27;Wrong output shape: {output.shape}&#x27;
+    return criterion(output, y)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Basic debugging, explain it in 5 to 8 lines, and connect it to Python basics.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Debugging is the skill that separates productive programmers from frustrated ones. ML code is particularly prone to silent failures — the code runs but the model learns nothing. Systematic debugging skills (reading tracebacks, using pdb, checking for <code>NaN</code>/Inf, defensive assertions) prevent hours of debugging time.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Ignoring error messages and just re-running — tracebacks contain all the information needed to fix the error. Read the error type, the line number, and the variable values before trying anything.</li><li>Not using assertions for data validation — assert X.shape[1] == <code>n_features</code> catches shape mismatches early (at data loading) rather than late (with cryptic errors during matrix multiplication).</li><li>Not checking for <code>NaN</code> during training — a single <code>NaN</code> in the input propagates through the network and corrupts all gradients. Monitor loss and check for <code>NaN</code> whenever the loss becomes unusually large or <code>NaN</code>.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Debug a deliberately broken ML training script: (1) create a training script with 5 intentional bugs: wrong dtype (int instead of float), <code>NaN</code> in data (from log(0)), shape mismatch, learning rate too high (loss diverges), label leakage in features, (2) use print debugging to find each bug, (3) rewrite using pdb and step through the code interactively, (4) add assertions for data validation that would have caught each bug automatically, (5) fix all bugs and verify training converges.</div>
     </div>
   </div>
 </section>

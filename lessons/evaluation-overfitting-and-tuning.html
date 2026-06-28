@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Evaluation, overfitting and tuning | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -41,17 +42,24 @@
       <h2>Overfitting</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Overfitting is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Evaluation, overfitting and tuning, study Overfitting by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+        <p>Overfitting occurs when a model learns the training data too closely — memorizing noise, specific examples, and idiosyncrasies — rather than learning the underlying general pattern. An overfitting model achieves very low training error but high test (generalization) error. The model essentially remembers the training set instead of learning from it.</p><p>Signs of overfitting: training accuracy is significantly higher than validation accuracy (accuracy gap &gt; 5–10% is typically a problem). The gap widens as training continues — training accuracy keeps improving but validation accuracy plateaus or degrades. The model makes confident predictions on training data but random-looking predictions on new data.</p><p>Regularization techniques reduce overfitting by constraining the model&#x27;s complexity. For neural networks: L2 weight decay (penalizes large weights), dropout (randomly zeros neurons during training, prevents co-adaptation), early stopping (stop training when validation loss starts increasing), and data augmentation (synthetically increase training diversity). For tree-based models: <code>max_depth</code>, <code>min_samples_leaf</code>, <code>max_features</code>. For linear models: L1/L2 regularization (C parameter in <code>sklearn</code>).</p><p>More data is the most reliable overfitting cure. Regularization is fighting the symptom (model too complex for the data); more data addresses the root cause (too little data for the model complexity). As a rule: if you double your training data and validation performance improves significantly, you had an overfitting problem. If it barely improves, your model is underfitting (high bias).</p><p>Overfitting is a function of the ratio of model complexity to training data size. A 10-parameter logistic regression on 10,000 examples will not overfit. A 10-million-parameter neural network on 1,000 examples will almost certainly overfit. This intuition guides model selection: choose the simplest model that is expressive enough for your data, then regularize aggressively.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how Overfitting changes the prediction, score, or interpretation.</p>
-        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Overfitting to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Diagnose: model.fit(X_train, y_train)
+train_acc = model.score(X_train, y_train)
+val_acc = model.score(X_val, y_val)
+print(f&#x27;Train: {train_acc:.3f}, Val: {val_acc:.3f}, Gap: {train_acc - val_acc:.3f}&#x27;)</code></pre><pre><code>Plot learning curves to visualize overfitting vs underfitting:
+from sklearn.model_selection import learning_curve
+train_sizes, train_scores, val_scores = learning_curve(model, X, y, cv=5)
+plt.plot(train_sizes, train_scores.mean(axis=1), label=&#x27;train&#x27;)
+plt.plot(train_sizes, val_scores.mean(axis=1), label=&#x27;validation&#x27;)</code></pre><pre><code>Fix with regularization: DecisionTreeClassifier(max_depth=5) instead of max_depth=None.</code></pre><pre><code>Fix with early stopping (keras): callbacks=[keras.callbacks.EarlyStopping(monitor=&#x27;val_loss&#x27;, patience=10, restore_best_weights=True)]</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Overfitting affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Overfitting is the most common failure mode in ML. A model that looks great on training data and fails in production is an overfit model. Every ML practitioner must be able to diagnose overfitting and apply the right mitigation.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using training accuracy to report model performance — training accuracy is always higher than test accuracy due to overfitting. Always report test/validation performance.</li><li>Adding more model complexity to improve training accuracy — if validation accuracy is already lower than training accuracy, making the model larger worsens overfitting.</li><li>Applying regularization after seeing test set results — regularization must be tuned on the validation set, never after seeing test set results (test set leakage).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Take the MNIST dataset. Train three models: (1) <code>DecisionTree</code>(<code>max_depth</code>=None), (2) <code>DecisionTree</code>(<code>max_depth</code>=10), (3) <code>RandomForest</code>(<code>n_estimators</code>=100). For each, plot training vs validation accuracy as a function of training set size (1%, 5%, 10%, 25%, 50%, 100% of training data). Identify which model overfits most severely and which is most robust. Apply L2 regularization to a neural network and show the validation loss curve improves.</div>
     </div>
   </div>
 </section>
@@ -63,17 +71,22 @@
       <h2>Underfitting</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Underfitting is a concept inside Evaluation, overfitting and tuning that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Underfitting occurs when a model is too simple to capture the underlying patterns in the data. Both training and validation errors are high — the model fails to learn even from the training data. Signs: training accuracy is low, a simpler model like majority-class prediction does almost as well, the learning curve shows both training and validation accuracy converging to a low value. Underfitting is the opposite problem from overfitting.</p><p>Causes of underfitting: (1) model too simple — logistic regression for a highly non-linear problem, (2) too few features — important features are missing or poorly engineered, (3) too much regularization — the penalty is so large that the model cannot fit the data, (4) training for too few epochs — the model has not yet converged, (5) wrong model type — a regression model for a problem that requires classification.</p><p>Diagnosing underfitting: plot the learning curve — if both training and validation error are high and converge to a high value as data increases, the model is underfitting (high bias). The training error is a ceiling on validation error — if training error is high, the model has not learned the training data. No amount of additional data will fix underfitting — the model needs more capacity.</p><p>Fixing underfitting: (1) use a more complex model (decision tree → random forest → neural network), (2) add more features (feature engineering, interaction terms, polynomial features), (3) reduce regularization (lower λ in L1/L2, decrease dropout rate, increase <code>max_depth</code>), (4) train for more epochs, (5) use better features by domain knowledge (feature engineering that captures the actual patterns).</p><p>The bias-variance tradeoff: underfitting = high bias (the model has wrong assumptions about the data). Overfitting = high variance (the model is too sensitive to training data variations). Bias and variance trade off: more model complexity reduces bias but increases variance. The optimal model minimizes total error = bias² + variance + irreducible noise.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Evaluation, overfitting and tuning and needs to apply Underfitting. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Evaluation, overfitting and tuning where Underfitting is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>Detect: model = LinearRegression().fit(X_train, y_train)
+print(f&#x27;Train R²: {model.score(X_train, y_train):.4f}&#x27;)  # should be high
+print(f&#x27;Val R²: {model.score(X_val, y_val):.4f}&#x27;)
+# If both are low → underfitting</code></pre><pre><code>Fix: model = PolynomialFeatures(degree=3).fit_transform + LinearRegression
+# Or: RandomForestRegressor(n_estimators=100)
+# Or: reduce regularization: LogisticRegression(C=10) instead of C=0.01</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Underfitting, explain it in 5 to 8 lines, and connect it to Evaluation, overfitting and tuning.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Recognizing underfitting is essential for knowing when to increase model complexity. The instinct to &#x27;add more data&#x27; will not help an underfitting model — the diagnosis must come first. Learning to distinguish underfitting (high bias) from overfitting (high variance) is one of the most important practical ML skills.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Collecting more data to fix underfitting — more data helps overfitting, not underfitting. Underfitting requires more model capacity.</li><li>Reducing regularization on an underfit model without increasing model complexity — if the model is linear and the problem is non-linear, removing regularization will not help.</li><li>Confusing low validation accuracy with underfitting — low validation accuracy with high training accuracy is overfitting. Low training accuracy AND low validation accuracy is underfitting.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Demonstrate underfitting vs overfitting on a 1D sine wave dataset (y = sin(x) + noise). Fit: (1) degree-1 polynomial (underfit), (2) degree-3 polynomial (good fit), (3) degree-15 polynomial (overfit). Plot the three fits overlaid on the data. Compute train and validation RMSE for each. Create a bias-variance decomposition by training 100 models of each degree on different bootstrap samples and measuring the variance of predictions.</div>
     </div>
   </div>
 </section>
@@ -85,17 +98,26 @@
       <h2>Bias variance tradeoff</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Bias variance tradeoff is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Evaluation, overfitting and tuning, learn Bias variance tradeoff with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+        <p>The bias-variance tradeoff is the fundamental tension between model complexity and generalization. Total expected test error = Bias² + Variance + Irreducible noise. Bias measures the systematic error from wrong model assumptions — a linear model on non-linear data always makes systematic errors. Variance measures the sensitivity of predictions to random fluctuations in training data — an overfit model&#x27;s predictions change drastically when training data changes.</p><p>High bias = underfitting: the model makes the same systematic errors regardless of the training data. Adding more data doesn&#x27;t help — the model can&#x27;t represent the true pattern. High variance = overfitting: the model memorizes training data idiosyncrasies. Predictions are different for every training set. Adding more training data reduces variance (averaging more signal reduces the impact of individual noisy points).</p><p>The tradeoff: increasing model complexity reduces bias (the model can fit more complex patterns) but increases variance (it becomes more sensitive to training data). Simple models (linear regression, decision stump) have high bias, low variance. Complex models (deep neural network, deep decision tree) have low bias, high variance. The optimal complexity is where total error is minimized — the sweet spot.</p><p>Regularization navigates the tradeoff: it adds a constraint that prevents the model from fitting the training data too closely (reduces variance) at the cost of slightly higher bias. L1/L2 regularization for linear models, <code>max_depth</code>/<code>min_samples_leaf</code> for trees, dropout for neural networks all reduce variance by constraining model complexity.</p><p>In practice: the bias-variance framework explains why: (1) ensemble methods (random forest = average of many high-variance trees → reduced variance), (2) boosting (sequence of high-bias models → reduced bias), (3) regularization (reduces variance at cost of small bias increase), (4) more data (reduces variance without affecting bias). This framework guides every model selection and hyperparameter tuning decision.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Support chatbot: remove personal data from logs, block unsafe requests, test for biased outputs, and keep a human escalation path for sensitive cases.</p>
-        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Evaluation, overfitting and tuning.</li><li>Change one input and describe why the result changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># Visualize bias-variance tradeoff: vary max_depth from 1 to 20
+train_errors, val_errors = [], []
+for depth in range(1, 21):
+    tree = DecisionTreeClassifier(max_depth=depth)
+    scores = cross_validate(tree, X, y, cv=5, return_train_score=True)
+    train_errors.append(1 - scores[&#x27;train_score&#x27;].mean())
+    val_errors.append(1 - scores[&#x27;test_score&#x27;].mean())</code></pre><pre><code>plt.plot(range(1,21), train_errors, label=&#x27;Train error (bias)&#x27;)
+plt.plot(range(1,21), val_errors, label=&#x27;Val error (total)&#x27;)
+plt.xlabel(&#x27;max_depth&#x27;); plt.legend()
+plt.axvline(np.argmin(val_errors)+1, color=&#x27;g&#x27;, linestyle=&#x27;--&#x27;, label=&#x27;Optimal&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Bias variance tradeoff by hand or in Python. Explain what each number means in one sentence.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>The bias-variance tradeoff is the theoretical framework that explains why models overfit, why regularization helps, and why ensemble methods work. It provides the vocabulary and mental model for diagnosing and fixing any ML model problem.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Confusing bias-variance with training-validation error — high training error + high validation error = high bias (underfitting). Low training error + high validation error = high variance (overfitting).</li><li>Thinking you can eliminate both bias and variance simultaneously — they trade off. You can only move along the tradeoff curve by changing model complexity or regularization.</li><li>Applying the bias-variance framework to irreducible noise — some error is irreducible (random noise in labels). No model can do better than the Bayes error rate (minimum achievable error).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Empirically demonstrate the bias-variance tradeoff: using k-NN classifier, vary k from 1 to 100 on a binary classification problem. For each k: train 100 models on 100 different bootstrap samples of the training data. For each of 100 test points, collect 100 predictions. Compute: bias (how far is the mean prediction from the true label), variance (std of predictions across 100 models), and total error. Plot bias², variance, and total error as a function of k.</div>
     </div>
   </div>
 </section>
@@ -107,17 +129,23 @@
       <h2>Cross-validation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Cross-validation is part of the machine learning workflow, where the goal is not just to fit data but to make useful predictions on new unseen cases. Every ML topic should be connected to a problem, a dataset, a model behavior, and an evaluation method.</p><p>In Evaluation, overfitting and tuning, study Cross-validation by building from a baseline. First ask what a simple rule or average prediction would do. Then apply the model or technique. Finally compare the result against the baseline and inspect where it fails.</p><p>A model can look good for the wrong reason. It may learn leakage, memorize the training set, exploit a biased feature, or perform well on common cases while failing badly on rare important cases. That is why every ML explanation must include train/test separation and error analysis.</p><p>For example, in a churn prediction task, accuracy alone is not enough. You need to know whether the model misses high-risk customers, whether false alarms are costly, and whether the training data represents future users. The topic only becomes meaningful when connected to those tradeoffs.</p><p>The learning goal is to answer: What does this method assume? What data does it need? What output does it produce? How do we know it worked? When does it fail? Those five questions are more important than memorizing the name.</p>
+        <p>Cross-validation is a resampling technique that provides a more reliable estimate of model performance than a single train/test split, particularly when data is limited. The most common form is k-fold cross-validation: the dataset is divided into k equally sized folds. For each fold, the model is trained on the remaining k-1 folds and evaluated on the held-out fold. This produces k performance estimates which are averaged to give a final score with standard deviation.</p><p>5-fold and 10-fold cross-validation are the most common choices. 5-fold is faster (5 train/test cycles vs 10). 10-fold provides a more stable estimate with slightly lower variance. Leave-One-Out Cross-Validation (LOOCV) uses each example as a single held-out sample — produces the least biased estimate but is computationally expensive for large datasets.</p><p>Cross-validation serves two purposes: model selection (which algorithm performs best?) and hyperparameter tuning (what setting of hyperparameters produces the best generalization?). For hyperparameter tuning, nested cross-validation is required: an outer loop for performance estimation, an inner loop for hyperparameter selection within each outer fold. This prevents the selected hyperparameters from overfitting the validation set.</p><p>Cross-validation for time series requires time-aware folds. <code>TimeSeriesSplit</code> ensures each fold&#x27;s training data comes from earlier time periods than its validation data, respecting temporal ordering. Random k-fold on time series is data leakage — the model trains on future data and tests on the past.</p><p>Stratified k-fold preserves class proportions in each fold, which is essential for imbalanced classification problems. <code>GroupKFold</code> ensures that examples from the same group (e.g., same patient, same customer, same session) are entirely in one fold — preventing the model from learning group-specific patterns that inflate performance estimates.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a small customer churn dataset. Train or evaluate one simple model, then explain how Cross-validation changes the prediction, score, or interpretation.</p>
-        <ol><li>Start with a tiny train/test split or a toy dataset.</li><li>Apply Cross-validation to a baseline model or evaluation step.</li><li>Compare the result before and after applying it.</li><li>Inspect at least two wrong predictions and explain what they teach you.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.model_selection import cross_validate
+results = cross_validate(model, X, y, cv=5, scoring=[&#x27;accuracy&#x27;, &#x27;f1_macro&#x27;], return_train_score=True)</code></pre><pre><code>print(results[&#x27;test_accuracy&#x27;].mean(), results[&#x27;test_accuracy&#x27;].std())</code></pre><pre><code>Hyperparameter selection with GridSearchCV:
+  from sklearn.model_selection import GridSearchCV
+  param_grid = {&#x27;n_estimators&#x27;: [100, 200], &#x27;max_depth&#x27;: [5, 10, None]}
+  gs = GridSearchCV(RandomForestClassifier(), param_grid, cv=5, scoring=&#x27;f1_macro&#x27;)
+  gs.fit(X_train, y_train)
+  print(gs.best_params_, gs.best_score_)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>This is where AI moves from demos to measured learning. You need it to choose the right model, compare alternatives fairly, and explain results honestly.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Training a complex model before building a simple baseline.</li><li>Judging success on training score only.</li><li>Forgetting to inspect wrong predictions manually.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Use a toy dataset to show how Cross-validation affects model training or evaluation. Compare at least two outputs and explain which one you trust more.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Cross-validation is the most reliable way to evaluate ML models with limited data. A single split can be misleading — a lucky split gives optimistic results, an unlucky split gives pessimistic results. Cross-validation averages over multiple splits for a stable estimate.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Fitting preprocessors inside the CV loop on all data — the preprocessor must be fit only on the training fold, not on all folds. Use Pipeline to ensure this.</li><li>Using cross-validation accuracy from hyperparameter search as the reported performance — this is optimistically biased. Report performance on a final held-out test set.</li><li>Using random k-fold on time-series data — always use <code>TimeSeriesSplit</code> for temporal data.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Take a dataset of 500 examples. Compare single train/test split (repeated 10 times with different random seeds) vs 10-fold cross-validation. For each approach, report mean accuracy and standard deviation. Show that cross-validation has lower variance in the performance estimate. Implement nested cross-validation for hyperparameter tuning with <code>RandomForestClassifier</code> on the same dataset.</div>
     </div>
   </div>
 </section>
@@ -129,17 +157,30 @@
       <h2>Grid search</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Grid search is a concept inside Evaluation, overfitting and tuning that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Grid search is a hyperparameter tuning method that exhaustively evaluates all combinations of hyperparameters from a specified grid, using cross-validation to estimate generalization performance. For example, if you specify <code>n_estimators</code>=[100, 200, 500] and <code>max_depth</code>=[3, 5, 10, None], grid search trains and evaluates 4×3=12 model configurations. The configuration with the best cross-validation score is selected.</p><p>Grid search guarantees finding the best combination within the grid but has two limitations. First, it is computationally expensive — the number of configurations grows exponentially with the number of hyperparameters (10 hyperparameters each with 5 values = 5^10 ≈ 10 million combinations). Second, the grid only covers combinations you manually specified — the true optimum may lie between grid points.</p><p>Random search (<code>RandomizedSearchCV</code>) is often more efficient than grid search. Instead of evaluating all combinations, it randomly samples N configurations from the specified distributions. Research shows that random search is more efficient than grid search when some hyperparameters are more important than others (which is almost always the case) — random search spends more &#x27;budget&#x27; varying the important hyperparameters.</p><p>Bayesian optimization (hyperopt, Optuna, Ax) is even more efficient than random search for expensive models. It builds a probabilistic model of hyperparameter performance (usually a Gaussian Process or Tree Parzen Estimator) and uses it to select the most promising next configuration to evaluate. This focuses computation on the region of hyperparameter space most likely to contain the optimum.</p><p>Nested cross-validation for honest evaluation: an inner CV loop for hyperparameter selection, an outer CV loop for performance estimation. Without nesting, the selected hyperparameters are overfit to the validation set, inflating the performance estimate. Nested CV gives an unbiased estimate of the performance of the best-hyperparameter-selected model.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Evaluation, overfitting and tuning and needs to apply Grid search. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Evaluation, overfitting and tuning where Grid search is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.model_selection import GridSearchCV
+param_grid = {&#x27;max_depth&#x27;: [3, 5, 10, None], &#x27;n_estimators&#x27;: [100, 200, 500], &#x27;min_samples_leaf&#x27;: [1, 2, 5]}
+gs = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=5, scoring=&#x27;f1_macro&#x27;, n_jobs=-1, verbose=1)
+gs.fit(X_train, y_train)
+print(gs.best_params_, gs.best_score_)</code></pre><pre><code>Random search: from sklearn.model_selection import RandomizedSearchCV
+param_dist = {&#x27;max_depth&#x27;: [3,5,10,None], &#x27;n_estimators&#x27;: randint(100,500), &#x27;min_samples_leaf&#x27;: randint(1,10)}
+rs = RandomizedSearchCV(RandomForestClassifier(), param_dist, n_iter=50, cv=5, scoring=&#x27;f1_macro&#x27;, n_jobs=-1)
+rs.fit(X_train, y_train)</code></pre><pre><code>Optuna: import optuna
+def objective(trial):
+    n_est = trial.suggest_int(&#x27;n_estimators&#x27;, 100, 500)
+    max_d = trial.suggest_categorical(&#x27;max_depth&#x27;, [3,5,10,None])
+    model = RandomForestClassifier(n_estimators=n_est, max_depth=max_d)
+    return cross_val_score(model, X_train, y_train, cv=3).mean()
+study = optuna.create_study(direction=&#x27;maximize&#x27;); study.optimize(objective, n_trials=50)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Grid search, explain it in 5 to 8 lines, and connect it to Evaluation, overfitting and tuning.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Hyperparameter tuning is often the difference between a model that achieves 80% and one that achieves 87% accuracy. Grid search is the standard starting point; understanding its limitations and alternatives (random search, Bayesian optimization) is essential for efficient model development.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Tuning hyperparameters on the test set — the test set must remain untouched until final evaluation. Tune on the validation set or using cross-validation.</li><li>Using grid search with too many hyperparameters — 5 hyperparameters × 5 values = 5^5 = 3125 configurations × 5-fold CV = 15,625 model fits. Use random search for more than 3 hyperparameters.</li><li>Not using <code>n_jobs</code>=-1 — grid search is embarrassingly parallel; running on a single core when 8 are available is an 8× slowdown.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Take XGBoost on a classification dataset. Compare grid search, random search (<code>n_iter</code>=50), and Optuna (<code>n_trials</code>=50) for hyperparameter tuning of: <code>n_estimators</code>, <code>learning_rate</code>, <code>max_depth</code>, subsample. Track: best validation score, total compute time, and number of configurations evaluated. Show that Optuna finds equally good or better configurations in less time than grid search.</div>
     </div>
   </div>
 </section>
@@ -151,17 +192,54 @@
       <h2>Random search</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Random search is a concept inside Evaluation, overfitting and tuning that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Random search (<code>RandomizedSearchCV</code> in <code>sklearn</code>) samples hyperparameter combinations from specified distributions rather than exhaustively trying all combinations (grid search). For a 4-hyperparameter problem with 5 values each, grid search runs 5^4=625 combinations; random search with <code>n_iter</code>=50 runs only 50 — but research shows that random search finds equivalent or better results because it explores a wider range of values for the most important hyperparameters.</p><p>Why random search beats grid search: in most ML models, 1-3 hyperparameters matter most (often learning rate and <code>n_estimators</code> for gradient boosting). Grid search wastes many evaluations trying every value of unimportant hyperparameters while sampling each important hyperparameter only a few times. Random search samples each hyperparameter independently — with <code>n_iter</code>=50, you get 50 distinct values of <code>learning_rate</code> rather than 5.</p><p>Hyperparameter distributions: for continuous hyperparameters (<code>learning_rate</code>, regularization strength), sample from log-uniform distributions: `<code>scipy</code>.<code>stats.loguniform</code>(1e-4, 1e-1)` samples uniformly in log space — appropriate because the difference between 0.001 and 0.01 (10x) is more meaningful than between 0.1 and 0.11 (10%). For integers: `<code>scipy</code>.<code>stats.randint</code>(50, 500)`. For categorical: `[&#x27;relu&#x27;, &#x27;tanh&#x27;, &#x27;sigmoid&#x27;]`.</p><p>Bayesian optimization: more sophisticated than random search — builds a probabilistic model of the hyperparameter→performance function and selects the next hyperparameter combination to maximize expected improvement. Implementations: Optuna, Hyperopt, <code>sklearn</code>-hyperopt. Bayesian optimization typically requires fewer evaluations than random search but has higher overhead per evaluation. Preferred when each training run takes &gt; 30 minutes.</p><p>Budget and compute tradeoffs: each hyperparameter configuration requires a full training run. With 5-fold cross-validation and <code>n_iter</code>=100, you run 500 training jobs. For large datasets, this is expensive. Practical approaches: use a fraction of the training data for hyperparameter search, then retrain with the best configuration on full data. Or use early stopping — kill configurations that are clearly underperforming after a few epochs.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Evaluation, overfitting and tuning and needs to apply Random search. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Evaluation, overfitting and tuning where Random search is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.model_selection import RandomizedSearchCV
+from sklearn.ensemble import GradientBoostingClassifier
+from scipy.stats import loguniform, randint
+# Define search space
+param_dist = {
+    &#x27;learning_rate&#x27;: loguniform(0.001, 0.3),  # log-uniform: 0.001 to 0.3
+    &#x27;n_estimators&#x27;: randint(50, 500),         # integer: 50 to 499
+    &#x27;max_depth&#x27;: randint(2, 8),               # integer: 2 to 7
+    &#x27;subsample&#x27;: loguniform(0.5, 1.0),        # fraction of samples per tree
+    &#x27;min_samples_split&#x27;: randint(2, 50),
+}
+# Random search with cross-validation
+search = RandomizedSearchCV(
+    GradientBoostingClassifier(random_state=42),
+    param_distributions=param_dist,
+    n_iter=50,          # evaluate 50 random combinations
+    cv=5,               # 5-fold cross-validation
+    n_jobs=-1,          # parallel jobs
+    scoring=&#x27;roc_auc&#x27;,
+    verbose=1,
+    random_state=42
+)
+search.fit(X_train, y_train)
+print(f&#x27;Best params: {search.best_params_}&#x27;)
+print(f&#x27;Best CV score: {search.best_score_:.4f}&#x27;)</code></pre><pre><code># Optuna for Bayesian optimization (faster convergence)
+import optuna
+def objective(trial):
+    params = {
+        &#x27;learning_rate&#x27;: trial.suggest_float(&#x27;learning_rate&#x27;, 1e-4, 1e-1, log=True),
+        &#x27;n_estimators&#x27;: trial.suggest_int(&#x27;n_estimators&#x27;, 50, 500),
+        &#x27;max_depth&#x27;: trial.suggest_int(&#x27;max_depth&#x27;, 2, 7),
+    }
+    model = GradientBoostingClassifier(**params, random_state=42)
+    return cross_val_score(model, X_train, y_train, cv=5, scoring=&#x27;roc_auc&#x27;).mean()
+study = optuna.create_study(direction=&#x27;maximize&#x27;)
+study.optimize(objective, n_trials=50, show_progress_bar=True)
+print(f&#x27;Best params: {study.best_params}&#x27;)
+print(f&#x27;Best value: {study.best_value:.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Random search, explain it in 5 to 8 lines, and connect it to Evaluation, overfitting and tuning.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Random search is the practical workhorse of hyperparameter tuning. Grid search is rarely used beyond 2-3 hyperparameters because the number of combinations explodes exponentially. Random search provides 95% of the gains in 20% of the evaluations. Understanding when to use random search vs Bayesian optimization (Optuna) vs grid search is a key practical skill.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using linear sampling for hyperparameters that operate on log scale — <code>learning_rate</code> values of [0.01, 0.02, 0.03, 0.04, 0.05] versus [0.001, 0.003, 0.01, 0.03, 0.1] (log scale): the log scale covers 100x range and samples orders of magnitude that matter. Always use loguniform for learning rates and regularization strengths.</li><li>Not fixing random seeds across hyperparameter search — comparing runs with different random seeds mixes hyperparameter effects with random effects. Set <code>random_state</code> in both the model and the search.</li><li>Stopping too early — random search with <code>n_iter</code>=20 might miss good regions. Plot the best score vs iteration: if it&#x27;s still improving at <code>n_iter</code>=20, run more iterations. A plateau indicates you&#x27;ve found the good region.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Tune a gradient boosting model with random search and compare to grid search: (1) choose a classification dataset, (2) define a 4-hyperparameter search space with appropriate distributions (log-uniform for <code>learning_rate</code> and subsampling, randint for <code>n_estimators</code> and <code>max_depth</code>), (3) run random search with <code>n_iter</code>=100 and 5-fold CV, (4) run grid search with 3 values per hyperparameter (3^4=81 combinations), (5) compare: best score, total compute time, and which hyperparameter values were found, (6) use Optuna to run 50 Bayesian optimization trials — does it find a better solution than random search in fewer evaluations?</div>
     </div>
   </div>
 </section>
@@ -173,17 +251,26 @@
       <h2>Learning curves</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Learning curves is a concept inside Evaluation, overfitting and tuning that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A learning curve shows model performance (train and validation) as a function of training set size. It diagnoses whether more data would help and whether the model is overfitting or underfitting. By plotting how performance changes as we use more training data, we can determine if the current performance gap is due to insufficient data or insufficient model capacity.</p><p>Reading a learning curve: (1) both training and validation performance converge to a high value as data increases → good — the model is learning well. (2) Both converge to a low value → underfitting — the model lacks capacity to learn the patterns. Need a more complex model. (3) Large gap between training and validation with high training performance → overfitting — need more data, regularization, or a simpler model. (4) Validation performance keeps improving with more data → more data will help.</p><p>Diagnosing with learning curves: if validation performance is still improving steeply at 100% of training data, collecting more training data should improve performance. If the curve has flattened (plateau), more data will not help — the bottleneck is model capacity or irreducible noise.</p><p>Training time curve: also plot training time vs data size. This reveals computational bottlenecks — some algorithms scale as O(n²) (SVM) and become prohibitively slow at large n. Compare algorithms&#x27; performance/time tradeoffs: a model that takes 100× longer but improves accuracy by 0.5% is probably not worth it.</p><p>Generating learning curves in <code>sklearn</code>: <code>learning_curve</code>(estimator, X, y, <code>train_sizes</code>=<code>np.linspace</code>(0.1, 1.0, 10), cv=5) trains the model at 10 different training set sizes (10% to 100%), each with 5-fold cross-validation. The result contains train scores and validation scores for each size.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Evaluation, overfitting and tuning and needs to apply Learning curves. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Evaluation, overfitting and tuning where Learning curves is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.model_selection import learning_curve
+train_sizes, train_scores, val_scores = learning_curve(
+    RandomForestClassifier(n_estimators=100), X, y, cv=5,
+    train_sizes=np.linspace(0.1, 1.0, 10), scoring=&#x27;roc_auc&#x27;, n_jobs=-1)</code></pre><pre><code>plt.figure(figsize=(10, 5))
+plt.plot(train_sizes, train_scores.mean(axis=1), &#x27;o-&#x27;, color=&#x27;b&#x27;, label=&#x27;Training AUC&#x27;)
+plt.fill_between(train_sizes, train_scores.mean(axis=1)-train_scores.std(axis=1), train_scores.mean(axis=1)+train_scores.std(axis=1), alpha=0.2, color=&#x27;b&#x27;)
+plt.plot(train_sizes, val_scores.mean(axis=1), &#x27;o-&#x27;, color=&#x27;r&#x27;, label=&#x27;Validation AUC&#x27;)
+plt.fill_between(train_sizes, val_scores.mean(axis=1)-val_scores.std(axis=1), val_scores.mean(axis=1)+val_scores.std(axis=1), alpha=0.2, color=&#x27;r&#x27;)
+plt.xlabel(&#x27;Training set size&#x27;); plt.ylabel(&#x27;AUC&#x27;)
+plt.legend(); plt.title(&#x27;Learning Curves&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Learning curves, explain it in 5 to 8 lines, and connect it to Evaluation, overfitting and tuning.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Learning curves are the diagnostic tool for understanding whether to collect more data, use a simpler model, or add regularization. Without them, you make these decisions blindly. They reveal the most efficient next step for improving model performance.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not plotting the confidence interval (std) around each curve — a single run&#x27;s learning curve is noisy. Always plot mean ± std across CV folds.</li><li>Only plotting the final point (100% of data) — the shape of the curve across all training sizes is what reveals the diagnosis (overfitting vs underfitting vs data-limited).</li><li>Using training set size in absolute numbers rather than fractions — fractions allow comparison across different total dataset sizes.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Generate learning curves for 4 models on a classification dataset: logistic regression (linear), decision tree (depth=20, overfit), decision tree (depth=5, regularized), and random forest. For each, plot training and validation AUC from 5% to 100% of training data. Diagnose: which model is overfitting? Which is underfitting? For which model would 10× more data help the most? How do you know?</div>
     </div>
   </div>
 </section>
@@ -195,17 +282,29 @@
       <h2>Validation curves</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Validation curves is a concept inside Evaluation, overfitting and tuning that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>A validation curve shows model performance (training and validation) as a function of a single hyperparameter, with all data used (unlike learning curves which vary data size). It directly answers: &#x27;What is the optimal value for this hyperparameter?&#x27; By varying the hyperparameter over a range and cross-validating at each value, we can see where the model transitions from underfitting (both train/val errors high) to the sweet spot to overfitting (train error low, val error high).</p><p>How to read a validation curve: x-axis = hyperparameter values (e.g., <code>max_depth</code> from 1 to 30 or C from 0.001 to 1000). y-axis = performance score (e.g., AUC or accuracy). Two lines: training score (always increases or stays constant as model complexity increases) and validation score (first increases then decreases after the optimum). The optimal hyperparameter value is where the validation score peaks.</p><p>Common hyperparameters to plot validation curves for: <code>max_depth</code> (decision trees), C (logistic regression, SVM — inverse regularization strength), alpha (Ridge, Lasso regularization), <code>n_estimators</code> (<code>RandomForest</code> — usually just increases), gamma (SVM kernel parameter), <code>learning_rate</code> (gradient boosting — typically lower is better but needs more estimators), <code>max_features</code> (<code>RandomForest</code> — &#x27;sqrt&#x27; vs &#x27;log2&#x27; vs fractions).</p><p>Difference from learning curves: learning curves vary training SET SIZE (x-axis = <code>n_samples</code>), validation curves vary a HYPERPARAMETER (x-axis = hyperparameter value). They answer different questions: learning curves ask &#x27;does more data help?&#x27;, validation curves ask &#x27;what is the optimal regularization strength?&#x27;. Both are essential diagnostic tools.</p><p>Practical use: in hyperparameter tuning, validation curves for key hyperparameters guide the search range for <code>GridSearchCV</code> or <code>RandomizedSearchCV</code>. If the validation curve peaks at <code>max_depth</code>=8, searching <code>max_depth</code> in [5, 6, 7, 8, 9, 10] in a grid search will efficiently find the optimum.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Evaluation, overfitting and tuning and needs to apply Validation curves. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Evaluation, overfitting and tuning where Validation curves is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.model_selection import validation_curve
+# Validate over max_depth for a decision tree
+max_depths = range(1, 31)
+train_scores, val_scores = validation_curve(
+    DecisionTreeClassifier(random_state=42), X, y,
+    param_name=&#x27;max_depth&#x27;, param_range=max_depths,
+    cv=5, scoring=&#x27;roc_auc&#x27;, n_jobs=-1)</code></pre><pre><code>plt.figure(figsize=(10, 5))
+plt.plot(max_depths, train_scores.mean(axis=1), &#x27;o-&#x27;, label=&#x27;Train&#x27;)
+plt.fill_between(max_depths, train_scores.mean(1)-train_scores.std(1), train_scores.mean(1)+train_scores.std(1), alpha=0.2)
+plt.plot(max_depths, val_scores.mean(axis=1), &#x27;o-&#x27;, label=&#x27;Validation&#x27;)
+plt.fill_between(max_depths, val_scores.mean(1)-val_scores.std(1), val_scores.mean(1)+val_scores.std(1), alpha=0.2)
+plt.xlabel(&#x27;max_depth&#x27;); plt.ylabel(&#x27;AUC&#x27;); plt.legend()
+plt.title(&#x27;Validation Curve&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Validation curves, explain it in 5 to 8 lines, and connect it to Evaluation, overfitting and tuning.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Validation curves are the most direct way to diagnose hyperparameter effects. They reveal the bias-variance tradeoff as a function of each hyperparameter and provide a visual guide for setting search ranges in hyperparameter optimization.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using training score to select hyperparameters — training score always increases with model complexity. Always use validation score for hyperparameter selection.</li><li>Not plotting confidence intervals (std across CV folds) — a single point estimate is noisy. Always show the ± std band to know if differences are significant.</li><li>Plotting on a linear scale for hyperparameters that span orders of magnitude (C: 0.001 to 1000) — use <code>plt.xscale</code>(&#x27;log&#x27;) for hyperparameters with exponential search spaces.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Plot validation curves for 3 hyperparameters on a classification dataset: (1) <code>max_depth</code> for decision tree (1 to 25), (2) C for logistic regression (10^-4 to 10^4 on log scale), (3) <code>n_estimators</code> for random forest (1 to 500). For each: (a) identify the optimal value from the validation curve, (b) compare to <code>sklearn</code>&#x27;s <code>GridSearchCV</code> result, (c) estimate the range of hyperparameter values that give &gt;95% of optimal performance (the &#x27;safe zone&#x27;). Show all plots with CI bands.</div>
     </div>
   </div>
 </section>
@@ -217,17 +316,41 @@
       <h2>Error analysis</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Error analysis is a concept inside Evaluation, overfitting and tuning that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Error analysis is the systematic process of examining your model&#x27;s prediction errors to understand where it fails and why. It is the most informative step in the ML development cycle — more valuable than blindly trying new architectures or hyperparameters. By categorizing errors, you discover: which data slices the model struggles with, which features are missing, and which errors are caused by labeling mistakes in the training data.</p><p>Error analysis process: (1) get a set of validation predictions, (2) separate correct predictions from incorrect ones, (3) for the incorrect predictions, manually examine 50-100 examples, (4) categorize each error (data quality issue, missing feature, ambiguous label, model limitation, rare edge case), (5) count the fraction in each category, (6) prioritize fixing the largest category — don&#x27;t chase small error categories.</p><p>Data slicing: compute metrics separately for subgroups. In medical imaging: accuracy for images taken at night vs day, for young vs old patients, for images from hospital A vs hospital B. In NLP: accuracy for short vs long texts, formal vs informal language, different topics. If accuracy on a slice is much lower than overall, investigate why — it may reveal data quality issues (less training data for that slice), feature gaps, or genuine model limitations.</p><p>Confusion analysis: for multi-class problems, the confusion matrix shows which classes the model confuses. If &#x27;cat&#x27; is often confused with &#x27;dog&#x27;, examine the cat+dog errors — are they blurry images? Similar-looking cat/dog breeds? Or labeling mistakes? This guides targeted data collection (get more diverse cat/dog images) or model changes (use a model that focuses on distinguishing fine-grained visual features).</p><p>Label error detection: training data often contains labeling mistakes. Cleanlab is a Python library that identifies likely mislabeled examples by finding training examples where the model&#x27;s predicted probability strongly disagrees with the label. Correcting label errors can improve accuracy more than collecting new data.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Evaluation, overfitting and tuning and needs to apply Error analysis. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Evaluation, overfitting and tuning where Error analysis is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import pandas as pd
+from sklearn.metrics import classification_report
+# Error analysis framework
+def analyze_errors(X_val, y_val, model, feature_names, label_names=None):
+    y_pred = model.predict(X_val)
+    y_proba = model.predict_proba(X_val).max(axis=1)
+    errors = X_val[y_pred != y_val].copy()
+    errors[&#x27;true_label&#x27;] = y_val[y_pred != y_val]
+    errors[&#x27;pred_label&#x27;] = y_pred[y_pred != y_val]
+    errors[&#x27;confidence&#x27;] = y_proba[y_pred != y_val]
+    # Sort by high-confidence errors (model is very wrong)
+    errors = errors.sort_values(&#x27;confidence&#x27;, ascending=False)
+    print(f&#x27;Total errors: {len(errors)} / {len(y_val)} ({len(errors)/len(y_val)*100:.1f}%)&#x27;)
+    print(&#x27;\nError counts by (true, predicted):&#x27;)
+    print(errors.groupby([&#x27;true_label&#x27;, &#x27;pred_label&#x27;]).size().sort_values(ascending=False))
+    return errors
+errors = analyze_errors(X_val_df, y_val, model, feature_names)</code></pre><pre><code># Data slice analysis
+def slice_analysis(X_val, y_val, model, slice_col):
+    df = X_val.copy()
+    df[&#x27;true&#x27;] = y_val
+    df[&#x27;pred&#x27;] = model.predict(X_val)
+    df[&#x27;correct&#x27;] = df[&#x27;true&#x27;] == df[&#x27;pred&#x27;]
+    return df.groupby(slice_col)[&#x27;correct&#x27;].agg([&#x27;mean&#x27;, &#x27;count&#x27;]).rename(columns={&#x27;mean&#x27;: &#x27;accuracy&#x27;, &#x27;count&#x27;: &#x27;n&#x27;})
+print(&#x27;Accuracy by country:&#x27;, slice_analysis(X_val_df, y_val, model, &#x27;country&#x27;))
+print(&#x27;Accuracy by age_bin:&#x27;, slice_analysis(X_val_df, y_val, model, &#x27;age_bin&#x27;))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Error analysis, explain it in 5 to 8 lines, and connect it to Evaluation, overfitting and tuning.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Error analysis is the fastest path to model improvement. Without it, model development is guesswork — trying different architectures and hyperparameters without knowing what the model is getting wrong. With error analysis, you know exactly where to focus: if 40% of errors are &#x27;low-quality images&#x27;, adding image preprocessing will improve performance much more than switching from <code>ResNet</code> to <code>EfficientNet</code>.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Looking only at aggregate metrics without examining individual errors — a precision of 0.78 is a number; examining the 22% of false positives reveals they are all from one specific country with unusual formatting. Aggregate metrics hide patterns that individual error examination reveals.</li><li>Examining only a few errors (5-10) — with 10 examples, you can&#x27;t reliably estimate category proportions. Examine at least 50-100 errors to get a statistically reliable categorization.</li><li>Fixing low-frequency error categories first — if 60% of errors are &#x27;poor image quality&#x27; and 5% are &#x27;unusual animal pose&#x27;, fix the 60% first. Don&#x27;t chase the interesting rare cases before fixing the common ones.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Conduct systematic error analysis on a text classifier: (1) train a BERT classifier on a multi-class NLU dataset, (2) generate predictions on the validation set, compute the full confusion matrix, (3) for the top-3 most confused class pairs, manually examine 30 errors each — what do they have in common?, (4) implement data slicing: compute accuracy by text length (short/medium/long), topic (sports/politics/technology), and source (news wire/social media/email), (5) use cleanlab to identify likely mislabeled examples in the training set — fix the top-50 by confidence and measure improvement.</div>
     </div>
   </div>
 </section>
@@ -239,17 +362,46 @@
       <h2>Probability calibration</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Probability calibration is a mathematical idea that gives language to something an AI system is doing: measuring size, comparing direction, estimating uncertainty, calculating error, or deciding how to improve. The goal is not to memorize the formula first. The goal is to understand what the number means.</p><p>In Evaluation, overfitting and tuning, learn Probability calibration with tiny numbers. Use two vectors, three rows, or one simple function. Calculate the result slowly and explain each term. A formula becomes useful only when you can say what changes if one input changes.</p><p>A science or math background is enough if the explanation starts from intuition. For example, a distance formula is not just algebra; it tells us whether two data points are similar. A probability is not just a fraction; it expresses uncertainty before a decision. A gradient is not just a derivative; it tells a model how to reduce error.</p><p>In AI, math is a debugging tool. If a model behaves strangely, the reason is often visible in a metric, distribution, vector distance, gradient, or probability. Understanding the math helps you diagnose the failure instead of randomly changing parameters.</p><p>When studying this topic, write one sentence for the formula, one sentence for the intuition, one numerical example, and one AI use case. If any of those four are missing, the topic is not fully learned.</p>
+        <p>Probability calibration ensures that a model&#x27;s predicted probabilities match the actual frequencies of positive outcomes. A well-calibrated model that predicts 70% probability of an event should be correct 70% of the time across all samples with that prediction. Many models are not calibrated: SVMs, gradient boosting, and neural networks often produce over- or under-confident probability estimates.</p><p>Reliability diagram (calibration plot): divide predictions into bins (e.g., 0.0-0.1, 0.1-0.2, ..., 0.9-1.0). For each bin, compute: mean predicted probability and fraction of actual positives. Plot these on a scatter plot — a perfectly calibrated model falls on the diagonal (y=x). Below the diagonal = overconfident (predicts 0.8 but only 0.6 are positive). Above the diagonal = underconfident.</p><p>Calibration methods: Platt scaling — fit a logistic regression on the model&#x27;s raw scores vs true labels on a validation set. This is a simple sigmoid transformation that maps uncalibrated scores to calibrated probabilities. Isotonic regression — fit a non-parametric monotone function. More flexible than Platt scaling but requires more data. <code>sklearn</code>&#x27;s <code>CalibratedClassifierCV</code> wraps any model with Platt scaling or isotonic regression.</p><p>Expected Calibration Error (ECE): a scalar summary of calibration quality. ECE = sum over bins of (|<code>bin_size</code>| / n) × |<code>fraction_positive</code> - <code>mean_predicted_probability</code>|. Lower ECE = better calibration. ECE &lt; 0.02 is considered well-calibrated. ECE &gt; 0.1 indicates significant miscalibration that should be corrected.</p><p>When calibration matters: medical diagnosis (a doctor needs to know if 70% probability means 70% or 90%), risk assessment (insurance, credit, fraud), any application where the absolute probability drives a decision (not just the rank order). For pure ranking tasks (recommendation systems, information retrieval), calibration is less important than relative ordering.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a tiny numeric example for Probability calibration: two features, three rows, or two vectors. Calculate the result and explain what the number says about the data.</p>
-        <ol><li>Choose the smallest numeric example that still shows the idea.</li><li>Calculate each step explicitly, without hiding the arithmetic.</li><li>Explain what the final number means for Evaluation, overfitting and tuning.</li><li>Change one input and describe why the result changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from sklearn.calibration import CalibratedClassifierCV, calibration_curve
+from sklearn.ensemble import GradientBoostingClassifier
+import matplotlib.pyplot as plt
+# Train uncalibrated model
+model = GradientBoostingClassifier(n_estimators=200, random_state=42)
+model.fit(X_train, y_train)
+# Calibrate with Platt scaling
+calibrated = CalibratedClassifierCV(model, method=&#x27;sigmoid&#x27;, cv=&#x27;prefit&#x27;)  # prefit: model already fitted
+calibrated.fit(X_val, y_val)  # fit calibration on held-out validation set
+# Compare calibration
+fig, ax = plt.subplots(figsize=(8,6))
+for name, estimator in [(&#x27;Uncalibrated&#x27;, model), (&#x27;Calibrated&#x27;, calibrated)]:
+    prob_pos = estimator.predict_proba(X_test)[:,1]
+    fraction_of_positives, mean_predicted_value = calibration_curve(y_test, prob_pos, n_bins=10)
+    ax.plot(mean_predicted_value, fraction_of_positives, label=name)
+ax.plot([0,1],[0,1], &#x27;k--&#x27;, label=&#x27;Perfect calibration&#x27;)
+ax.legend(); ax.set_xlabel(&#x27;Mean predicted probability&#x27;); ax.set_ylabel(&#x27;Fraction of positives&#x27;)
+plt.title(&#x27;Calibration plot&#x27;)</code></pre><pre><code># ECE computation
+def expected_calibration_error(y_true, y_prob, n_bins=10):
+    bin_edges = np.linspace(0, 1, n_bins+1)
+    ece = 0
+    for i in range(n_bins):
+        mask = (y_prob &gt;= bin_edges[i]) &amp; (y_prob &lt; bin_edges[i+1])
+        if mask.sum() == 0: continue
+        bin_accuracy = y_true[mask].mean()
+        bin_confidence = y_prob[mask].mean()
+        ece += (mask.sum() / len(y_true)) * abs(bin_accuracy - bin_confidence)
+    return ece
+print(f&#x27;ECE before: {expected_calibration_error(y_test, model.predict_proba(X_test)[:,1]):.4f}&#x27;)
+print(f&#x27;ECE after: {expected_calibration_error(y_test, calibrated.predict_proba(X_test)[:,1]):.4f}&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing formulas without knowing what each term represents.</li><li>Skipping units, shapes, or assumptions.</li><li>Using a metric because it is popular instead of because it matches the problem.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Compute a small numeric example for Probability calibration by hand or in Python. Explain what each number means in one sentence.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Probability calibration is essential for any application where the absolute predicted probability drives a decision. A credit model that says &#x27;70% probability of default&#x27; must actually have 70% of those borrowers defaulting. Without calibration, thresholds set based on predicted probabilities produce unexpected behavior in production.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Calibrating on the training set — Platt scaling fits a sigmoid to map model outputs to probabilities. Fitting on the training set overfits (the model knows the training labels perfectly). Always calibrate on a held-out validation set that the model was not trained on.</li><li>Not separating calibration from training cross-validation — when using <code>CalibratedClassifierCV</code> with cv=5, it trains 5 models and calibrates each — this is for an unfitted model. For a pre-fitted model, use cv=&#x27;prefit&#x27; and calibrate on a separate validation set.</li><li>Assuming all models need calibration — random forests and logistic regression with proper regularization are often well-calibrated. Always plot the calibration curve first — if the model is already well-calibrated, adding Platt scaling may hurt.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Compare calibration of 4 ML models: (1) logistic regression, (2) random forest, (3) gradient boosting, (4) SVM. For each: (a) plot calibration curve and compute ECE, (b) apply Platt scaling, (c) apply isotonic regression, (d) plot calibration curves for all three variants. Which model needs calibration most? Which calibration method works better?</div>
     </div>
   </div>
 </section>

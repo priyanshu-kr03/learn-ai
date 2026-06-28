@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Tool calling and AI agents | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -30,7 +31,7 @@
       <header class="content-head">
         <span class="eyebrow">08 Generative AI and LLMs</span>
         <h1>Tool calling and AI agents</h1>
-        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 31</span></div>
+        <div class="meta"><span class="pill">Advanced</span><span class="pill">2 weeks</span><span class="pill">Lesson 35</span></div>
         <p class="lead">A practical chapter with plain-English explanations, concrete examples, common mistakes, and practice tasks for every subtopic.</p>
         <div class="tags"><span class="tag">Function calling</span><span class="tag">Tool schema</span><span class="tag">Tool validation</span><span class="tag">Agents</span><span class="tag">Planner executor</span><span class="tag">ReAct concept</span><span class="tag">Memory</span><span class="tag">LangChain</span><span class="tag">LangGraph</span><span class="tag">Fallbacks</span><span class="tag">Tracing and debugging</span><span class="tag">Human-in-the-loop</span></div>
       </header>
@@ -43,17 +44,40 @@
       <h2>Function calling</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Function calling should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Tool calling and AI agents, connect Function calling to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Function calling (also called tool use) allows LLMs to call external functions when generating a response. Instead of generating text, the model outputs a structured call with a function name and arguments: {&#x27;name&#x27;: &#x27;<code>search_web</code>&#x27;, &#x27;arguments&#x27;: {&#x27;query&#x27;: &#x27;current weather in Paris&#x27;}}. The application executes the function and returns the result to the model, which then incorporates it into the final response. This turns LLMs from knowledge-retrieval systems into action-taking agents.</p><p>How function calling works in <code>OpenAI</code>/Claude API: (1) define tool schemas (function name, description, parameters with JSON Schema), (2) send the schema along with the user message, (3) model returns either a normal response OR a <code>tool_use</code> block with function name and arguments, (4) application executes the function, (5) send the result back to the model as a tool result, (6) model generates the final response using the tool result. This round-trip can repeat multiple times (multi-step tool use).</p><p>Tool schema design: the quality of the function description critically affects reliability. The description must explain WHEN to use the function (not just what it does). Parameter descriptions must be precise. Example: a poorly described &#x27;search&#x27; function vs &#x27;<code>search_product_catalog</code>(query: str) — use to find products matching the user&#x27;s criteria. Returns a list of up to 10 matching products with prices and availability.&#x27; The second description guides the model to use the tool appropriately.</p><p>Parallel tool calls: modern APIs support parallel function calls — the model can call multiple tools simultaneously. Example: a user asks &#x27;What is the weather in Paris and the current AAPL stock price?&#x27; The model calls <code>weather_tool</code> and <code>stock_tool</code> in parallel, waits for both results, then combines them in the response. This significantly speeds up multi-tool agents.</p><p>Tool use in Claude API (Anthropic): define tools as a list of dicts with &#x27;name&#x27;, &#x27;description&#x27;, &#x27;<code>input_schema</code>&#x27;. Claude returns a response with <code>stop_reason</code>=&#x27;<code>tool_use</code>&#x27; and a content block with type=&#x27;<code>tool_use</code>&#x27;, name, and input. The application runs the tool and sends back a message with type=&#x27;<code>tool_result</code>&#x27;. Claude continues from this context to produce the final response.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Function calling in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code># OpenAI function calling
+from openai import OpenAI
+client = OpenAI()
+tools = [{&#x27;type&#x27;: &#x27;function&#x27;, &#x27;function&#x27;: {
+    &#x27;name&#x27;: &#x27;get_weather&#x27;,
+    &#x27;description&#x27;: &#x27;Get current weather for a city&#x27;,
+    &#x27;parameters&#x27;: {&#x27;type&#x27;: &#x27;object&#x27;, &#x27;properties&#x27;: {
+        &#x27;city&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;, &#x27;description&#x27;: &#x27;City name&#x27;}
+    }, &#x27;required&#x27;: [&#x27;city&#x27;]}
+}}]
+response = client.chat.completions.create(
+    model=&#x27;gpt-4-turbo&#x27;, messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: &#x27;Weather in Paris?&#x27;}],
+    tools=tools, tool_choice=&#x27;auto&#x27;)
+if response.choices[0].message.tool_calls:
+    args = json.loads(response.choices[0].message.tool_calls[0].function.arguments)
+    result = get_weather(args[&#x27;city&#x27;])  # execute the actual function</code></pre><pre><code># Anthropic Claude tool use
+import anthropic
+client = anthropic.Anthropic()
+tools = [{&#x27;name&#x27;: &#x27;search&#x27;, &#x27;description&#x27;: &#x27;Search for information&#x27;, &#x27;input_schema&#x27;: {
+    &#x27;type&#x27;: &#x27;object&#x27;, &#x27;properties&#x27;: {&#x27;query&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;}}, &#x27;required&#x27;: [&#x27;query&#x27;]
+}}]
+response = client.messages.create(
+    model=&#x27;claude-opus-4-8&#x27;, max_tokens=1000,
+    tools=tools, messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: &#x27;Search for the latest AI news&#x27;}])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Function calling. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Function calling is what transforms LLMs from static knowledge sources into agents that can take actions in the world — search the web, execute code, query databases, call APIs, send emails. Understanding function calling is essential for building AI agents, chatbots with live data, and any LLM-powered application that needs access to external systems.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Writing vague tool descriptions — the model decides WHEN to call a tool based on the description. &#x27;Searches something&#x27; is not actionable. &#x27;<code>search_web</code>(query) — use when you need current information not in your training data, such as today&#x27;s news, current prices, or live events&#x27; gives the model a clear trigger.</li><li>Not handling the <code>tool_use</code> stop reason — if the model returns <code>stop_reason</code>=&#x27;<code>tool_use</code>&#x27;, the application must execute the tool and send back the result. Ignoring this leaves the model hanging with an incomplete response.</li><li>Returning unformatted tool results — the tool result should be a clean, structured string or JSON. Returning raw API responses (thousands of tokens of noise) wastes context and confuses the model.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multi-tool agent: (1) define 4 tools: <code>search_web</code>, calculate, <code>get_current_time</code>, <code>send_email</code>, (2) implement mock versions of each, (3) build the tool-use loop: send user message → check for <code>tool_use</code> → execute tool → send result → repeat until no more tools, (4) test with queries that require: (a) a single tool, (b) two tools in sequence, (c) two tools in parallel, (5) add error handling for when a tool fails (tool result with <code>is_error</code>=true), (6) log all tool calls and results for debugging.</div>
     </div>
   </div>
 </section>
@@ -65,17 +89,55 @@
       <h2>Tool schema</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Tool schema is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Tool calling and AI agents, test Tool schema with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>A tool schema is the formal description of a function that an AI agent can call. It tells the LLM what the tool does, what parameters it takes, which parameters are required vs optional, and what data types are expected. Without a clear schema, the LLM cannot correctly format its tool calls — it may pass wrong types, miss required parameters, or call the wrong tool.</p><p><code>OpenAI</code> function calling format (also used by Anthropic): a JSON Schema object with &#x27;name&#x27;, &#x27;description&#x27;, and &#x27;parameters&#x27;. The parameters field uses JSON Schema to describe the input: type, properties, required, enum, description for each field. Example: a <code>web_search</code> tool has parameters: {&#x27;query&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;, &#x27;description&#x27;: &#x27;The search query&#x27;}, &#x27;<code>max_results</code>&#x27;: {&#x27;type&#x27;: &#x27;integer&#x27;, &#x27;default&#x27;: 5}}. The LLM uses this schema to generate a valid JSON call.</p><p>Anthropic tool use: tools are passed in the API request as a list. The model responds with a <code>tool_use</code> content block containing: &#x27;id&#x27; (unique call ID), &#x27;name&#x27; (tool name), &#x27;input&#x27; (dict of arguments). You execute the function and return the result in a &#x27;<code>tool_result</code>&#x27; content block with the matching &#x27;<code>tool_use_id</code>&#x27;. Multiple tools can be called in parallel — the model may return multiple <code>tool_use</code> blocks in one response.</p><p>Description quality matters: the tool description is the model&#x27;s only guide for deciding WHEN to use the tool. Vague description: &#x27;fetches data&#x27; — when would you use this? Clear description: &#x27;Retrieves current weather data for a specific city. Use when the user asks about current weather, temperature, or forecast for any location.&#x27; The model uses the description to reason about whether this tool is appropriate for the current query.</p><p>Parameter constraints with JSON Schema: use &#x27;enum&#x27; for categorical parameters: &#x27;unit&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;, &#x27;enum&#x27;: [&#x27;celsius&#x27;, &#x27;fahrenheit&#x27;]}. Use &#x27;minimum&#x27;/&#x27;maximum&#x27; for numeric ranges. Use &#x27;pattern&#x27; for string format (e.g., &#x27;pattern&#x27;: &#x27;^\d{4}-\d{2}-\d{2}$&#x27; for ISO date). These constraints cause the model to generate valid inputs without needing additional validation.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Tool schema changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+client = anthropic.Anthropic()
+tools = [
+    {
+        &#x27;name&#x27;: &#x27;get_weather&#x27;,
+        &#x27;description&#x27;: &#x27;Get current weather for a city. Use when user asks about weather, temperature, or forecast.&#x27;,
+        &#x27;input_schema&#x27;: {
+            &#x27;type&#x27;: &#x27;object&#x27;,
+            &#x27;properties&#x27;: {
+                &#x27;city&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;, &#x27;description&#x27;: &#x27;City name, e.g. &quot;London&quot; or &quot;New York&quot;&#x27;},
+                &#x27;unit&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;, &#x27;enum&#x27;: [&#x27;celsius&#x27;, &#x27;fahrenheit&#x27;], &#x27;default&#x27;: &#x27;celsius&#x27;}
+            },
+            &#x27;required&#x27;: [&#x27;city&#x27;]
+        }
+    }
+]
+response = client.messages.create(
+    model=&#x27;claude-opus-4-8&#x27;,
+    max_tokens=1024,
+    tools=tools,
+    messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: &#x27;What is the weather in Tokyo?&#x27;}]
+)
+# Extract tool call
+for block in response.content:
+    if block.type == &#x27;tool_use&#x27;:
+        print(f&#x27;Tool: {block.name}, Args: {block.input}&#x27;)</code></pre><pre><code># Full agentic loop: model calls tool, you return result, model generates final answer
+def agent_loop(user_message):
+    messages = [{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: user_message}]
+    while True:
+        resp = client.messages.create(model=&#x27;claude-opus-4-8&#x27;, max_tokens=2048, tools=tools, messages=messages)
+        if resp.stop_reason == &#x27;end_turn&#x27;: return resp.content[-1].text
+        if resp.stop_reason == &#x27;tool_use&#x27;:
+            messages.append({&#x27;role&#x27;: &#x27;assistant&#x27;, &#x27;content&#x27;: resp.content})
+            tool_results = []
+            for block in resp.content:
+                if block.type == &#x27;tool_use&#x27;:
+                    result = execute_tool(block.name, block.input)
+                    tool_results.append({&#x27;type&#x27;: &#x27;tool_result&#x27;, &#x27;tool_use_id&#x27;: block.id, &#x27;content&#x27;: str(result)})
+            messages.append({&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: tool_results})</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Tool schema. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Tool schemas are the API contract between your application and the AI model. A well-designed tool schema makes the agent reliable: it calls the right tools with valid parameters. A poorly designed schema causes the agent to misuse tools, hallucinate parameters, or fail to call tools when needed. Mastering tool schema design is essential for building robust AI agents.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Writing vague tool descriptions — &#x27;a useful tool for getting information&#x27; does not tell the model when to use it. Write actionable descriptions: &#x27;Use this to retrieve the current stock price for a ticker symbol when the user asks about stock prices or company valuations.&#x27;</li><li>Not using JSON Schema constraints — without &#x27;enum&#x27; and type constraints, the model may pass &#x27;Celsius&#x27; instead of &#x27;celsius&#x27; (case mismatch), or pass a string where an integer is expected. Use schema constraints to enforce valid inputs.</li><li>Not handling tool errors — if the tool call fails (network error, invalid input), return the error in the <code>tool_result</code> content. The model will then retry with corrected parameters or explain the error to the user.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multi-tool agent for travel planning: (1) design tool schemas for: <code>search_flights</code>(origin, destination, date, <code>cabin_class</code>), <code>get_hotel_prices</code>(city, <code>check_in</code>, <code>check_out</code>, guests), <code>get_weather</code>(city, date), <code>convert_currency</code>(amount, <code>from_currency</code>, <code>to_currency</code>), (2) implement mock versions of each tool, (3) implement the full agentic loop with the Anthropic API, (4) test with complex queries: &#x27;Plan a 5-day trip to Tokyo in March for 2 people, under $3000 total, what will the weather be like?&#x27;, (5) handle errors: make one tool randomly fail 20% of the time and ensure the agent retries or gracefully handles the failure.</div>
     </div>
   </div>
 </section>
@@ -87,17 +149,48 @@
       <h2>Tool validation</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Tool validation is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Tool calling and AI agents, test Tool validation with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p>Tool validation in LLM agent systems means checking that the model&#x27;s tool call inputs are valid before executing the tool. When an LLM generates a JSON function call, it may include: wrong types (string instead of int), missing required fields, out-of-range values, or completely invalid structure. Executing a tool with invalid inputs causes cryptic errors or silent failures.</p><p>JSON schema validation: tool definitions use JSON Schema to specify expected parameters. Before executing a tool call, validate the model&#x27;s output against the schema using `<code>jsonschema.validate()</code>`. This catches type mismatches, missing required fields, and format violations before they reach your tool code.</p><p>Pydantic for runtime validation: Pydantic&#x27;s data models are the standard way to validate tool call arguments in Python. Define a Pydantic model matching your tool&#x27;s expected arguments, parse the model&#x27;s output using it, and Pydantic will raise <code>ValidationError</code> for any type mismatch or missing field with a clear error message.</p><p>Retry on validation failure: when a tool call fails validation, send the error message back to the model and ask it to fix the input. This retry loop typically resolves 80-90% of tool call failures on the first retry. Include the validation error in the context: &#x27;Your previous tool call failed with: field X is required. Please provide a valid value for X.&#x27;</p><p>Graceful degradation: not all tool call failures should crash the agent. Categorize failures: (1) validation failures (wrong format) — retry with error feedback. (2) execution failures (API error, timeout) — retry with backoff. (3) logical failures (tool returned empty results) — fall back to a different tool or acknowledge the limitation to the user.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how Tool validation changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from pydantic import BaseModel, Field, validator
+from typing import Optional
+import anthropic
+# Define expected tool arguments as Pydantic model
+class SearchWebArgs(BaseModel):
+    query: str = Field(..., min_length=3, max_length=200)
+    max_results: int = Field(default=5, ge=1, le=20)
+    filter_date: Optional[str] = Field(None, regex=r&#x27;\d{4}-\d{2}-\d{2}&#x27;)
+# Validate model output before executing
+client = anthropic.Anthropic()
+def call_tool_safely(tool_name: str, tool_input: dict) -&gt; dict:
+    try:
+        if tool_name == &#x27;search_web&#x27;:
+            args = SearchWebArgs(**tool_input)  # Pydantic validates here
+            return execute_search(args.query, args.max_results)  # safe to execute
+    except Exception as e:
+        return {&#x27;error&#x27;: str(e), &#x27;tool&#x27;: tool_name, &#x27;input&#x27;: tool_input}
+# Agent loop with retry
+def run_agent_with_retry(user_message: str, max_retries: int = 3):
+    messages = [{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: user_message}]
+    for attempt in range(max_retries):
+        response = client.messages.create(model=&#x27;claude-opus-4-8&#x27;, max_tokens=1024, messages=messages, tools=[SEARCH_TOOL_DEF])
+        if response.stop_reason == &#x27;tool_use&#x27;:
+            for block in response.content:
+                if block.type == &#x27;tool_use&#x27;:
+                    result = call_tool_safely(block.name, block.input)
+                    if &#x27;error&#x27; in result:
+                        messages.append({&#x27;role&#x27;: &#x27;assistant&#x27;, &#x27;content&#x27;: response.content})
+                        messages.append({&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: [{&#x27;type&#x27;: &#x27;tool_result&#x27;, &#x27;tool_use_id&#x27;: block.id, &#x27;content&#x27;: f&#x27;Error: {result[&quot;error&quot;]}. Please fix your tool call.&#x27;, &#x27;is_error&#x27;: True}]})
+                    else:
+                        # proceed normally
+                        break</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around Tool validation. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Tool validation is the difference between a brittle demo agent and a production agent. In a demo, you always test with well-formed inputs and the tool always succeeds. In production, users ask questions in unexpected ways, the model generates slightly malformed tool calls, and external APIs return errors. Tool validation with retry turns these failures into recoverable events instead of agent crashes.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Executing tool calls without validation — trusting the LLM to always generate valid JSON with correct types is too optimistic. Models make mistakes. Always validate before executing, especially for tools that have side effects (send email, execute code, modify database).</li><li>Not including the error in the retry message — sending back &#x27;tool call failed, please retry&#x27; is unhelpful. Include the specific validation error: &#x27;field <code>max_results</code> must be between 1 and 20, you provided 100.&#x27; The model needs the specific error to generate a correct retry.</li><li>Infinite retry loops — without a maximum retry count, a tool call that always fails (because of a misunderstood tool schema) will loop forever. Cap retries at 3 and fail gracefully after that.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a robust tool-calling agent: (1) define 3 tools with Pydantic models for input validation, (2) implement an agent loop that: validates tool call inputs, retries on validation failure with error feedback, uses exponential backoff on execution errors, gives up after 3 retries, (3) test with adversarial inputs: ask the agent to search for something in a way that will likely produce an invalid tool call, (4) log all tool calls: success rate, validation failure rate, execution failure rate, (5) add a confidence check: if the model generates a tool call but appears uncertain, ask for confirmation before executing.</div>
     </div>
   </div>
 </section>
@@ -109,17 +202,29 @@
       <h2>Agents</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Agents is a concept inside Tool calling and AI agents that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>An AI agent is a system where an LLM controls a loop: it observes the current state, decides what action to take (which tool to call, what query to issue, what to write), takes the action, observes the result, and iterates until the task is complete. Unlike a single LLM call, an agent can take multiple steps, use multiple tools, and adapt its strategy based on intermediate results. Agents enable open-ended problem solving.</p><p>The <code>ReAct</code> (Reasoning and Acting) framework is the most common agent pattern. At each step, the LLM outputs: Thought (I need to find the current population of France), Action (search Wikipedia for &#x27;France population&#x27;), Observation (Wikipedia says 67 million as of 2024), Thought (now I have the information I need), Final Answer (France has approximately 67 million people). The alternating Thought-Action-Observation loop enables the agent to reason about multi-step problems.</p><p>Tool calling is the mechanism that gives agents capabilities beyond text generation. A tool is a function with a name, description, and parameter schema. The LLM sees the tool descriptions and selects which tool to call and with what parameters. Common tools: web search, code interpreter (Python REPL), calculator, calendar, email, database query, API calls. Tool validation ensures the model&#x27;s requested parameter values are type-checked and safe before execution.</p><p>Agent reliability challenges: hallucinating tool parameters (the LLM calls a tool with plausible but wrong arguments), infinite loops (the agent keeps taking actions without making progress), context exhaustion (long multi-step tasks exhaust the context window), and error propagation (one wrong tool call produces wrong information that propagates through subsequent reasoning). Mitigations: output parsing with retry, step limits, structured intermediate state, and human-in-the-loop checkpoints.</p><p>Multi-agent systems use multiple specialized agents collaborating: a Planner agent decomposes a complex task into subtasks, Executor agents handle each subtask (one for web search, one for code writing, one for data analysis), and a Critic agent reviews and validates the combined output. <code>LangGraph</code>, <code>CrewAI</code>, and <code>AutoGen</code> are frameworks for building multi-agent systems. This architecture enables parallelism and specialization for complex workflows.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Set up a small realistic scenario from Tool calling and AI agents where Agents is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>OpenAI function calling:
+tools = [{&#x27;type&#x27;: &#x27;function&#x27;, &#x27;function&#x27;: {&#x27;name&#x27;: &#x27;search&#x27;, &#x27;description&#x27;: &#x27;Search the web&#x27;, &#x27;parameters&#x27;: {&#x27;type&#x27;: &#x27;object&#x27;, &#x27;properties&#x27;: {&#x27;query&#x27;: {&#x27;type&#x27;: &#x27;string&#x27;}}, &#x27;required&#x27;: [&#x27;query&#x27;]}}}]</code></pre><pre><code>Agent loop:
+while True:
+    response = client.chat.completions.create(model=&#x27;gpt-4o&#x27;, messages=messages, tools=tools)
+    if response.choices[0].finish_reason == &#x27;tool_calls&#x27;:
+        tool_call = response.choices[0].message.tool_calls[0]
+        result = execute_tool(tool_call.function.name, json.loads(tool_call.function.arguments))
+        messages.append({&#x27;role&#x27;: &#x27;tool&#x27;, &#x27;content&#x27;: result, &#x27;tool_call_id&#x27;: tool_call.id})
+    else:
+        print(response.choices[0].message.content); break</code></pre><pre><code>LangChain agent: from langchain.agents import create_react_agent, AgentExecutor
+tools = [TavilySearchResults(), PythonREPLTool()]
+agent = create_react_agent(llm, tools, hub.pull(&#x27;hwchase17/react&#x27;))
+executor = AgentExecutor(agent=agent, tools=tools, verbose=True, max_iterations=10)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Agents, explain it in 5 to 8 lines, and connect it to Tool calling and AI agents.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Agents extend LLMs from question-answering to autonomous problem-solving. They are the foundation of: code assistants that run tests and iterate, research assistants that search and synthesize, and data analysis tools that write and execute code. Understanding agents is essential for building practical AI products.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not setting <code>max_iterations</code> — without a step limit, an agent can loop indefinitely, burning tokens and running up API costs.</li><li>Giving agents too many tools — with 20+ tools, the LLM struggles to choose the right one. Keep the tool set focused and relevant to the task.</li><li>Not validating tool inputs before execution — an agent requesting to delete all files with a regex pattern must have its parameters validated before execution.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a research agent that answers factual questions by: (1) searching Wikipedia, (2) searching arXiv for recent papers, (3) writing a Python script to do any required calculations, (4) synthesizing the results into a final answer. Test with 5 multi-hop questions (e.g., &#x27;What is the difference between the number of parameters in GPT-2 and GPT-4, and how many times larger is the latter?&#x27;). Add retry logic for failed tool calls and a <code>max_iterations</code>=15 limit.</div>
     </div>
   </div>
 </section>
@@ -131,17 +236,35 @@
       <h2>Planner executor</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Planner executor is a concept inside Tool calling and AI agents that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>The planner-executor pattern separates an agent&#x27;s reasoning (what to do) from its execution (how to do it). A planner LLM generates a structured plan (a list of steps with tool calls), and an executor LLM or deterministic function executes each step in order. This separation improves reliability: the planner can reason globally about the task; the executor focuses on one step at a time.</p><p>When to use planner-executor: tasks that require multi-step reasoning with dependencies between steps. &#x27;Research this company, analyze their financials, write a report&#x27; requires: (1) search for basic info, (2) find financial data, (3) synthesize a report using both. A single-pass agent would try to do all three simultaneously and often miss dependencies. A planner generates the explicit three-step plan first.</p><p>Plan structure: a plan is typically a list of subtasks, each with: step number, description, required tools, dependencies (which prior steps must complete first), and expected output. In <code>LangGraph</code>, each step in the plan becomes a node in the graph, with edges representing dependencies.</p><p>Plan validation before execution: before starting execution, the planner&#x27;s plan should be validated. Check: are all referenced tools available? Are dependency relationships acyclic (no circular dependencies)? Are step descriptions complete enough for the executor? Invalid plans are caught before any expensive tool calls are made.</p><p>Dynamic re-planning: a static plan assumes the world is predictable. When a step fails or returns unexpected results, the agent should re-plan. Dynamic re-planning: after each step, re-evaluate whether the remaining plan is still valid given the new information. If a tool returned empty results (&#x27;no financial data found&#x27;), revise the plan to search for alternative data sources before proceeding.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Set up a small realistic scenario from Tool calling and AI agents where Planner executor is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+import json
+client = anthropic.Anthropic()
+# Planner: generate a structured plan
+def generate_plan(task: str) -&gt; list:
+    response = client.messages.create(
+        model=&#x27;claude-opus-4-8&#x27;,
+        max_tokens=1024,
+        system=&#x27;You are a planning agent. Given a task, output a JSON list of steps. Each step has: {step: int, description: str, tool: str, depends_on: list[int]}. Be specific and concrete.&#x27;,
+        messages=[{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: f&#x27;Create a detailed plan to: {task}&#x27;}]
+    )
+    text = response.content[0].text
+    # Parse JSON from response
+    import re
+    json_match = re.search(r&#x27;\[.*?\]&#x27;, text, re.DOTALL)
+    if json_match: return json.loads(json_match.group())
+    return []
+plan = generate_plan(&#x27;Research Python web frameworks and write a comparison report&#x27;)
+for step in plan: print(f&#x27;Step {step[&quot;step&quot;]}: {step[&quot;description&quot;]} (tool: {step.get(&quot;tool&quot;, &quot;none&quot;)})&#x27;)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Planner executor, explain it in 5 to 8 lines, and connect it to Tool calling and AI agents.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>The planner-executor pattern is how production AI agents handle complex multi-step tasks reliably. Without explicit planning, an LLM agent tries to reason about all steps simultaneously, loses track of state, and produces inconsistent outputs. By separating &#x27;what to do&#x27; (planner) from &#x27;how to do it&#x27; (executor), you get more reliable execution, better error handling, and clearer auditability of what the agent did.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Over-specifying the plan — a plan with 15 micro-steps for a simple task is harder to execute correctly than a plan with 4 high-level steps. Plan at the right granularity: each step should be independently executable and verifiable.</li><li>Not handling plan step failures — the executor must decide: if step 3 fails, skip step 4 (which depends on step 3), report the failure, and try the alternative path if one exists. Without failure handling, a failed step silently propagates incorrect state.</li><li>Using the planner model for both planning and execution — planning requires global reasoning (understand the full task); execution requires precise action (correct tool call format). Using a less capable model for execution and a more capable model for planning often gives better results at lower cost.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a planner-executor research agent: (1) implement a planner that generates a 3-5 step research plan for any given topic, (2) implement an executor that runs each step in dependency order, (3) test with: &#x27;Research the top 5 ML papers from 2024 and summarize the key findings for each&#x27;, (4) add dynamic re-planning: if a step returns insufficient results, the agent revises the remaining plan to try a different approach, (5) log execution: which steps succeeded, which failed, how many re-plans were needed.&#x27;,</div>
     </div>
   </div>
 </section>
@@ -153,17 +276,42 @@
       <h2>ReAct concept</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>ReAct concept is a concept inside Tool calling and AI agents that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p><code>ReAct</code> (Reasoning + Acting) is an agent framework where the LLM alternates between Reasoning (thinking about what to do next) and Acting (calling a tool or taking an action). The model produces explicit intermediate reasoning steps (Thought: ...) before each action (Action: <code>tool_name</code>, args), and observes the result (Observation: tool output) before deciding on the next step. This explicit reasoning trace makes the agent&#x27;s decisions interpretable and correctable.</p><p><code>ReAct</code> loop: Thought 1 → Action 1 → Observation 1 → Thought 2 → Action 2 → Observation 2 → ... → Final Answer. The model reasons about what it knows, what it needs, which tool to use, and why — before calling the tool. After observing the result, it reasons again about whether it has enough information or needs more. This reasoning-before-acting pattern dramatically reduces tool misuse compared to direct function calling without explicit reasoning.</p><p><code>ReAct</code> vs chain-of-thought vs tool use: chain-of-thought (<code>CoT</code>) enables complex reasoning without tool use — the model thinks step by step but cannot look up external information. Tool use without reasoning produces direct API calls but no interpretable rationale. <code>ReAct</code> combines both: reasoning traces + external tool calls. The key insight: external tools ground reasoning in facts (reduce hallucination), and explicit reasoning makes tool selection smarter.</p><p>Implementation: in early <code>ReAct</code> implementations, the model was prompted to format its output as &#x27;Thought: ... Action: [tool name] Input: [json args]&#x27;. The framework parsed the Action/Input and executed the tool. Modern LLM APIs (Anthropic, <code>OpenAI</code>) have native tool use with structured JSON calls — they implement <code>ReAct</code>-style reasoning internally without requiring the text-format prompt template.</p><p><code>ReAct</code> in <code>LangChain</code> and <code>LangGraph</code>: <code>LangChain</code>&#x27;s <code>AgentExecutor</code> implements the <code>ReAct</code> loop. <code>LangGraph</code> provides a more flexible graph-based agentic framework where nodes are processing steps and edges are transitions. <code>LangGraph</code> enables branching (different paths based on tool output), loops (retry until success), and parallel tool execution — going beyond the simple sequential <code>ReAct</code> loop.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Set up a small realistic scenario from Tool calling and AI agents where ReAct concept is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain_anthropic import ChatAnthropic
+from langchain.agents import create_react_agent, AgentExecutor
+from langchain import hub
+from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
+# ReAct agent with langchain
+llm = ChatAnthropic(model=&#x27;claude-opus-4-8&#x27;)
+tools = [DuckDuckGoSearchRun(), WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())]
+prompt = hub.pull(&#x27;hwchase17/react&#x27;)  # standard ReAct prompt template
+agent = create_react_agent(llm, tools, prompt)
+executor = AgentExecutor(agent=agent, tools=tools, verbose=True, max_iterations=10)
+result = executor.invoke({&#x27;input&#x27;: &#x27;What is the capital of the country that won the 2022 FIFA World Cup?&#x27;})
+print(result[&#x27;output&#x27;])</code></pre><pre><code># Minimal ReAct from scratch with Anthropic tool use
+def react_agent(question, tools, max_steps=10):
+    messages = [{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: question}]
+    for step in range(max_steps):
+        resp = client.messages.create(model=&#x27;claude-opus-4-8&#x27;, max_tokens=2048, tools=tools, messages=messages)
+        messages.append({&#x27;role&#x27;: &#x27;assistant&#x27;, &#x27;content&#x27;: resp.content})
+        if resp.stop_reason == &#x27;end_turn&#x27;:
+            return next(b.text for b in resp.content if hasattr(b, &#x27;text&#x27;))
+        tool_results = []
+        for block in resp.content:
+            if block.type == &#x27;tool_use&#x27;:
+                result = execute_tool(block.name, block.input)
+                tool_results.append({&#x27;type&#x27;: &#x27;tool_result&#x27;, &#x27;tool_use_id&#x27;: block.id, &#x27;content&#x27;: str(result)})
+        messages.append({&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: tool_results})
+    return &#x27;Max steps reached&#x27;</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for ReAct concept, explain it in 5 to 8 lines, and connect it to Tool calling and AI agents.</div>
+      <div class="good box"><b>Why this matters in AI</b><br><code>ReAct</code> is the foundational paradigm for building agents that can reason about and use tools reliably. The explicit reasoning trace before each action makes agents debuggable — you can see WHY the agent chose to call a specific tool, and identify where the reasoning went wrong when things fail.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not setting <code>max_iterations</code> — a <code>ReAct</code> agent can get stuck in a reasoning loop, calling the same tool repeatedly. Always set a maximum number of steps (10-20) and return a clear error message when exceeded.</li><li>Using <code>ReAct</code> for simple single-step tasks — for a question that requires exactly one tool call, the overhead of the reasoning-acting loop adds latency without benefit. Use direct tool use for predictable, structured tasks.</li><li>Not handling tool errors in the <code>ReAct</code> loop — when a tool fails, the Observation should contain the error message so the model can reason about the failure and try a different approach.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a <code>ReAct</code> research agent: (1) equip it with 4 tools: <code>web_search</code>, <code>wikipedia_lookup</code>, calculator, and <code>python_repl</code>, (2) test with multi-hop questions: &#x27;What is the GDP of the country that hosts the Eiffel Tower multiplied by the population of its capital?&#x27;, (3) examine the reasoning trace: how many steps does it take? Where does it use each tool?, (4) implement a &#x27;reflection&#x27; step: after the agent generates its final answer, have it verify its answer by checking each factual claim with a tool call, (5) compare <code>ReAct</code> with direct tool use (no explicit reasoning) on 20 factual questions: which produces more accurate answers?</div>
     </div>
   </div>
 </section>
@@ -175,17 +323,37 @@
       <h2>Memory</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Memory is a concept inside Tool calling and AI agents that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Memory in AI agents refers to the ability to retain and recall information across turns in a conversation (short-term memory) and across separate sessions (long-term memory). Without memory, every conversation starts from scratch — the agent has no context from past interactions. Memory enables personalization, continuity, and the ability to build on prior work.</p><p>Short-term memory (within-conversation): the conversation history stored in the messages list. Every new message is appended, and the full history is passed to the LLM on each turn. Limitation: context window limit — at some point, the history must be summarized or truncated. Strategies: summarize old messages (replace old messages with a summary), sliding window (keep only the last N messages), or message compression (compress verbose messages).</p><p>Long-term memory (cross-session): information stored persistently in a database and retrieved when relevant. Types: episodic memory (specific past events — &#x27;user mentioned they are vegetarian last Tuesday&#x27;), semantic memory (general facts about the user — &#x27;user prefers Python&#x27;), procedural memory (how to perform tasks — &#x27;user&#x27;s workflow for deploying to production&#x27;). Implemented with a vector store — retrieve relevant memories based on semantic similarity to the current query.</p><p>Memory in <code>LangChain</code>: <code>ConversationBufferMemory</code> (stores full history), <code>ConversationSummaryMemory</code> (summarizes old history with LLM), <code>ConversationSummaryBufferMemory</code> (keeps recent messages verbatim + summarizes older ones), <code>ConversationEntityMemory</code> (extracts entities from conversation: names, preferences, facts), <code>VectorStoreRetrieverMemory</code> (stores messages in vector store, retrieves relevant ones).</p><p>Memory update vs retrieval: memory must be explicitly written (save important facts as the conversation progresses) and explicitly read (retrieve relevant facts given the current context). An agent that only retrieves memory but never updates it will never learn. Implement a memory manager that: at conversation end, extracts key facts and stores them, at conversation start, retrieves relevant memories based on the user&#x27;s opening query.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Travel assistant: the model decides when to call a flight search tool, validates the tool arguments, reads the result, and asks the user before booking anything irreversible.</p>
-        <ol><li>Set up a small realistic scenario from Tool calling and AI agents where Memory is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langchain.memory import ConversationSummaryBufferMemory
+from langchain_openai import ChatOpenAI
+llm = ChatOpenAI(model=&#x27;gpt-4o-mini&#x27;)
+# Summary + buffer: keeps recent messages + summarizes old ones
+memory = ConversationSummaryBufferMemory(llm=llm, max_token_limit=1000, return_messages=True)
+# Add messages
+memory.save_context({&#x27;input&#x27;: &#x27;My name is Alex and I prefer Python.&#x27;}, {&#x27;output&#x27;: &#x27;Got it, Alex!&#x27;})
+memory.save_context({&#x27;input&#x27;: &#x27;I am working on a fraud detection model.&#x27;}, {&#x27;output&#x27;: &#x27;Happy to help with that!&#x27;})
+# Load memory for next turn
+memory_vars = memory.load_memory_variables({})
+print(&#x27;Memory:&#x27;, memory_vars)</code></pre><pre><code># Long-term memory with vector store
+from langchain_community.vectorstores import Chroma
+from langchain.memory import VectorStoreRetrieverMemory
+vectorstore = Chroma(embedding_function=embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={&#x27;k&#x27;: 5})
+long_term_memory = VectorStoreRetrieverMemory(retriever=retriever)
+long_term_memory.save_context({&#x27;input&#x27;: &#x27;My favorite framework is PyTorch.&#x27;}, {&#x27;output&#x27;: &#x27;Noted.&#x27;})
+# Retrieve relevant memories for new query
+query = &#x27;What framework should I use for my next project?&#x27;
+relevant = long_term_memory.load_memory_variables({&#x27;prompt&#x27;: query})
+print(&#x27;Relevant memories:&#x27;, relevant)</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Memory, explain it in 5 to 8 lines, and connect it to Tool calling and AI agents.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Memory is what transforms a chatbot into an intelligent assistant. A customer support agent with memory knows that this user has had 3 previous issues with the same feature and should be escalated. A coding assistant with memory knows that this user always uses <code>TypeScript</code> and prefers functional programming style. Memory enables the personalization that makes AI assistants genuinely useful.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Storing everything in memory — not every message is worth remembering. Memory should store specific facts, preferences, and decisions — not every conversational turn. Implement a memory extraction step that identifies what is worth storing.</li><li>Not managing context window growth — without summarization or truncation, the conversation history grows unboundedly and eventually exceeds the context window. Use <code>ConversationSummaryBufferMemory</code> to keep context size bounded.</li><li>Not securing memory — user memories contain personal information. Ensure memory is stored per-user, encrypted, and can be deleted on user request (GDPR compliance). Never mix memories across users.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a personalized coding assistant with memory: (1) implement short-term memory with <code>ConversationSummaryBufferMemory</code> (max 2000 tokens), (2) implement long-term memory with a Chroma vector store, (3) at the end of each conversation, extract: user&#x27;s preferred languages, frameworks, and coding patterns (use LLM to extract these facts), (4) at the start of each conversation, retrieve the top-5 most relevant memories, (5) test: have 3 conversations teaching the assistant about your preferences, then in a 4th conversation ask for a code recommendation — does it remember your preferences?, (6) implement a memory management UI: list all stored memories, let users delete specific ones.</div>
     </div>
   </div>
 </section>
@@ -197,17 +365,30 @@
       <h2>LangChain</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>LangChain is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Tool calling and AI agents, test LangChain with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p><code>LangChain</code> is a framework for building LLM-powered applications. It provides: abstractions for LLM calls (works with <code>OpenAI</code>, Anthropic, local models), memory (store conversation history), chains (compose multiple LLM calls), agents (LLMs that use tools to complete tasks), and document loaders/text splitters/vector stores for RAG. <code>LangChain</code> reduces boilerplate when building complex LLM applications.</p><p>Core <code>LangChain</code> concepts: LLMs and Chat Models are the wrappers around model providers. Prompts are templates with input variables (<code>PromptTemplate</code>). Chains are sequences of operations: LLMChain = prompt → LLM → <code>output_parser</code>. Sequential chains combine multiple LLMChains where output of one becomes input of the next. LCEL (<code>LangChain</code> Expression Language) uses pipe syntax: chain = prompt | llm | <code>output_parser</code> — cleaner than explicit chain classes.</p><p>Memory in <code>LangChain</code> stores conversation history for multi-turn interactions. <code>ConversationBufferMemory</code> keeps all messages (for short conversations). <code>ConversationSummaryMemory</code> uses an LLM to summarize old messages (for long conversations — stays within context window). <code>ConversationKGMemory</code> extracts knowledge graph entities from conversation history. Memory is attached to a <code>ConversationChain</code> and automatically included in the prompt.</p><p><code>LangChain</code> agents use LLMs as reasoning engines that decide which tools to call and in what order to answer a query. The LLM is given a set of tool descriptions and a task; it iteratively: reasons about what to do next (Thought), calls a tool (Action), observes the result (Observation), and repeats until it has a final answer. Agents enable: web search, calculator, code execution, database queries, and custom tools — combining them dynamically based on the task.</p><p><code>LangGraph</code> (part of the <code>LangChain</code> ecosystem) is a more powerful framework for building stateful multi-agent systems. It represents the agent&#x27;s workflow as a directed graph of nodes (functions) and edges (control flow). This enables: conditional branching (if the retriever finds nothing, fall back to web search), loops (retry up to 3 times), parallel node execution, and human-in-the-loop interruption points. <code>LangGraph</code> is more explicit and controllable than <code>LangChain</code> agents.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to LangChain, the response, and one failure case.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how LangChain changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>pip install langchain langchain-openai
+from langchain_openai import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser</code></pre><pre><code>LCEL chain: prompt = ChatPromptTemplate.from_template(&#x27;Summarize: {text}&#x27;)
+llm = ChatOpenAI(model=&#x27;gpt-4o-mini&#x27;)
+chain = prompt | llm | StrOutputParser()
+result = chain.invoke({&#x27;text&#x27;: &#x27;Long article text here...&#x27;})</code></pre><pre><code>Conversational chain:
+from langchain.chains import ConversationChain
+from langchain.memory import ConversationBufferMemory
+convo = ConversationChain(llm=llm, memory=ConversationBufferMemory())
+convo.predict(input=&#x27;Hi, my name is Alice&#x27;)
+convo.predict(input=&#x27;What is my name?&#x27;)  # should recall &#x27;Alice&#x27;</code></pre><pre><code>RAG chain: from langchain.chains import RetrievalQA
+qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=vectorstore.as_retriever())
+result = qa_chain.invoke({&#x27;query&#x27;: &#x27;What is machine learning?&#x27;})</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around LangChain. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br><code>LangChain</code> reduces the time to prototype an LLM application from days to hours. Understanding its abstractions helps you build complex multi-step pipelines (RAG + memory + tools) without reinventing each piece. Even if you later switch to a custom implementation, <code>LangChain</code>&#x27;s conceptual model of chains, agents, and memory is the mental model used throughout the industry.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Using <code>LangChain</code> for simple LLM calls — for a single API call, <code>LangChain</code> adds unnecessary complexity. Use the <code>OpenAI</code> client directly for simple use cases.</li><li>Storing entire conversation history in <code>ConversationBufferMemory</code> for long conversations — this fills the context window quickly. Use <code>ConversationSummaryMemory</code> for conversations longer than ~10 turns.</li><li>Using <code>LangChain</code> agents for deterministic workflows — agents are non-deterministic (the LLM decides which tool to call). For predictable, structured workflows, use LCEL chains or <code>LangGraph</code>.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a <code>LangChain</code>-powered research assistant that: (1) accepts a research topic, (2) searches Wikipedia (use the Wikipedia <code>LangChain</code> tool), (3) summarizes the findings using an LLM, (4) suggests 3 follow-up questions, (5) answers any follow-up question using the Wikipedia content as RAG context. Add <code>ConversationBufferMemory</code> so the assistant remembers the conversation. Test with 3 different research topics.</div>
     </div>
   </div>
 </section>
@@ -219,17 +400,48 @@
       <h2>LangGraph</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>LangGraph is part of building LLM applications, where the final answer depends on instructions, user input, retrieved context, model settings, tools, output format, and safety rules. The concept is learned only when you can explain how it changes the answer a user receives.</p><p>In Tool calling and AI agents, test LangGraph with more than one prompt. Use a normal request, an unclear request, a long request, a request with missing information, and a request that tries to break the rules. LLM systems fail in ways that classic ML systems do not.</p><p>A good LLM explanation must include uncertainty. The model can sound confident while being wrong. It can follow the wrong instruction from retrieved text. It can produce invalid JSON. It can call a tool with unsafe arguments. These are not edge cases; they are normal engineering concerns.</p><p>For example, in a RAG assistant, the model should answer from retrieved evidence, cite sources, and admit when evidence is missing. The topic should be connected to that behavior, not described as a buzzword.</p><p>To learn it properly, keep traces: prompt, retrieved chunks, tool calls, model output, cost, latency, and failure notes. Without traces, you cannot debug why an LLM app behaved the way it did.</p>
+        <p><code>LangGraph</code> is a framework for building stateful, multi-step LLM applications as directed graphs where nodes are processing functions (agent steps, tool calls, conditionals) and edges are transitions between steps. Unlike <code>LangChain</code>&#x27;s linear chains, <code>LangGraph</code> supports cycles (loops for iterative refinement), branching (conditional paths based on output), parallel execution (multiple tools at once), and human-in-the-loop (pause and wait for human input).</p><p>Core concepts: State — a typed dict (<code>TypedDict</code>) that flows through the graph, accumulating information at each step. Nodes — Python functions that take State and return updated State. Edges — static (A always goes to B) or conditional (go to B or C based on state content). <code>StateGraph</code> — the graph object where you <code>add_node()</code> and <code>add_edge()</code>. Compiled graph — calling <code>graph.compile()</code> produces a runnable that can be invoked, streamed, or run asynchronously.</p><p>The supervisor pattern: a meta-agent (supervisor) decides which specialized sub-agent to call next based on the current state. The supervisor routes to: &#x27;<code>research_agent</code>&#x27;, &#x27;<code>calculation_agent</code>&#x27;, or &#x27;<code>writer_agent</code>&#x27; depending on what the task requires. The supervisor sees the accumulated state (what has been done) and decides the next step. This enables complex multi-agent orchestration with explicit routing logic.</p><p>Human-in-the-loop: <code>LangGraph</code> supports <code>interrupt_before</code> and <code>interrupt_after</code> for human review. compile(checkpointer=<code>MemorySaver()</code>, <code>interrupt_before</code>=[&#x27;<code>sensitive_action_node</code>&#x27;]) pauses the graph before executing that node. The human reviews the pending action (e.g., &#x27;agent is about to send an email&#x27;), approves or modifies, and resumes. Essential for autonomous agents with real-world consequences.</p><p>Streaming: <code>LangGraph</code>&#x27;s compiled graph supports async streaming — you can stream intermediate tokens and state updates to the user in real-time. <code>graph.astream_events()</code> yields events as they happen: model tokens, tool call starts, tool results, state updates. This enables responsive UX where users see the agent&#x27;s reasoning and tool results as they occur.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Use a support assistant example. Show the user&#x27;s message, the model context or configuration related to LangGraph, the response, and one failure case.</p>
-        <ol><li>Write one realistic user request.</li><li>Show how LangGraph changes the prompt, retrieval, tool call, or output.</li><li>Record the model response and the evidence used to produce it.</li><li>Test one failure case and describe the guardrail or evaluation needed.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langgraph.graph import StateGraph, END
+from typing import TypedDict, Annotated
+import operator
+class AgentState(TypedDict):
+    messages: Annotated[list, operator.add]  # append-only message history
+    next: str  # next node to route to
+# Node functions
+def call_model(state):
+    response = llm.invoke(state[&#x27;messages&#x27;])
+    return {&#x27;messages&#x27;: [response]}
+def call_tool(state):
+    last_message = state[&#x27;messages&#x27;][-1]
+    tool_result = execute_tool(last_message.tool_calls[0])
+    return {&#x27;messages&#x27;: [ToolMessage(content=str(tool_result), tool_call_id=last_message.tool_calls[0][&#x27;id&#x27;])]}
+def should_continue(state):
+    last = state[&#x27;messages&#x27;][-1]
+    if last.tool_calls: return &#x27;action&#x27;
+    return END
+# Build graph
+graph = StateGraph(AgentState)
+graph.add_node(&#x27;agent&#x27;, call_model)
+graph.add_node(&#x27;action&#x27;, call_tool)
+graph.set_entry_point(&#x27;agent&#x27;)
+graph.add_conditional_edges(&#x27;agent&#x27;, should_continue, {&#x27;action&#x27;: &#x27;action&#x27;, END: END})
+graph.add_edge(&#x27;action&#x27;, &#x27;agent&#x27;)  # after tool, go back to agent
+app = graph.compile()</code></pre><pre><code># Invoke with streaming
+import asyncio
+async def stream_agent(question):
+    async for event in app.astream_events({&#x27;messages&#x27;: [HumanMessage(content=question)]}, version=&#x27;v1&#x27;):
+        if event[&#x27;event&#x27;] == &#x27;on_chat_model_stream&#x27;:
+            print(event[&#x27;data&#x27;][&#x27;chunk&#x27;].content, end=&#x27;&#x27;, flush=True)
+asyncio.run(stream_agent(&#x27;Research the latest AI developments in 2024&#x27;))</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>LLM apps fail in different ways from classic ML: hallucination, prompt brittleness, context limits, tool misuse, cost spikes, and unsafe outputs.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Treating model output as guaranteed truth.</li><li>Putting private or untrusted text into prompts without controls.</li><li>Testing only one happy-path prompt.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Build a small LLM app experiment around LangGraph. Test a normal input, an ambiguous input, and a failure case; save the prompts and outputs.</div>
+      <div class="good box"><b>Why this matters in AI</b><br><code>LangGraph</code> addresses the limitations of linear agent frameworks: real-world agent tasks require loops (retry until correct), branching (different tools for different situations), and human oversight (approval before consequential actions). <code>LangGraph</code>&#x27;s graph-based approach makes complex agent behavior explicit, debuggable, and reliable.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Not defining State with proper annotations — use Annotated[list, <code>operator.add</code>] for message lists to enable append-only semantics. Without annotations, each node&#x27;s output overwrites the state rather than merging.</li><li>Creating cycles without a termination condition — add a counter to the state and check MAX_ITERATIONS to prevent infinite loops. <code>LangGraph</code> will recurse indefinitely if there is no path to END.</li><li>Not using checkpointers for long-running agents — without a checkpointer (<code>MemorySaver</code> or <code>SqliteSaver</code>), the state is lost if the process crashes mid-execution. Add a checkpointer for any agent that runs more than a few seconds.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a multi-agent research pipeline with <code>LangGraph</code>: (1) implement a supervisor that routes to: <code>search_agent</code> (for finding information), <code>analysis_agent</code> (for synthesizing findings), <code>writer_agent</code> (for drafting the final report), (2) implement each agent as a <code>LangGraph</code> node with its own tools, (3) add a &#x27;review&#x27; node that checks if the research is complete or needs more information (loops back to <code>search_agent</code> if incomplete), (4) add human-in-the-loop: pause before the <code>writer_agent</code> produces the final report to let the human approve or add requirements, (5) stream the entire pipeline and display intermediate states to the user.</div>
     </div>
   </div>
 </section>
@@ -241,17 +453,43 @@
       <h2>Fallbacks</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Fallbacks is a concept inside Tool calling and AI agents that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Fallbacks are alternative paths taken when the primary approach fails — a model call times out, returns an error, produces an invalid response, or the confidence is too low. Robust production systems always have fallbacks; brittle systems fail completely when any component fails.</p><p>Model fallback chain: if the primary model (e.g., Claude Opus) is unavailable or times out, fall back to a faster/cheaper model (Claude Haiku). If that also fails, fall back to a cached response, a rules-based response, or a graceful &#x27;I cannot answer this right now&#x27; message. Each level of fallback is less capable but more reliable.</p><p>Tool fallback: if the primary search tool returns empty results, try an alternative search strategy (broader query, different data source). If OCR fails to parse a document, try a different OCR engine. If a translation API fails, try a different translation service or skip translation. The key: always have at least one backup path that cannot fail (even if the backup is &#x27;return None and log the failure&#x27;).</p><p>Confidence-based fallback: use model confidence (prediction probability) to route requests. High confidence (&gt;0.9): auto-approve the response. Medium confidence (0.5-0.9): add a disclaimer. Low confidence (&lt;0.5): fallback to a human reviewer or a more capable model. This approach maximizes automation for confident cases while ensuring quality for uncertain cases.</p><p><code>LangChain</code> fallback chains: <code>LangChain</code> provides `.<code>with_fallbacks</code>([<code>fallback_chain</code>])` syntax for automatic fallback. If the primary chain raises an exception, the fallback chain is tried. You can chain multiple fallbacks: <code>primary_model</code> → <code>backup_model</code> → <code>rules_based_responder</code> → &#x27;service unavailable&#x27; message.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Tool calling and AI agents and needs to apply Fallbacks. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Tool calling and AI agents where Fallbacks is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import anthropic
+import time
+# Model fallback chain
+client = anthropic.Anthropic()
+def call_with_fallback(messages, primary=&#x27;claude-opus-4-8&#x27;, fallback=&#x27;claude-haiku-4-5-20251001&#x27;, timeout=10):
+    for model in [primary, fallback]:
+        try:
+            response = client.messages.create(
+                model=model, max_tokens=1024, messages=messages
+            )
+            return response.content[0].text
+        except anthropic.APITimeoutError:
+            print(f&#x27;Timeout on {model}, trying fallback...&#x27;)
+        except anthropic.APIStatusError as e:
+            if e.status_code == 529:  # API overloaded
+                print(f&#x27;{model} overloaded, trying fallback...&#x27;)
+                time.sleep(1)
+            else:
+                raise
+    return &#x27;I am temporarily unable to process your request. Please try again shortly.&#x27;
+# LangChain fallback pattern
+from langchain_anthropic import ChatAnthropic
+from langchain_core.output_parsers import StrOutputParser
+primary_llm = ChatAnthropic(model=&#x27;claude-opus-4-8&#x27;)
+fallback_llm = ChatAnthropic(model=&#x27;claude-haiku-4-5-20251001&#x27;)
+# Automatic fallback: if primary raises exception, try fallback
+llm_with_fallback = primary_llm.with_fallbacks([fallback_llm])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Fallbacks, explain it in 5 to 8 lines, and connect it to Tool calling and AI agents.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Production AI systems fail without fallbacks. LLM API outages happen. Search APIs go down. OCR fails on corrupted images. A system without fallbacks shows error pages to users when any component fails. A system with fallbacks degrades gracefully: primary model → backup model → rules-based → &#x27;try again later&#x27;. Fallbacks are the implementation of reliability at the application layer.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Only having one fallback level — if both the primary and the first fallback fail (concurrent API outage), the system crashes. Always have at least 3 levels: primary, backup, and a hardcoded default response.</li><li>Not logging fallback activations — fallbacks that activate silently hide production failures. When a fallback is used, log: why (timeout/error/confidence), which level was used, and the request that triggered it. Use this log to identify reliability issues in the primary system.</li><li>Using the same provider for primary and fallback — if your primary and fallback both use <code>OpenAI</code>, an <code>OpenAI</code> outage takes both down simultaneously. Diversify across providers: Anthropic primary, <code>OpenAI</code> fallback (or vice versa).</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Design a 3-level fallback system: (1) primary: Claude Opus → response, (2) secondary: Claude Haiku → response (on timeout or error), (3) tertiary: retrieve a similar cached response from a vector database, (4) quaternary: return a canned response with a clear &#x27;reduced capability&#x27; message, (5) test: manually trigger each fallback level by mocking API failures, (6) measure: what fraction of requests use each level? What is the quality difference between responses at each level? (7) add monitoring: alert if &gt; 5% of requests are using level 3 or 4 (indicates a production issue with levels 1 and 2).</div>
     </div>
   </div>
 </section>
@@ -263,17 +501,46 @@
       <h2>Tracing and debugging</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Tracing and debugging is a concept inside Tool calling and AI agents that should be learned through use, not memorization. Start with the problem it solves. Then identify the input it receives, the operation or decision it performs, and the output it creates.</p><p>A college science or math student can understand the topic if it is connected to a small concrete example. Abstract terms become clear when you can point to a number, row, prompt, image, model output, or system decision.</p><p>The next step is to ask how the result can be wrong. Every AI topic has failure modes: bad data, wrong assumptions, leakage, overfitting, unclear prompts, unstable deployment, or misleading metrics.</p><p>Finally, explain the topic in your own words using a real workflow. If the explanation cannot mention input, process, output, and failure case, it is still too shallow.</p>
+        <p>Tracing in LLM applications means recording every step in a chain or agent run: the input prompt, the model called, the tokens used, the response, tool calls made, and the final output. Without tracing, debugging an agent that calls 5 tools across 10 LLM calls is nearly impossible — you see only the final (wrong) output but not which step failed.</p><p><code>LangSmith</code> for tracing: <code>LangSmith</code> (by <code>LangChain</code>) is the most widely used tracing tool for LLM applications. Set environment variables: `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_API_KEY=...`. All <code>LangChain</code> calls are automatically traced. The <code>LangSmith</code> UI shows: full prompt → model response timeline, token counts, latency per step, child spans for tool calls.</p><p>What to trace: each LLM call (input tokens, output tokens, model name, latency), each tool call (tool name, input, output, success/failure), each retrieval operation (query, retrieved documents, scores), and the final output. For multi-step chains: capture the full trace tree so you can see exactly where the chain went wrong.</p><p>Debugging failures: common LLM application failures and how to trace them: (1) model hallucination — check if the retrieved context actually contained the answer (retrieval failure) or if the model ignored the context (generation failure). (2) tool call failure — check the exact tool input the model generated (often a JSON format issue). (3) infinite loops — check the agent&#x27;s decision trace: it kept calling the same tool because a previous tool returned an error it didn&#x27;t handle.</p><p>Production monitoring: tracing should continue in production, not just during development. Log all traces, monitor: latency percentiles (p50, p90, p99), error rates, token cost per request, number of LLM calls per user request. Alert on: p99 latency &gt; threshold, error rate &gt; 1%, cost anomalies.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Example scenario: a learner is studying Tool calling and AI agents and needs to apply Tracing and debugging. The input should be written down, the transformation should be shown step by step, and the final output should be checked against an expected result.</p>
-        <ol><li>Set up a small realistic scenario from Tool calling and AI agents where Tracing and debugging is needed.</li><li>Write the exact input: a few numbers, rows, sentences, images, prompts, or configuration values.</li><li>Apply the concept step by step and show the intermediate result instead of jumping to the final answer.</li><li>Write the final output and explain what a learner should conclude from it.</li><li>Change one assumption or input value and explain how the output or decision changes.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>import os
+os.environ[&#x27;LANGCHAIN_TRACING_V2&#x27;] = &#x27;true&#x27;
+os.environ[&#x27;LANGCHAIN_API_KEY&#x27;] = &#x27;your-langsmith-api-key&#x27;
+os.environ[&#x27;LANGCHAIN_PROJECT&#x27;] = &#x27;my-rag-project&#x27;
+# All subsequent LangChain calls are automatically traced
+from langchain_anthropic import ChatAnthropic
+from langchain_core.messages import HumanMessage
+llm = ChatAnthropic(model=&#x27;claude-opus-4-8&#x27;)
+result = llm.invoke([HumanMessage(content=&#x27;What is the capital of France?&#x27;)])
+# This call is visible in LangSmith UI with full trace
+print(result.content)</code></pre><pre><code># Custom tracing without LangSmith
+import time
+from dataclasses import dataclass, field
+from typing import List, Any
+@dataclass
+class Span:
+    name: str; start: float = field(default_factory=time.time)
+    end: float = None; inputs: dict = field(default_factory=dict)
+    outputs: dict = field(default_factory=dict); children: List = field(default_factory=list)
+class Tracer:
+    def __init__(self): self.spans = []
+    def start_span(self, name, inputs=None):
+        span = Span(name=name, inputs=inputs or {}); self.spans.append(span); return span
+    def end_span(self, span, outputs=None):
+        span.end = time.time(); span.outputs = outputs or {}
+    def print_trace(self):
+        for span in self.spans:
+            duration = (span.end or time.time()) - span.start
+            print(f&#x27;{span.name}: {duration*1000:.0f}ms | inputs: {span.inputs} | outputs: {span.outputs}&#x27;)
+tracer = Tracer()</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>It connects the chapter to practical AI work and gives you vocabulary to discuss design choices, tradeoffs, and failure modes.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Memorizing the definition only.</li><li>Moving ahead before you can give your own example.</li><li>Not connecting the idea to a project, metric, or failure case.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Create your own example for Tracing and debugging, explain it in 5 to 8 lines, and connect it to Tool calling and AI agents.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>Debugging an LLM application without tracing is like debugging a distributed system without logs. The chain might call 5 tools, make 8 LLM requests, and produce a wrong answer — without tracing, you have no idea which step was responsible. Tracing reduces debugging time from hours to minutes by showing exactly what happened at each step.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Only tracing in development — production failures often occur on edge-case inputs that never appeared in testing. Keeping tracing on in production (with appropriate data retention policies) means you can always debug any production issue.</li><li>Not tracing tool inputs and outputs — the most common agent failures are incorrect tool inputs (model generates malformed JSON) or unexpected tool outputs (tool returns an error message the model doesn&#x27;t handle). Always log both the raw tool input and the raw tool output.</li><li>Not setting a project name in <code>LangSmith</code> — without a project name, all traces go to a default project and become impossible to organize as your application grows. Use meaningful project names like &#x27;rag-customer-support-v2&#x27;.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Set up tracing for an agent application: (1) implement a 2-tool agent (web search + calculator) with <code>LangChain</code>, (2) enable <code>LangSmith</code> tracing, (3) run 10 different queries including at least 2 that should cause tool call failures, (4) examine each trace in <code>LangSmith</code>: what was the exact prompt sent to the model? What tool was called? What did the tool return? Where did the chain go wrong? (5) implement a custom tracer that logs spans to a JSON file for analysis — compute: mean tool call latency, success rate by tool, most common failure modes.</div>
     </div>
   </div>
 </section>
@@ -285,17 +552,38 @@
       <h2>Human-in-the-loop</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Human-in-the-loop should be learned as a practical tool for building reliable AI programs, not as isolated syntax. In real AI work, code receives data, transforms it, sends it to a model or analysis step, and then returns an output that someone depends on. If the code is unclear, the model result becomes difficult to trust.</p><p>In Tool calling and AI agents, connect Human-in-the-loop to a complete mini-flow: define a small input, apply the concept, print or return the output, and check whether the output matches your expectation. This is the difference between recognizing syntax and being able to use it in a project.</p><p>A science or math student should think of programming like lab procedure. If you do not record the input, method, and output, another person cannot reproduce the result. Good AI code is reproducible in the same way: clear input, clear transformation, clear output.</p><p>For example, if the topic is related to functions, write one function that receives a list of numbers, validates the input, calculates a statistic, and returns the answer. Then test it with normal input, empty input, and wrong-type input. That small exercise teaches more than reading ten definitions.</p><p>The common failure is silent wrong output. Code may run without crashing but still produce a wrong result because a type was unexpected, a file path was wrong, or a variable was overwritten. Always test the concept with at least one bad input.</p>
+        <p>Human-in-the-loop (HITL) is a system design pattern where a human reviewer is embedded in the automated workflow for high-stakes or uncertain decisions. Instead of full automation, the system runs autonomously for routine cases and escalates to a human for cases that are uncertain, novel, or high-risk. This combines the speed of automation with the judgment of human expertise.</p><p>When HITL is necessary: medical diagnosis (AI suggests, doctor confirms), legal document review (AI flags issues, lawyer reviews), financial fraud decisions (AI scores risk, analyst confirms before blocking), content moderation (AI classifier, human reviewer for borderline cases), AI agent actions that are irreversible (send an email, execute a trade, delete data).</p><p>HITL in LLM agents: use <code>LangGraph</code>&#x27;s interrupt mechanism to pause agent execution before critical actions. The agent plans an action (e.g., &#x27;send email to customer&#x27;), raises an interrupt, a human reviews the planned action, approves or modifies it, and the agent continues. This prevents autonomous agents from taking irreversible wrong actions.</p><p>Active learning: HITL is not just for deployment — it&#x27;s also for training data creation. Active learning uses model uncertainty to identify which examples would be most valuable for a human to label. Instead of labeling randomly, a human labels the examples the model is most uncertain about — dramatically reducing the number of labels needed to achieve target performance.</p><p>Confidence-based routing: a practical HITL implementation — route requests to human review when model confidence falls below a threshold. For a classification model: if max(<code>softmax_output</code>) &lt; 0.7, escalate to human. Tune the threshold to balance automation rate (cost) vs accuracy (quality). Track: automation rate, human review queue depth, and error rate on auto-approved vs human-reviewed cases.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
-        <p>Build a small script that uses Human-in-the-loop to load a few records, transform them, print a clean result, and handle one bad input without crashing.</p>
-        <ol><li>Create a tiny input with three to five records.</li><li>Apply Human-in-the-loop in one small, readable step.</li><li>Print the output and verify it matches what you expected.</li><li>Change one input to a bad value and observe how the code handles it.</li></ol>
+        <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
+        <pre><code>from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
+# LangGraph with human-in-the-loop interrupt
+def should_interrupt(state):
+    &#x27;Return True if action requires human approval&#x27;
+    action = state.get(&#x27;planned_action&#x27;, {})
+    return action.get(&#x27;type&#x27;) in [&#x27;send_email&#x27;, &#x27;delete_record&#x27;, &#x27;execute_payment&#x27;]
+def plan_action(state): return {&#x27;planned_action&#x27;: {&#x27;type&#x27;: &#x27;send_email&#x27;, &#x27;to&#x27;: &#x27;user@example.com&#x27;, &#x27;body&#x27;: &#x27;Your order shipped.&#x27;}}
+def execute_action(state): return {&#x27;result&#x27;: f&#x27;Executed: {state[&quot;planned_action&quot;]}&#x27;}
+# Build graph with interrupt
+builder = StateGraph(dict)
+builder.add_node(&#x27;plan&#x27;, plan_action)
+builder.add_node(&#x27;execute&#x27;, execute_action)
+builder.add_edge(&#x27;plan&#x27;, &#x27;execute&#x27;)
+graph = builder.compile(checkpointer=MemorySaver(), interrupt_before=[&#x27;execute&#x27;])
+# Run: will pause before execute
+config = {&#x27;configurable&#x27;: {&#x27;thread_id&#x27;: &#x27;1&#x27;}}
+result = graph.invoke({&#x27;query&#x27;: &#x27;Notify customer&#x27;}, config)
+print(&#x27;Paused. Planned action:&#x27;, result[&#x27;planned_action&#x27;])
+# Human reviews and approves by resuming
+result = graph.invoke(None, config)  # resume from checkpoint
+print(&#x27;Result:&#x27;, result[&#x27;result&#x27;])</code></pre>
       </div>
       
-      <div class="good box"><b>Why this matters in AI</b><br>Without this, notebooks become fragile. Good code lets you repeat experiments, reuse logic, and find bugs before they corrupt results.</div>
-      <div class="mistake box"><b>Common mistakes</b><ul><li>Copying code without changing inputs to see how it behaves.</li><li>Ignoring errors instead of reading the traceback from top to bottom.</li><li>Writing one large notebook cell instead of small testable functions.</li></ul></div>
-      <div class="practice box"><b>Practice task</b><br>Write a 20-line Python example using Human-in-the-loop. Add one normal input, one bad input, and a short note explaining the output.</div>
+      <div class="good box"><b>Why this matters in AI</b><br>HITL is the responsible deployment pattern for AI systems in high-stakes domains. A fully automated loan approval system that is 95% accurate still makes mistakes on 5% of cases — with HITL, those uncertain cases get human review, the 95% routine cases are automated, and the system is both faster (for routine cases) and safer (for edge cases) than either pure automation or pure human review.</div>
+      <div class="mistake box"><b>Common mistakes</b><ul><li>Setting confidence thresholds without measuring impact — &#x27;escalate if confidence &lt; 0.7&#x27; is arbitrary. Measure: at your chosen threshold, what fraction of errors does human review catch? What fraction of cases are escalated? Tune the threshold to hit your target quality and automation rate.</li><li>Not logging which cases were escalated and the human decision — HITL generates valuable data. The cases that required human review are the hardest cases for the model. Using human decisions on these cases for retraining continuously improves the automation rate over time.</li><li>Creating brittle HITL queues — if humans can&#x27;t keep up with the volume of escalated cases (queue grows faster than it&#x27;s drained), the system degrades. Design HITL workflows with queue monitoring, SLA tracking, and overflow handling.</li></ul></div>
+      <div class="practice box"><b>Practice task</b><br>Build a HITL sentiment analysis system: (1) train a sentiment classifier (positive/negative/neutral), (2) evaluate: at what confidence threshold does auto-approval produce &lt; 5% error rate on the test set?, (3) implement confidence-based routing: auto-approve high-confidence cases, route low-confidence to a review queue, (4) simulate human review: for escalated cases, manually inspect and correct labels, (5) retrain with corrected labels added to training data — does the automation rate improve after retraining? How many human review iterations to reach 95% automation?</div>
     </div>
   </div>
 </section>

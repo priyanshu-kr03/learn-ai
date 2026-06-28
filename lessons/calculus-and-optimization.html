@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Calculus and optimization | AI Roadmap</title>
   <link rel="stylesheet" href="../styles.css">
+  <script src="../theme.js"></script>
 </head>
 <body>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="../index.html">AI<span>Roadmap</span></a><nav class="navlinks"><a href="../index.html">Roadmap</a><a href="../topics.html">All topics</a><a href="../study-plan.html">Study plan</a><a href="../projects.html">Projects</a></nav><button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div></header>
   <main class="wrap page">
     <aside class="sidebar">
       <h3>Contents</h3>
@@ -44,7 +45,7 @@
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Start with f(x) = x^2. This function is easy to visualize: x = 1 gives 1, x = 2 gives 4, x = 3 gives 9.</li><li>The derivative is f&#x27;(x) = 2x. At x = 3, f&#x27;(3) = 6.</li><li>Interpret 6 as local sensitivity: near x = 3, a small increase of 0.01 in x increases the output by roughly 0.06.</li><li>Connect it to ML: if x is a model weight and f(x) is loss, the derivative tells the optimizer how to move x to reduce error.</li></ol>
+        <pre><code>Start with f(x) = x^2. This function is easy to visualize: x = 1 gives 1, x = 2 gives 4, x = 3 gives 9.</code></pre><pre><code>The derivative is f&#x27;(x) = 2x. At x = 3, f&#x27;(3) = 6.</code></pre><pre><code>Interpret 6 as local sensitivity: near x = 3, a small increase of 0.01 in x increases the output by roughly 0.06.</code></pre><pre><code>Connect it to ML: if x is a model weight and f(x) is loss, the derivative tells the optimizer how to move x to reduce error.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
@@ -66,7 +67,7 @@
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Use f(x, y) = x^2 + 3y.</li><li>For partial derivative with respect to x, freeze y and differentiate x^2. Result: 2x.</li><li>For partial derivative with respect to y, freeze x and differentiate 3y. Result: 3.</li><li>At x = 4, y = 10, the sensitivities are 8 for x and 3 for y, so x has a stronger local effect on the output.</li></ol>
+        <pre><code>Use f(x, y) = x^2 + 3y.</code></pre><pre><code>For partial derivative with respect to x, freeze y and differentiate x^2. Result: 2x.</code></pre><pre><code>For partial derivative with respect to y, freeze x and differentiate 3y. Result: 3.</code></pre><pre><code>At x = 4, y = 10, the sensitivities are 8 for x and 3 for y, so x has a stronger local effect on the output.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
@@ -88,7 +89,7 @@
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Define z = 3x and y = z^2.</li><li>Find the local derivative of y with respect to z: dy/dz = 2z.</li><li>Find the local derivative of z with respect to x: dz/dx = 3.</li><li>Multiply them: dy/dx = 2z * 3. At x = 2, z = 6, so dy/dx = 36.</li></ol>
+        <pre><code>Define z = 3x and y = z^2.</code></pre><pre><code>Find the local derivative of y with respect to z: dy/dz = 2z.</code></pre><pre><code>Find the local derivative of z with respect to x: dz/dx = 3.</code></pre><pre><code>Multiply them: dy/dx = 2z * 3. At x = 2, z = 6, so dy/dx = 36.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
@@ -110,7 +111,7 @@
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Start with f(x, y) = x^2 + y^2.</li><li>Compute partial derivatives: df/dx = 2x and df/dy = 2y.</li><li>At x = 3 and y = 4, the gradient is [6, 8].</li><li>To reduce f, move against the gradient: reduce x and reduce y by small amounts.</li></ol>
+        <pre><code>Start with f(x, y) = x^2 + y^2.</code></pre><pre><code>Compute partial derivatives: df/dx = 2x and df/dy = 2y.</code></pre><pre><code>At x = 3 and y = 4, the gradient is [6, 8].</code></pre><pre><code>To reduce f, move against the gradient: reduce x and reduce y by small amounts.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
@@ -132,7 +133,7 @@
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Take three true values: [100, 200, 300]. Predictions are [110, 180, 330].</li><li>Errors are [10, -20, 30]. Absolute errors are [10, 20, 30], so MAE is 20.</li><li>Squared errors are [100, 400, 900], so MSE is 466.67.</li><li>The larger third error affects MSE more strongly, which is why MSE pushes models to avoid large errors.</li></ol>
+        <pre><code>Take three true values: [100, 200, 300]. Predictions are [110, 180, 330].</code></pre><pre><code>Errors are [10, -20, 30]. Absolute errors are [10, 20, 30], so MAE is 20.</code></pre><pre><code>Squared errors are [100, 400, 900], so MSE is 466.67.</code></pre><pre><code>The larger third error affects MSE more strongly, which is why MSE pushes models to avoid large errors.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
@@ -149,12 +150,12 @@
       <h2>Gradient descent</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>Gradient descent is an optimization method that repeatedly updates model parameters to reduce loss. It uses the gradient to decide the direction of change and the learning rate to decide the size of the step.</p><p>The update rule is: new parameter = old parameter - learning_rate * gradient. The minus sign matters because the gradient points toward increasing loss, while training wants to decrease loss.</p><p>Imagine a model has one weight w and the loss at the current point has derivative 6. If the learning rate is 0.1, the update is w = w - 0.1 * 6, so w moves down by 0.6. If the derivative is negative, subtracting it moves w upward.</p><p>Real training repeats this process many times over batches of data. Each update is small, but thousands of updates can move the model from poor predictions to useful predictions.</p>
+        <p>Gradient descent is an optimization method that repeatedly updates model parameters to reduce loss. It uses the gradient to decide the direction of change and the learning rate to decide the size of the step.</p><p>The update rule is: new parameter = old parameter - <code>learning_rate</code> * gradient. The minus sign matters because the gradient points toward increasing loss, while training wants to decrease loss.</p><p>Imagine a model has one weight w and the loss at the current point has derivative 6. If the learning rate is 0.1, the update is w = w - 0.1 * 6, so w moves down by 0.6. If the derivative is negative, subtracting it moves w upward.</p><p>Real training repeats this process many times over batches of data. Each update is small, but thousands of updates can move the model from poor predictions to useful predictions.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Suppose current weight w = 3 and current gradient = 6.</li><li>Choose learning rate = 0.1.</li><li>Update: new w = 3 - 0.1 * 6 = 2.4.</li><li>The weight moved in the direction expected to reduce the loss.</li></ol>
+        <pre><code>Suppose current weight w = 3 and current gradient = 6.</code></pre><pre><code>Choose learning rate = 0.1.</code></pre><pre><code>Update: new w = 3 - 0.1 * 6 = 2.4.</code></pre><pre><code>The weight moved in the direction expected to reduce the loss.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
@@ -171,12 +172,12 @@
       <h2>Learning rate</h2>
       <div class="deep-dive">
         <h3>Detailed explanation</h3>
-        <p>The learning rate controls how large each optimization step is. It is one of the most important training settings because it affects whether learning is stable, slow, or completely broken.</p><p>If the learning rate is too small, the model may improve very slowly and waste compute. If it is too large, the model can jump over good solutions, bounce around, or make the loss explode.</p><p>Using the update rule w = w - learning_rate * gradient, suppose w = 3 and gradient = 6. With learning rate 0.1, the step is 0.6 and w becomes 2.4. With learning rate 1.0, the step is 6 and w becomes -3, which may be far too aggressive.</p><p>In practice, you monitor training loss and validation loss. Smooth slow improvement may mean the learning rate is conservative. Wild spikes or NaN values often indicate the learning rate is too high.</p>
+        <p>The learning rate controls how large each optimization step is. It is one of the most important training settings because it affects whether learning is stable, slow, or completely broken.</p><p>If the learning rate is too small, the model may improve very slowly and waste compute. If it is too large, the model can jump over good solutions, bounce around, or make the loss explode.</p><p>Using the update rule w = w - <code>learning_rate</code> * gradient, suppose w = 3 and gradient = 6. With learning rate 0.1, the step is 0.6 and w becomes 2.4. With learning rate 1.0, the step is 6 and w becomes -3, which may be far too aggressive.</p><p>In practice, you monitor training loss and validation loss. Smooth slow improvement may mean the learning rate is conservative. Wild spikes or <code>NaN</code> values often indicate the learning rate is too high.</p>
       </div>
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Use the same gradient, 6, with two learning rates.</li><li>Learning rate 0.1 gives update size 0.6.</li><li>Learning rate 1.0 gives update size 6.0.</li><li>Compare the behavior: the first is controlled; the second may overshoot the useful region.</li></ol>
+        <pre><code>Use the same gradient, 6, with two learning rates.</code></pre><pre><code>Learning rate 0.1 gives update size 0.6.</code></pre><pre><code>Learning rate 1.0 gives update size 6.0.</code></pre><pre><code>Compare the behavior: the first is controlled; the second may overshoot the useful region.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>
@@ -198,7 +199,7 @@
       <div class="example box">
         <b>Worked example</b>
         <p>Follow the numeric walkthrough below. It starts with a tiny function or training situation, calculates the important quantity, and then connects that number back to model learning.</p>
-        <ol><li>Picture a curve with two valleys: one shallow valley and one deep valley.</li><li>If optimization starts near the shallow valley, local downhill steps may lead there first.</li><li>Once the slope is near zero, updates become tiny.</li><li>Better initialization or optimizer settings can help find better regions of the loss surface.</li></ol>
+        <pre><code>Picture a curve with two valleys: one shallow valley and one deep valley.</code></pre><pre><code>If optimization starts near the shallow valley, local downhill steps may lead there first.</code></pre><pre><code>Once the slope is near zero, updates become tiny.</code></pre><pre><code>Better initialization or optimizer settings can help find better regions of the loss surface.</code></pre>
       </div>
       
       <div class="good box"><b>Why this matters in AI</b><br>Math intuition helps you debug models. When a metric, gradient, probability, or similarity score behaves strangely, you can reason about the cause instead of guessing.</div>

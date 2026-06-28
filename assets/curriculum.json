@@ -508,6 +508,46 @@
   },
   {
     "number": 26,
+    "track": "06 Reinforcement Learning",
+    "title": "Reinforcement learning fundamentals",
+    "slug": "reinforcement-learning-fundamentals",
+    "level": "Intermediate",
+    "duration": "1.5 weeks",
+    "topics": [
+      "Agent and environment",
+      "State action reward",
+      "Policy",
+      "Value function",
+      "Q-function",
+      "Exploration vs exploitation",
+      "Epsilon-greedy",
+      "Markov decision process",
+      "Discount factor",
+      "Episode and trajectory"
+    ]
+  },
+  {
+    "number": 27,
+    "track": "06 Reinforcement Learning",
+    "title": "RL algorithms and applications",
+    "slug": "rl-algorithms-and-applications",
+    "level": "Intermediate",
+    "duration": "1.5 weeks",
+    "topics": [
+      "Q-learning",
+      "Deep Q-Network",
+      "Policy gradient",
+      "REINFORCE algorithm",
+      "Actor-critic",
+      "Proximal policy optimization",
+      "Model-based vs model-free RL",
+      "Reward shaping",
+      "RLHF overview",
+      "RL in games and robotics"
+    ]
+  },
+  {
+    "number": 28,
     "track": "07 NLP",
     "title": "NLP foundations",
     "slug": "nlp-foundations",
@@ -533,7 +573,47 @@
     ]
   },
   {
-    "number": 27,
+    "number": 29,
+    "track": "07 NLP",
+    "title": "NLP with transformers and BERT",
+    "slug": "nlp-with-transformers-and-bert",
+    "level": "Intermediate",
+    "duration": "1.5 weeks",
+    "topics": [
+      "BERT architecture",
+      "Masked language modeling",
+      "Next sentence prediction",
+      "Subword tokenization",
+      "BPE and WordPiece",
+      "Fine-tuning BERT",
+      "Sentence-BERT",
+      "Cross-encoder vs bi-encoder",
+      "Zero-shot NLP classification",
+      "NER with transformers"
+    ]
+  },
+  {
+    "number": 30,
+    "track": "07 NLP",
+    "title": "Advanced NLP and information extraction",
+    "slug": "advanced-nlp-and-information-extraction",
+    "level": "Intermediate",
+    "duration": "1.5 weeks",
+    "topics": [
+      "Coreference resolution",
+      "Dependency parsing",
+      "Relation extraction",
+      "Event detection",
+      "Text clustering",
+      "Topic modeling",
+      "LDA",
+      "Language identification",
+      "Text augmentation",
+      "Multilingual NLP"
+    ]
+  },
+  {
+    "number": 31,
     "track": "08 Generative AI and LLMs",
     "title": "LLM foundations",
     "slug": "llm-foundations",
@@ -555,7 +635,7 @@
     ]
   },
   {
-    "number": 28,
+    "number": 32,
     "track": "08 Generative AI and LLMs",
     "title": "Prompt engineering",
     "slug": "prompt-engineering",
@@ -576,7 +656,7 @@
     ]
   },
   {
-    "number": 29,
+    "number": 33,
     "track": "08 Generative AI and LLMs",
     "title": "Embeddings and vector databases",
     "slug": "embeddings-and-vector-databases",
@@ -598,7 +678,7 @@
     ]
   },
   {
-    "number": 30,
+    "number": 34,
     "track": "08 Generative AI and LLMs",
     "title": "RAG systems",
     "slug": "rag-systems",
@@ -620,7 +700,7 @@
     ]
   },
   {
-    "number": 31,
+    "number": 35,
     "track": "08 Generative AI and LLMs",
     "title": "Tool calling and AI agents",
     "slug": "tool-calling-and-ai-agents",
@@ -642,7 +722,7 @@
     ]
   },
   {
-    "number": 32,
+    "number": 36,
     "track": "08 Generative AI and LLMs",
     "title": "Fine-tuning and model adaptation",
     "slug": "fine-tuning-and-model-adaptation",
@@ -663,7 +743,7 @@
     ]
   },
   {
-    "number": 33,
+    "number": 37,
     "track": "08 Generative AI and LLMs",
     "title": "Multimodal AI",
     "slug": "multimodal-ai",
@@ -688,7 +768,7 @@
     ]
   },
   {
-    "number": 34,
+    "number": 38,
     "track": "09 Data Engineering for AI",
     "title": "SQL and data pipelines",
     "slug": "sql-and-data-pipelines",
@@ -710,7 +790,7 @@
     ]
   },
   {
-    "number": 35,
+    "number": 39,
     "track": "09 Data Engineering for AI",
     "title": "MLOps and production ML",
     "slug": "mlops-and-production-ml",
@@ -735,7 +815,7 @@
     ]
   },
   {
-    "number": 36,
+    "number": 40,
     "track": "09 Data Engineering for AI",
     "title": "AI security and responsible AI",
     "slug": "ai-security-and-responsible-ai",
@@ -758,7 +838,7 @@
     ]
   },
   {
-    "number": 37,
+    "number": 41,
     "track": "10 AI System Design",
     "title": "ML system design",
     "slug": "ml-system-design",
@@ -781,7 +861,7 @@
     ]
   },
   {
-    "number": 38,
+    "number": 42,
     "track": "10 AI System Design",
     "title": "LLM app architecture",
     "slug": "llm-app-architecture",
@@ -802,7 +882,7 @@
     ]
   },
   {
-    "number": 39,
+    "number": 43,
     "track": "11 Projects and Portfolio",
     "title": "Projects: beginner to advanced",
     "slug": "projects-beginner-to-advanced",
@@ -825,7 +905,7 @@
     ]
   },
   {
-    "number": 40,
+    "number": 44,
     "track": "11 Projects and Portfolio",
     "title": "Capstone: AI learning assistant",
     "slug": "capstone-ai-learning-assistant",
